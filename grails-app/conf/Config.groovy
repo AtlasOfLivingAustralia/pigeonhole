@@ -1,15 +1,34 @@
-// locations to search for config files that get merged into the main config;
-// config files can be ConfigSlurper scripts, Java properties files, or classes
-// in the classpath in ConfigSlurper format
+/******************************************************************************\
+ *  CONFIG MANAGEMENT
+ \******************************************************************************/
+//def appName = 'pidgeonhole'
+def ENV_NAME = "${appName.toUpperCase()}_CONFIG"
+default_config = "/data/${appName}/config/${appName}-config.properties"
+if(!grails.config.locations || !(grails.config.locations instanceof List)) {
+    grails.config.locations = []
+}
+if(System.getenv(ENV_NAME) && new File(System.getenv(ENV_NAME)).exists()) {
+    println "[${appName}] Including configuration file specified in environment: " + System.getenv(ENV_NAME);
+    grails.config.locations.add "file:" + System.getenv(ENV_NAME)
+} else if(System.getProperty(ENV_NAME) && new File(System.getProperty(ENV_NAME)).exists()) {
+    println "[${appName}] Including configuration file specified on command line: " + System.getProperty(ENV_NAME);
+    grails.config.locations.add "file:" + System.getProperty(ENV_NAME)
+} else if(new File(default_config).exists()) {
+    println "[${appName}] Including default configuration file: " + default_config;
+    grails.config.locations.add "file:" + default_config
+} else {
+    println "[${appName}] No external configuration file defined."
+}
 
-// grails.config.locations = [ "classpath:${appName}-config.properties",
-//                             "classpath:${appName}-config.groovy",
-//                             "file:${userHome}/.grails/${appName}-config.properties",
-//                             "file:${userHome}/.grails/${appName}-config.groovy"]
+println "[${appName}] (*) grails.config.locations = ${grails.config.locations}"
 
-// if (System.properties["${appName}.config.location"]) {
-//    grails.config.locations << "file:" + System.properties["${appName}.config.location"]
-// }
+/******************************************************************************\
+ *  RELOADABLE CONFIG
+ \******************************************************************************/
+reloadable.cfgs = ["file:/data/${appName}/config/${appName}-config.properties"]
+
+runWithNoExternalConfig = true
+//security.cas.bypass = true
 
 grails.project.groupId = appName // change this to alter the default package name and Maven publishing destination
 
@@ -100,22 +119,102 @@ environments {
 }
 
 // log4j configuration
+if (!logging.dir) {
+    logging.dir = (System.getProperty('catalina.base') ? System.getProperty('catalina.base') + '/logs'  : '/var/log/tomcat6')
+}
 log4j = {
-    // Example of changing the log pattern for the default console appender:
-    //
-    //appenders {
-    //    console name:'stdout', layout:pattern(conversionPattern: '%c{2} %m%n')
-    //}
+    appenders {
+        environments{
+            development {
+                console name: "stdout",
+                        layout: pattern(conversionPattern: "%d %-5p [%c{1}]  %m%n"),
+                        threshold: org.apache.log4j.Level.DEBUG
+                rollingFile name: "${appName}Log",
+                        maxFileSize: 104857600,
+                        file: config.logging.dir+"/${appName}.log",
+                        threshold: org.apache.log4j.Level.INFO,
+                        layout: pattern(conversionPattern: "%d %-5p [%c{1}]  %m%n")
+                rollingFile name: "stacktrace",
+                        maxFileSize: 104857600,
+                        file: config.logging.dir+"/${appName}-stacktrace.log"
+            }
+            test {
+                rollingFile name: "${appName}Log",
+                        maxFileSize: 104857600,
+                        file: config.logging.dir+"/${appName}.log",
+                        threshold: org.apache.log4j.Level.INFO,
+                        layout: pattern(conversionPattern: "%d %-5p [%c{1}]  %m%n")
+                rollingFile name: "stacktrace",
+                        maxFileSize: 104857600,
+                        file: config.logging.dir+"${appName}-stacktrace.log"
+            }
+            nectar {
+                rollingFile name: "${appName}Log",
+                        maxFileSize: 104857600,
+                        file: config.logging.dir+"/${appName}.log",
+                        threshold: org.apache.log4j.Level.INFO,
+                        layout: pattern(conversionPattern: "%d %-5p [%c{1}]  %m%n")
+                rollingFile name: "stacktrace",
+                        maxFileSize: 104857600,
+                        file: config.logging.dir+"/${appName}-stacktrace.log"
+            }
+            nectartest {
+                rollingFile name: "${appName}Log",
+                        maxFileSize: 104857600,
+                        file: config.logging.dir+"/${appName}.log",
+                        threshold: org.apache.log4j.Level.INFO,
+                        layout: pattern(conversionPattern: "%d %-5p [%c{1}]  %m%n")
+                rollingFile name: "stacktrace",
+                        maxFileSize: 104857600,
+                        file: config.logging.dir+"/${appName}-stacktrace.log"
+            }
+            production {
+                rollingFile name: "${appName}Log",
+                        maxFileSize: 104857600,
+                        file: config.logging.dir+"${appName}.log",
+                        threshold: org.apache.log4j.Level.INFO,
+                        layout: pattern(conversionPattern: "%d %-5p [%c{1}]  %m%n")
+                rollingFile name: "stacktrace",
+                        maxFileSize: 104857600,
+                        file: config.logging.dir+"/${appName}-stacktrace.log"
+            }
+        }
+    }
+
+    environments {
+        development {
+            all additivity: false, stdout: [
+                    'grails.app.controllers.au.org.ala',
+                    'grails.app.domain.au.org.ala',
+                    'grails.app.services.au.org.ala',
+                    'grails.app.taglib.au.org.ala',
+                    'grails.app.conf.au.org.ala',
+                    'grails.app.filters.au.org.ala',
+                    'au.org.ala.cas.client'
+            ]
+        }
+    }
+
+    all additivity: false, "${appName}Log": [
+            'grails.app.controllers.au.org.ala',
+            'grails.app.domain.au.org.ala',
+            'grails.app.services.au.org.ala',
+            'grails.app.taglib.au.org.ala',
+            'grails.app.conf.au.org.ala',
+            'grails.app.filters.au.org.ala'
+    ]
+
+    debug 'grails.app.controllers.au.org.ala','ala','au.org.ala.web' // 'au.org.ala.cas.client',
 
     error  'org.codehaus.groovy.grails.web.servlet',        // controllers
-           'org.codehaus.groovy.grails.web.pages',          // GSP
-           'org.codehaus.groovy.grails.web.sitemesh',       // layouts
-           'org.codehaus.groovy.grails.web.mapping.filter', // URL mapping
-           'org.codehaus.groovy.grails.web.mapping',        // URL mapping
-           'org.codehaus.groovy.grails.commons',            // core / classloading
-           'org.codehaus.groovy.grails.plugins',            // plugins
-           'org.codehaus.groovy.grails.orm.hibernate',      // hibernate integration
-           'org.springframework',
-           'org.hibernate',
-           'net.sf.ehcache.hibernate'
+            'org.codehaus.groovy.grails.web.pages',          // GSP
+            'org.codehaus.groovy.grails.web.sitemesh',       // layouts
+            'org.codehaus.groovy.grails.web.mapping.filter', // URL mapping
+            'org.codehaus.groovy.grails.web.mapping',        // URL mapping
+            'org.codehaus.groovy.grails.commons',            // core / classloading
+            'org.codehaus.groovy.grails.plugins',            // plugins
+            'org.codehaus.groovy.grails.orm.hibernate',      // hibernate integration
+            'org.springframework',
+            'org.hibernate',
+            'net.sf.ehcache.hibernate'
 }
