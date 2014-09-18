@@ -129,54 +129,34 @@ log4j = {
                 console name: "stdout",
                         layout: pattern(conversionPattern: "%d %-5p [%c{1}]  %m%n"),
                         threshold: org.apache.log4j.Level.DEBUG
-                rollingFile name: "${appName}Log",
+                rollingFile name: "${config.appName}Log",
                         maxFileSize: 104857600,
-                        file: config.logging.dir+"/${appName}.log",
+                        file: config.logging.dir+"/${config.appName}.log",
                         threshold: org.apache.log4j.Level.INFO,
                         layout: pattern(conversionPattern: "%d %-5p [%c{1}]  %m%n")
                 rollingFile name: "stacktrace",
                         maxFileSize: 104857600,
-                        file: config.logging.dir+"/${appName}-stacktrace.log"
+                        file: config.logging.dir+"/${config.appName}-stacktrace.log"
             }
             test {
-                rollingFile name: "${appName}Log",
+                rollingFile name: "${config.appName}Log",
                         maxFileSize: 104857600,
-                        file: config.logging.dir+"/${appName}.log",
+                        file: config.logging.dir+"/${config.appName}.log",
                         threshold: org.apache.log4j.Level.INFO,
                         layout: pattern(conversionPattern: "%d %-5p [%c{1}]  %m%n")
                 rollingFile name: "stacktrace",
                         maxFileSize: 104857600,
-                        file: config.logging.dir+"${appName}-stacktrace.log"
-            }
-            nectar {
-                rollingFile name: "${appName}Log",
-                        maxFileSize: 104857600,
-                        file: config.logging.dir+"/${appName}.log",
-                        threshold: org.apache.log4j.Level.INFO,
-                        layout: pattern(conversionPattern: "%d %-5p [%c{1}]  %m%n")
-                rollingFile name: "stacktrace",
-                        maxFileSize: 104857600,
-                        file: config.logging.dir+"/${appName}-stacktrace.log"
-            }
-            nectartest {
-                rollingFile name: "${appName}Log",
-                        maxFileSize: 104857600,
-                        file: config.logging.dir+"/${appName}.log",
-                        threshold: org.apache.log4j.Level.INFO,
-                        layout: pattern(conversionPattern: "%d %-5p [%c{1}]  %m%n")
-                rollingFile name: "stacktrace",
-                        maxFileSize: 104857600,
-                        file: config.logging.dir+"/${appName}-stacktrace.log"
+                        file: config.logging.dir+"${config.appName}-stacktrace.log"
             }
             production {
-                rollingFile name: "${appName}Log",
+                rollingFile name: "${config.appName}Log",
                         maxFileSize: 104857600,
-                        file: config.logging.dir+"${appName}.log",
+                        file: config.logging.dir+"${config.appName}.log",
                         threshold: org.apache.log4j.Level.INFO,
                         layout: pattern(conversionPattern: "%d %-5p [%c{1}]  %m%n")
                 rollingFile name: "stacktrace",
                         maxFileSize: 104857600,
-                        file: config.logging.dir+"/${appName}-stacktrace.log"
+                        file: config.logging.dir+"/${config.appName}-stacktrace.log"
             }
         }
     }
@@ -195,7 +175,7 @@ log4j = {
         }
     }
 
-    all additivity: false, "${appName}Log": [
+    all additivity: false, "${config.appName}Log": [
             'grails.app.controllers.au.org.ala',
             'grails.app.domain.au.org.ala',
             'grails.app.services.au.org.ala',

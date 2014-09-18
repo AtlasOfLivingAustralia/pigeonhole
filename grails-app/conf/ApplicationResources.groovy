@@ -11,11 +11,11 @@ modules = {
 
     leafletLocate {
         dependsOn 'leaflet'
-        //resource url: 'js/leaflet-plugins/leaflet-locatecontrol-gh-pages/src/L.Control.Locate.js', l
-        resource url:'http://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-locatecontrol/v0.24.0/L.Control.Locate.js'
-        //resource url: [dir: 'js/leaflet-plugins/leaflet-locatecontrol-gh-pages/src', file: 'L.Control.Locate.css'], linkOverride:'http://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-locatecontrol/v0.24.0/L.Control.Locate.css'
-        resource url:'http://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-locatecontrol/v0.24.0/L.Control.Locate.css'
-        //resource url: [dir: 'js/leaflet-plugins/leaflet-locatecontrol-gh-pages/src', file: 'L.Control.Locate.ie.css'], wrapper: { s -> "<!--[if lt IE 9]>$s<![endif]-->" }
+        resource url: 'js/leaflet-plugins/leaflet-locatecontrol-gh-pages/src/L.Control.Locate.js'
+        //resource url:'http://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-locatecontrol/v0.24.0/L.Control.Locate.js'
+        resource url: [dir: 'js/leaflet-plugins/leaflet-locatecontrol-gh-pages/src', file: 'L.Control.Locate.css']
+        //resource url:'http://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-locatecontrol/v0.24.0/L.Control.Locate.css'
+        resource url: [dir: 'js/leaflet-plugins/leaflet-locatecontrol-gh-pages/src', file: 'L.Control.Locate.ie.css'], wrapper: { s -> "<!--[if lt IE 9]>$s<![endif]-->" }
     }
 
     leafletGeoSearch {
@@ -24,5 +24,10 @@ modules = {
         resource url: [dir: 'js/leaflet-plugins/L.GeoSearch/src/js', file: 'l.geosearch.provider.google.js']
         resource url: [dir: 'js/leaflet-plugins/L.GeoSearch/src/js', file: 'l.geosearch.provider.openstreetmap.js']
         resource url: [dir: 'js/leaflet-plugins/L.GeoSearch/src/css', file: 'l.geosearch.css']
+    }
+
+    leafletGeocoding {
+        dependsOn 'leaflet'
+        resource url: 'js/leaflet-plugins/leaflet.geocoding/leaflet.geocoding.js'
     }
 }

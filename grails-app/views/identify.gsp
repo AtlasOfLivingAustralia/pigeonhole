@@ -3,10 +3,12 @@
 	<head>
 		<meta name="layout" content="main"/>
 		<title>Identifiy</title>
-        <r:require modules="jquery, leaflet, leafletGeoSearch, leafletLocate"/>
+        <r:require modules="jquery, leaflet, leafletGeocoding, leafletLocate"/>
         <r:script>
+            var map, geocoding, marker;
+
             $(document).ready(function() {
-                var map = L.map('map').setView([-28, 134], 4);
+                map = L.map('map').setView([-28, 134], 4);
                 L.Icon.Default.imagePath = "${g.createLink(uri:'/js/leaflet-0.7.3/images')}";
 
                 L.tileLayer('https://{s}.tiles.mapbox.com/v3/{id}/{z}/{x}/{y}.png', {
@@ -17,21 +19,45 @@
                     id: 'examples.map-i86knfo3'
                 }).addTo(map);
 
-                L.control.locate({position:'topright', icon:'location-icon', markerClass: L.marker}).addTo(map);
+                %{--new L.Control.GeoSearch({--}%
+                    %{--provider: new L.GeoSearch.Provider.OpenStreetMap(),--}%
+                    %{--position: 'topright',--}%
+                    %{--showMarker: true--}%
+                %{--}).addTo(map);--}%
 
-                new L.Control.GeoSearch({
-                    provider: new L.GeoSearch.Provider.OpenStreetMap(),
-                    position: 'topright',
-                    showMarker: true
-                }).addTo(map);
+                %{--L.control.locate({position:'topright', icon:'location-icon', markerClass: L.marker}).addTo(map);--}%
 
-                map.on('geosearch_showlocation', function (result) {
-                    //console.log('zoom to: ' + result.Location.Label);
-                    thisLatLon = result.Location.X + " " + result.Location.Y;
-                    alert('your lat/lng is: ' + thisLatLon);
+                %{--map.on('geosearch_showlocation', function (result) {--}%
+                    %{--//console.log('zoom to: ' + result.Location.Label);--}%
+                    %{--thisLatLon = result.Location.X + " " + result.Location.Y;--}%
+                    %{--alert('your lat/lng is: ' + thisLatLon);--}%
+                %{--});--}%
+
+                map.locate({setView: true, maxZoom: 16});
+
+                map.on('locationfound', onLocationFound);
+
+                function onLocationFound(e) {
+                    // create a marker at the users "latlng" and add it to the map
+                    marker = L.marker(e.latlng).addTo(map);
+                }
+
+                geocoding = new L.Geocoding();
+                map.addControl(geocoding);
+
+                $('#geocodeinput').on('keydown', function(e) {
+                    if (e.keyCode == 13 ) {
+                        e.preventDefault();
+                        geocoding.geocode( $('#geocodeinput').val())
+                    }
                 });
 
             });
+
+            function geocode() {
+                var latlng = geocoding.geocode($("#geocodeinput").val());
+                console.log("latlng", latlng, $('#leaflet-geocoding'));
+            }
 
         </r:script>
 	</head>
@@ -42,7 +68,11 @@
                 <div id="map" style="width: 100%; height: 500px"></div>
             </div>
             <div class="span6">
-                <div>Some controls go here</div>
+                <div>Enter an address, location or coordinates</div>
+                <div class="input-append">
+                    <input class="input-large" id="geocodeinput" type="text">
+                    <button id="geocodebutton" class="btn" onclick="geocode()">Lookup</button>
+                </div>
             </div>
         </div>
 	</body>
