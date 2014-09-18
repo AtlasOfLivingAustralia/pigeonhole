@@ -40,7 +40,6 @@ L.Geocoding = L.Control.extend({
 
     , onAdd: function (map) {
         this._map = map;
-        this._latlng = null;
         return L.DomUtil.create('div', 'leaflet-geocoding');;
     }
 
@@ -67,7 +66,6 @@ L.Geocoding = L.Control.extend({
                 , zoom : that._map.getZoom()
                 , cb : $.proxy(that._zoomto, that)
             });
-        return that._latlng
     }
 
     , _zoomto: function(georesult) {
@@ -78,7 +76,6 @@ L.Geocoding = L.Control.extend({
         //L.rectangle(georesult.bounds, {color: "#ff7800", weight: 1}).addTo(map);
         popup.setLatLng(georesult.latlng).setContent(georesult.content).addTo(map);
         map.openPopup(popup);
-        this._latlng = georesult.latlng;
     }
 
     , _osm: function(arg) {
