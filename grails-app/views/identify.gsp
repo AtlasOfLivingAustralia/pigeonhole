@@ -3,7 +3,7 @@
 	<head>
 		<meta name="layout" content="main"/>
 		<title>Identifiy</title>
-        <r:require modules="jquery, leaflet, leafletGeocoding, leafletLocate"/>
+        <r:require modules="jquery, leaflet"/>
         <style type="text/css">
             #locationLatLng {
                 color: #DDD;
@@ -46,9 +46,15 @@
                 padding-top: 15px;
             }
 
+            .select-mini {
+                font-size: 12px;
+                height: 22px;
+                width: auto !important;
+            }
+
         </style>
         <r:script>
-            var map, geocoding, marker;
+            var map, geocoding, marker, circle, radius;
 
             $(document).ready(function() {
 
@@ -57,7 +63,7 @@
                     attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
                         '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
                         'Imagery © <a href="http://mapbox.com">Mapbox</a>',
-                    id: 'examples.map-i86knfo3'
+                    id: 'examples.map-i875mjb7'
                 });
 
                 var OpenStreetMap_Mapnik = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -98,31 +104,32 @@
                     updateLocation(this.getLatLng());
                 });
 
+                radius = $('#radius').val();
+                circle = L.circle(null, radius * 1000,  {color: '#df4a21'}); // #bada55
+
                 L.Icon.Default.imagePath = "${g.createLink(uri:'/js/leaflet-0.7.3/images')}";
-
-
 
                 map.on('locationfound', onLocationFound);
 
                 function onLocationFound(e) {
                     // create a marker at the users "latlng" and add it to the map
-                    //marker = L.marker(e.latlng, {draggable: true}).addTo(map);
                     marker.setLatLng(e.latlng).addTo(map);
                     updateLocation(e.latlng);
                 }
 
-                geocoding = new L.Geocoding();
-                map.addControl(geocoding);
+//                geocoding = new L.Geocoding();
+//                map.addControl(geocoding);
 
                 $('#geocodeinput').on('keydown', function(e) {
                     if (e.keyCode == 13 ) {
                         e.preventDefault();
-                        //geocoding.geocode( $('#geocodeinput').val())
                         osmGeocodeAddress();
                     }
                 });
 
-
+                $('#radius').change(function() {
+                    updateLocation(marker.getLatLng());
+                });
 
             }); // end document load
 
@@ -131,31 +138,46 @@
             }
 
             function geocode() {
-//                var latlng = geocoding.geocode($("#geocodeinput").val());
                 osmGeocodeAddress();
-                //console.log("latlng", $('#locationLatLng'));
             }
 
             function updateSpeciesGroups() {
-                var radius = 5;
+                var radius = $('#radius').val();
                 var latlng = $('#locationLatLng span').data('latlng');
 
                 $.ajax({
-                    url : 'http://biocache.ala.org.au/ws/explore/groups'
+                    url : 'http://biocache.ala.org.au/ws/explore/groups.json'
                         , dataType : 'jsonp'
-                        //, jsonp : 'callback'
+                        , jsonp : 'callback'
                         , data : {
                             'lat' : latlng.lat
                             , 'lon' : latlng.lng
                             , 'radius' : radius
                         }
-                    })
+                })
                 .done(function(data){
+                    //console.log("data", data);
                     if (data.length > 0) {
-                        console.log("data", data);
+                        var rows = "<table class='table table-bordered table-compact'><tr>";
+                        $.each(data, function(index, value){
+                            if (value.level == 1 && value.speciesCount > 0) {
+                                //console.log("value", value);
+                                rows += "<td>" + value.name + " <span class='badge badge-infoX'>" + value.speciesCount + "</span></td>";
+                            }
+                        });
+                        rows += "</tr><tr>";
+                        $.each(data, function(index, value){
+                            if (value.level == 2 && value.speciesCount > 0) {
+                                console.log("value", value);
+                                rows += "<td>" + value.name + " <span class='badge badge-infoX'>" + value.speciesCount + "</span></td>";
+                            }
+                        });
+                        rows += "</tr></table>";
+                        $('#speciesGroup').html(rows);
                     }
-                }).fail(function( jqXHR, textStatus, errorThrown ) {
-                    alert(textStatus + " - " + errorThrown);
+                })
+                .fail(function( jqXHR, textStatus, errorThrown ) {
+                    alert("Error: " + textStatus + " - " + errorThrown);
                 });
             }
 
@@ -164,6 +186,8 @@
                 $('#locationLatLng span').html(latlng.toString());
                 $('#locationLatLng span').data('latlng', latlng);
                 marker.setLatLng(latlng).addTo(map);
+                circle.setLatLng(latlng).setRadius($('#radius').val() * 1000).addTo(map);
+                map.fitBounds(circle.getBounds());
                 updateSpeciesGroups()
                 //console.log("zoom", map.getZoom());
             }
@@ -184,10 +208,10 @@
                         var res = data[0];
                         var latlng = new L.LatLng(res.lat, res.lon);
                         var bounds = new L.LatLngBounds([res.boundingbox[0], res.boundingbox[2]], [res.boundingbox[1], res.boundingbox[3]])
+                        map.fitBounds(bounds);
                         updateLocation(latlng);
                         //marker = L.marker(latlng, {draggable: true}).addTo(map);
                         //marker.setLatLng(latlng).addTo(map);
-                        map.fitBounds(bounds);
                     } else {
                         alert('location was not found, try a different address or place name');
                     }
@@ -218,9 +242,16 @@
             </div>
         </div>
 
-    <div class="bs-docs-example" data-content="Species group">
-        <p>Narrow down the identification by first choosing a species group</p>
-        <div id="speciesGroup">Specify a location first</div>
-    </div>
+        <div class="bs-docs-example" data-content="Species group">
+            <p>Narrow down the identification by first choosing a species group. Species counts are based a
+                <g:select name="radius" id="radius" class="select-mini" from="${[1,2,5,10,20]}" value="${defaultRadius?:5}"/>
+                km area surrounding your input location</p>
+            <div id="speciesGroup">Specify a location first</div>
+        </div>
+
+        <div class="bs-docs-example" data-content="Browse species images">
+            <p>Narrow down the identification by browsing species images</p>
+            <div id="speciesImages">Specify a species group first</div>
+        </div>
 	</body>
 </html>
