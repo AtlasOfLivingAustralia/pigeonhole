@@ -117,9 +117,6 @@
                     updateLocation(e.latlng);
                 }
 
-//                geocoding = new L.Geocoding();
-//                map.addControl(geocoding);
-
                 $('#geocodeinput').on('keydown', function(e) {
                     if (e.keyCode == 13 ) {
                         e.preventDefault();
@@ -158,6 +155,100 @@
                 .done(function(data){
                     //console.log("data", data);
                     if (data.length > 0) {
+
+//                        var map = {}, node, roots = [];
+//                        for (var i = 0; i < data.length; i += 1) {
+//                            node = nodes[i];
+//                            node.children = [];
+//                            map[node.name] = i; // use map to look-up the parents
+//                            if (node.level !== "0") {
+//                                nodes[map[node.parentId]].children.push(node);
+//                            } else {
+//                                roots.push(node);
+//                            }
+//                        }
+//                        console.log(roots);
+
+                        var groupsMap = [];
+                        var level = 0;
+                        var parentLevel = 0;
+                        var previousLevel = 0;
+                        var parentId = '';
+
+ //                       $.each(data, function(index, val){
+//                            level = val.level;
+//                            previousLevel = (index > 0) ? data[index - 1].level : previousLevel;
+//                            var node = val;
+//                            node.children = [];
+//
+//                            if (level > previousLevel) {
+//                                parentLevel = previousLevel;
+//                            } else if (level < previousLevel) {
+//                                parentLevel = level - 1;
+//                            }
+//
+//                            console.log("levels", level, previousLevel, parentLevel);
+//
+//                            if (level == 0) {
+//                                groupsMap.push(node);
+//                            } else if (level > parentLevel) {
+//                                // child node
+//                                console.log(level, parentLevel, node, groupsMap.length);
+//                                groupsMap[parentLevel].children.push(node);
+//                                //previousLevel = level;
+//                            } else if (level < parentLevel) {
+//                                // parent's sibling node
+//                                groupsMap[parentLevel].children.push(node);
+//                            } else {
+//                                //
+//                                console.log("else", level, parentLevel);
+//                            }
+//                        });
+                        var itemsByID = {}, parentId = null;
+
+                        $.each(data, function(index, item){
+                            var previousLevel = (index > 0) ? data[index - 1].level : 0;
+                            if (item.level > previousLevel) {
+                                parentId = data[index - 1].name
+                            }
+                            item.parentID = parentId;
+                            item.children = [];
+
+                            itemsByID[item.name] = item;
+                        });
+
+                        console.log("itemsByID", itemsByID.length);
+
+                        $.each(itemsByID, function(key, item){
+                            console.log("item", item, item.parentID);
+                            if(item.parentID !== null) {
+                                itemsByID[item.parentID].children.push(item);
+                            }
+                        });
+
+//                        itemsByID.forEach(function(item) {
+//                            console.log("item", item, item.parentID);
+//                            if(item.parentID !== null) {
+//                                itemsByID[item.parentID].children.push(item);
+//                            }
+//                        });
+                        console.log("itemsByID2", itemsByID);
+                        //var roots = itemsByID.filter(function(item) { return item.parentID === null; });
+                        var roots;
+                        //itemsByID.forEach(function(item) { delete item.parentID; });
+                        $.each(itemsByID, function(key, item){
+                            if (!item.parentID) {
+                                roots = item;
+                            }
+                        });
+
+                        console.log("roots", roots);
+
+                        var rows = "<table class='table table-bordered table-compact'>";
+                        $.each(roots.children, function(i, el){
+                            console.log("el", el);
+                        });
+
                         var rows = "<table class='table table-bordered table-compact'><tr>";
                         $.each(data, function(index, value){
                             if (value.level == 1 && value.speciesCount > 0) {
@@ -173,6 +264,7 @@
                             }
                         });
                         rows += "</tr></table>";
+
                         $('#speciesGroup').html(rows);
                     }
                 })
