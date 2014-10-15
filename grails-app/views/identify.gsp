@@ -47,9 +47,38 @@
             }
 
             .select-mini {
-                font-size: 12px;
-                height: 22px;
                 width: auto !important;
+                height: 24px;
+                font-size: 12px;
+                line-height: 20px;
+                margin-bottom: 2px;
+            }
+
+            #speciesGroup {
+                /*width: 18%;*/
+                /*float: left;*/
+            }
+
+            #speciesSubGroup {
+                /*width: 80%;*/
+                /*float: left;*/
+                /*padding-left: 15px;*/
+                margin-top: 20px;
+            }
+
+            #speciesSubGroup .btn-group {
+                margin-left: 0 !important;
+                margin-top: 10px;
+            }
+
+            .sub-groups {
+                /*display: inline-block;*/
+                /*margin-top: 10px;*/
+            }
+
+            .sub-groups .btn {
+                margin-bottom: 4px;
+                margin-right: 4px;
             }
 
         </style>
@@ -126,6 +155,20 @@
 
                 $('#radius').change(function() {
                     updateLocation(marker.getLatLng());
+                });
+
+                $('#speciesGroup').on('click', '.groupBtn', function(e) {
+                    $('#speciesGroup .btn').removeClass('btn-primary');
+                    $(this).addClass('btn-primary');
+
+                    $('#speciesSubGroup .sub-groups').addClass('hide'); // hide all subgroups
+                    $('#subgroup_' + $(this).data('group')).removeClass('hide'); // expose requested subgroup
+                    //updateSubGroups($(this).data('group'));
+                    loadSpeciesGroupImages($(this).data('group'))
+                });
+
+                $('#speciesSubGroup').on('click', '.subGroupBtn', function(e) {
+                    loadSpeciesGroupImages($(this).data('group'));
                 });
 
             }); // end document load
@@ -244,28 +287,103 @@
 
                         console.log("roots", roots);
 
-                        var rows = "<table class='table table-bordered table-compact'>";
-                        $.each(roots.children, function(i, el){
-                            console.log("el", el);
-                        });
+//                        var rows = "<table class='table table-bordered table-compact'>";
+//                        $.each(roots.children, function(i, el){
+//                            console.log("el", el);
+//                        });
 
-                        var rows = "<table class='table table-bordered table-compact'><tr>";
+                        //var rows = "<table class='table table-bordered table-compact'><tr>";
+                        var rows = "<div class='btn-group'>";
                         $.each(data, function(index, value){
                             if (value.level == 1 && value.speciesCount > 0) {
                                 //console.log("value", value);
-                                rows += "<td>" + value.name + " <span class='badge badge-infoX'>" + value.speciesCount + "</span></td>";
+                                //rows += "<td>" + value.name + " <span class='badge badge-infoX'>" + value.speciesCount + "</span></td>";
+                                rows += "<div class='btn groupBtn' data-group='" + value.name + "'>" + value.name + " <span class='badge badge-infoX'>" + value.speciesCount + "</span></div>";
                             }
                         });
-                        rows += "</tr><tr>";
-                        $.each(data, function(index, value){
-                            if (value.level == 2 && value.speciesCount > 0) {
-                                console.log("value", value);
-                                rows += "<td>" + value.name + " <span class='badge badge-infoX'>" + value.speciesCount + "</span></td>";
-                            }
-                        });
-                        rows += "</tr></table>";
+//                        rows += "</tr><tr>";
+//                        $.each(data, function(index, value){
+//                            if (value.level == 2 && value.speciesCount > 0) {
+//                                console.log("value", value);
+//                                rows += "<td>" + value.name + " <span class='badge badge-infoX'>" + value.speciesCount + "</span></td>";
+//                            }
+//                        });
+                        // rows += "</tr></table>";
+                        rows += "</div>";
 
                         $('#speciesGroup').html(rows);
+                    }
+                })
+                .fail(function( jqXHR, textStatus, errorThrown ) {
+                    alert("Error: " + textStatus + " - " + errorThrown);
+                });
+            }
+
+            function updateSubGroups(group) {
+                var radius = $('#radius').val();
+                var latlng = $('#locationLatLng span').data('latlng');
+
+                $.ajax({
+                    url : 'http://localhost:8080/biocache-service/explore/hierarchy/groups.json'
+                        , dataType : 'jsonp'
+                        , jsonp : 'callback'
+                        , data : {
+                            'lat' : latlng.lat
+                            , 'lon' : latlng.lng
+                            , 'radius' : radius
+                            , 'speciesGroup': group
+                        }
+                })
+                .done(function(data){
+                    var group = "<div id='speciesGroup1' class='btn-group '>";
+                    $('#speciesSubGroup').html('');
+
+                    $.each(data, function(index, value){
+                        console.log(index, value);
+                        var btn = (index == 0) ? 'btn-primary' : '';
+                        group += "<div class='btn groupBtn " +  btn + "' data-group='" + value.name + "'>" + value.name + " <span class='badge badge-infoX'>" + value.speciesCount + "</span></div>";
+
+                        if (value.childGroups.length > 0) {
+                            var hide = (index == 0) ? '' : 'hide';
+                            var subGroup = "<div id='subgroup_" + value.name + "' class='sub-groups " + hide + "'>";
+                            $.each(value.childGroups, function(i, el){
+                                subGroup += "<div class='btn subGroupBtn' data-group='" + el.name + "'>" + el.name + " <span class='badge badge-infoX'>" + el.speciesCount + "</span></div>";
+                            });
+                            $('#speciesSubGroup').append(subGroup);
+                        }
+                    });
+
+                    $('#speciesGroup').html(group);
+                })
+                .fail(function( jqXHR, textStatus, errorThrown ) {
+                    alert("Error: " + textStatus + " - " + errorThrown);
+                });
+            }
+
+            function loadSpeciesGroupImages(speciesGroup) {
+                var radius = $('#radius').val();
+                var latlng = $('#locationLatLng span').data('latlng');
+                jQuery.ajaxSettings.traditional = true; // so multiple params with same key are formatted right
+                //var url = "http://biocache.ala.org.au/ws/occurrences/search?q=species_subgroup:Parrots&fq=geospatial_kosher%3Atrue&fq=multimedia:Image&facets=multimedia&lat=-35.2792511&lon=149.1113017&radius=5"
+                $.ajax({
+                    url : 'http://biocache.ala.org.au/ws/occurrences/search.json',
+                        dataType : 'jsonp',
+                        jsonp : 'callback',
+                        data : {
+                            'q' : '*:*',
+//                            'fq': ['species_subgroup:' + speciesGroup,
+//                                   'geospatial_kosher:true'],
+                            'fq':'species_subgroup:' + speciesGroup,
+                            'facets': 'lsid',
+                            'pageSize': 0,
+                            'lat' : latlng.lat,
+                            'lon' : latlng.lng,
+                            'radius' : radius
+                        }
+                })
+                .done(function(data){
+                    if (data.totalRecords && data.totalRecords > 0) {
+                        console.log(speciesGroup + ': species count = ' + data.facetResults[0].fieldResult.length);
                     }
                 })
                 .fail(function( jqXHR, textStatus, errorThrown ) {
@@ -280,7 +398,8 @@
                 marker.setLatLng(latlng).addTo(map);
                 circle.setLatLng(latlng).setRadius($('#radius').val() * 1000).addTo(map);
                 map.fitBounds(circle.getBounds());
-                updateSpeciesGroups()
+                //updateSpeciesGroups()
+                updateSubGroups();
                 //console.log("zoom", map.getZoom());
             }
 
@@ -325,6 +444,9 @@
                         <input class="span3" id="geocodeinput" type="text" placeholder="Enter an address, location or lat/lng">
                         <button id="geocodebutton" class="btn" onclick="geocode()">Lookup</button>
                     </div>
+                    <div>Show known species in a
+                    <g:select name="radius" id="radius" class="select-mini" from="${[1,2,5,10,20]}" value="${defaultRadius?:5}"/>
+                    km area surrounding this location</div>
                     <div id="locationLatLng"><span></span></div>
                 </div>
                 <div class="span4">
@@ -335,10 +457,10 @@
         </div>
 
         <div class="bs-docs-example" data-content="Species group">
-            <p>Narrow down the identification by first choosing a species group. Species counts are based a
-                <g:select name="radius" id="radius" class="select-mini" from="${[1,2,5,10,20]}" value="${defaultRadius?:5}"/>
-                km area surrounding your input location</p>
+            <p>Narrow down the identification by first choosing a species group.
             <div id="speciesGroup">Specify a location first</div>
+            <div id="speciesSubGroup"></div>
+            <div class="clearfix"></div>
         </div>
 
         <div class="bs-docs-example" data-content="Browse species images">
