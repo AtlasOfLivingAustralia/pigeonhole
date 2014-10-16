@@ -81,6 +81,45 @@
                 margin-right: 4px;
             }
 
+            /* Gallery styling */
+            .imgCon {
+                display: inline-block;
+                /* margin-right: 8px; */
+                text-align: center;
+                line-height: 1.3em;
+                background-color: #DDD;
+                color: #DDD;
+                font-size: 12px;
+                /*text-shadow: 2px 2px 6px rgba(255, 255, 255, 1);*/
+                /* padding: 5px; */
+                /* margin-bottom: 8px; */
+                margin: 2px 4px 2px 0;
+                position: relative;
+            }
+            .imgCon img {
+                height: 170px;
+                min-width: 150px;
+            }
+            .imgCon .meta {
+                opacity: 0.8;
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                overflow: hidden;
+                text-align: left;
+                padding: 4px 5px 2px 5px;
+            }
+            .imgCon .brief {
+                color: black;
+                background-color: white;
+            }
+            .imgCon .detail {
+                color: white;
+                background-color: black;
+                opacity: 0.7;
+            }
+
         </style>
         <r:script>
             var map, geocoding, marker, circle, radius;
@@ -164,14 +203,31 @@
                     $('#speciesSubGroup .sub-groups').addClass('hide'); // hide all subgroups
                     $('#subgroup_' + $(this).data('group')).removeClass('hide'); // expose requested subgroup
                     //updateSubGroups($(this).data('group'));
-                    loadSpeciesGroupImages($(this).data('group'))
+                    loadSpeciesGroupImages('species_group:' + unescape($(this).data('group')));
                 });
 
                 $('#speciesSubGroup').on('click', '.subGroupBtn', function(e) {
-                    loadSpeciesGroupImages($(this).data('group'));
+                    $('#speciesSubGroup .btn').removeClass('btn-primary');
+                    $(this).addClass('btn-primary');
+                    loadSpeciesGroupImages('species_subgroup:' + unescape($(this).data('group')));
                 });
 
-            }); // end document load
+                %{--$("img").error(function () {--}%
+                     %{--$(this).unbind("error").attr("src", "${createLink(uri: "/images/noImage.jpg")}");--}%
+                %{--});--}%
+
+                // mouse over affect on thumbnail images
+                $('#speciesImages').on('hover', '.imgCon', function() {
+                    $(this).find('.brief, .detail').toggleClass('hide');
+                });
+
+        }); // end document load
+
+        function imgError(image){
+            image.onerror = "";
+            image.src = "${createLink(uri: "/images/noImage.jpg")}";
+                return true;
+            }
 
             function geolocate() {
                 map.locate({setView: true, maxZoom: 16});
@@ -179,144 +235,6 @@
 
             function geocode() {
                 osmGeocodeAddress();
-            }
-
-            function updateSpeciesGroups() {
-                var radius = $('#radius').val();
-                var latlng = $('#locationLatLng span').data('latlng');
-
-                $.ajax({
-                    url : 'http://biocache.ala.org.au/ws/explore/groups.json'
-                        , dataType : 'jsonp'
-                        , jsonp : 'callback'
-                        , data : {
-                            'lat' : latlng.lat
-                            , 'lon' : latlng.lng
-                            , 'radius' : radius
-                        }
-                })
-                .done(function(data){
-                    //console.log("data", data);
-                    if (data.length > 0) {
-
-//                        var map = {}, node, roots = [];
-//                        for (var i = 0; i < data.length; i += 1) {
-//                            node = nodes[i];
-//                            node.children = [];
-//                            map[node.name] = i; // use map to look-up the parents
-//                            if (node.level !== "0") {
-//                                nodes[map[node.parentId]].children.push(node);
-//                            } else {
-//                                roots.push(node);
-//                            }
-//                        }
-//                        console.log(roots);
-
-                        var groupsMap = [];
-                        var level = 0;
-                        var parentLevel = 0;
-                        var previousLevel = 0;
-                        var parentId = '';
-
- //                       $.each(data, function(index, val){
-//                            level = val.level;
-//                            previousLevel = (index > 0) ? data[index - 1].level : previousLevel;
-//                            var node = val;
-//                            node.children = [];
-//
-//                            if (level > previousLevel) {
-//                                parentLevel = previousLevel;
-//                            } else if (level < previousLevel) {
-//                                parentLevel = level - 1;
-//                            }
-//
-//                            console.log("levels", level, previousLevel, parentLevel);
-//
-//                            if (level == 0) {
-//                                groupsMap.push(node);
-//                            } else if (level > parentLevel) {
-//                                // child node
-//                                console.log(level, parentLevel, node, groupsMap.length);
-//                                groupsMap[parentLevel].children.push(node);
-//                                //previousLevel = level;
-//                            } else if (level < parentLevel) {
-//                                // parent's sibling node
-//                                groupsMap[parentLevel].children.push(node);
-//                            } else {
-//                                //
-//                                console.log("else", level, parentLevel);
-//                            }
-//                        });
-                        var itemsByID = {}, parentId = null;
-
-                        $.each(data, function(index, item){
-                            var previousLevel = (index > 0) ? data[index - 1].level : 0;
-                            if (item.level > previousLevel) {
-                                parentId = data[index - 1].name
-                            }
-                            item.parentID = parentId;
-                            item.children = [];
-
-                            itemsByID[item.name] = item;
-                        });
-
-                        console.log("itemsByID", itemsByID.length);
-
-                        $.each(itemsByID, function(key, item){
-                            console.log("item", item, item.parentID);
-                            if(item.parentID !== null) {
-                                itemsByID[item.parentID].children.push(item);
-                            }
-                        });
-
-//                        itemsByID.forEach(function(item) {
-//                            console.log("item", item, item.parentID);
-//                            if(item.parentID !== null) {
-//                                itemsByID[item.parentID].children.push(item);
-//                            }
-//                        });
-                        console.log("itemsByID2", itemsByID);
-                        //var roots = itemsByID.filter(function(item) { return item.parentID === null; });
-                        var roots;
-                        //itemsByID.forEach(function(item) { delete item.parentID; });
-                        $.each(itemsByID, function(key, item){
-                            if (!item.parentID) {
-                                roots = item;
-                            }
-                        });
-
-                        console.log("roots", roots);
-
-//                        var rows = "<table class='table table-bordered table-compact'>";
-//                        $.each(roots.children, function(i, el){
-//                            console.log("el", el);
-//                        });
-
-                        //var rows = "<table class='table table-bordered table-compact'><tr>";
-                        var rows = "<div class='btn-group'>";
-                        $.each(data, function(index, value){
-                            if (value.level == 1 && value.speciesCount > 0) {
-                                //console.log("value", value);
-                                //rows += "<td>" + value.name + " <span class='badge badge-infoX'>" + value.speciesCount + "</span></td>";
-                                rows += "<div class='btn groupBtn' data-group='" + value.name + "'>" + value.name + " <span class='badge badge-infoX'>" + value.speciesCount + "</span></div>";
-                            }
-                        });
-//                        rows += "</tr><tr>";
-//                        $.each(data, function(index, value){
-//                            if (value.level == 2 && value.speciesCount > 0) {
-//                                console.log("value", value);
-//                                rows += "<td>" + value.name + " <span class='badge badge-infoX'>" + value.speciesCount + "</span></td>";
-//                            }
-//                        });
-                        // rows += "</tr></table>";
-                        rows += "</div>";
-
-                        $('#speciesGroup').html(rows);
-                    }
-                })
-                .fail(function( jqXHR, textStatus, errorThrown ) {
-                    alert("Error: " + textStatus + " - " + errorThrown);
-                });
             }
 
             function updateSubGroups(group) {
@@ -341,13 +259,13 @@
                     $.each(data, function(index, value){
                         console.log(index, value);
                         var btn = (index == 0) ? 'btn-primary' : '';
-                        group += "<div class='btn groupBtn " +  btn + "' data-group='" + value.name + "'>" + value.name + " <span class='badge badge-infoX'>" + value.speciesCount + "</span></div>";
+                        group += "<div class='btn groupBtn " +  btn + "' data-group='" + escape(value.name) + "'>" + value.name + " <span class='badge badge-infoX'>" + value.speciesCount + "</span></div>";
 
                         if (value.childGroups.length > 0) {
                             var hide = (index == 0) ? '' : 'hide';
                             var subGroup = "<div id='subgroup_" + value.name + "' class='sub-groups " + hide + "'>";
                             $.each(value.childGroups, function(i, el){
-                                subGroup += "<div class='btn subGroupBtn' data-group='" + el.name + "'>" + el.name + " <span class='badge badge-infoX'>" + el.speciesCount + "</span></div>";
+                                subGroup += "<div class='btn subGroupBtn' data-group='" + escape(el.name) + "'>" + el.name + " <span class='badge badge-infoX'>" + el.speciesCount + "</span></div>";
                             });
                             $('#speciesSubGroup').append(subGroup);
                         }
@@ -371,10 +289,11 @@
                         jsonp : 'callback',
                         data : {
                             'q' : '*:*',
-//                            'fq': ['species_subgroup:' + speciesGroup,
-//                                   'geospatial_kosher:true'],
-                            'fq':'species_subgroup:' + speciesGroup,
-                            'facets': 'lsid',
+                            'fq': [ speciesGroup,
+                                   'geospatial_kosher:true'],
+                            //'fq': speciesGroup,
+                            'facets': 'common_name_and_lsid',
+                            'flimit': 999,
                             'pageSize': 0,
                             'lat' : latlng.lat,
                             'lon' : latlng.lng,
@@ -382,8 +301,22 @@
                         }
                 })
                 .done(function(data){
-                    if (data.totalRecords && data.totalRecords > 0) {
-                        console.log(speciesGroup + ': species count = ' + data.facetResults[0].fieldResult.length);
+                    if (data.facetResults && data.facetResults.length > 0 && data.facetResults[0].fieldResult.length > 0) {
+                        //console.log(speciesGroup + ': species count = ' + data.facetResults[0].fieldResult.length);
+                        var images = "<div id='imagesGrid'>";
+                        $.each(data.facetResults[0].fieldResult, function(i, el){
+                            if (i >= 30) return false;
+                            var parts = el.label.split("|");
+                            var lsid = parts[2];
+                            var imgUrl = "http://bie.ala.org.au/ws/species/image/small/" + lsid; // http://bie.ala.org.au/ws/species/image/thumbnail/urn:lsid:biodiversity.org.au:afd.taxon:aa745ff0-c776-4d0e-851d-369ba0e6f537
+                            images += "<div class='imgCon'><a class='cbLink thumbImage tooltips' rel='thumbs' href='http://bie.ala.org.au/species/" +
+                                    lsid + "' target='species'><img src='" + imgUrl +
+                                    "' alt='species thumbnail' onerror='imgError(this);'/><div class='meta brief'><i>" +
+                                    parts[1] + "</i> | " + parts[0] + "</div><div class='meta detail hide'><i>" +
+                                    parts[1] + "</i><br>" + parts[0] + "<br>Records: " + el.count + "</div></a></div>";
+                        });
+                        images += "</div>";
+                        $('#speciesImages').html(images);
                     }
                 })
                 .fail(function( jqXHR, textStatus, errorThrown ) {
