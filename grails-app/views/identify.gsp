@@ -57,13 +57,14 @@
             #speciesGroup {
                 /*width: 18%;*/
                 /*float: left;*/
+                margin-bottom: 10px;
             }
 
             #speciesSubGroup {
                 /*width: 80%;*/
                 /*float: left;*/
                 /*padding-left: 15px;*/
-                margin-top: 20px;
+                /*margin-top: 20px;*/
             }
 
             #speciesSubGroup .btn-group {
@@ -272,6 +273,7 @@
                     });
 
                     $('#speciesGroup').html(group);
+                    $('#speciesImages').empty();
                 })
                 .fail(function( jqXHR, textStatus, errorThrown ) {
                     alert("Error: " + textStatus + " - " + errorThrown);
@@ -289,8 +291,9 @@
                         jsonp : 'callback',
                         data : {
                             'q' : '*:*',
-                            'fq': [ speciesGroup,
-                                   'geospatial_kosher:true'],
+                            'fq': [ speciesGroup
+                                   //'geospatial_kosher:true'],
+                                   ],
                             //'fq': speciesGroup,
                             'facets': 'common_name_and_lsid',
                             'flimit': 999,
@@ -308,24 +311,30 @@
                             if (i >= 30) return false;
                             var parts = el.label.split("|");
                             var lsid = parts[2];
+                            var displayName = (parts[0]) ? parts[0] : "<i>" + parts[1] + "</i>";
                             var imgUrl = "http://bie.ala.org.au/ws/species/image/small/" + lsid; // http://bie.ala.org.au/ws/species/image/thumbnail/urn:lsid:biodiversity.org.au:afd.taxon:aa745ff0-c776-4d0e-851d-369ba0e6f537
                             images += "<div class='imgCon'><a class='cbLink thumbImage tooltips' rel='thumbs' href='http://bie.ala.org.au/species/" +
                                     lsid + "' target='species'><img src='" + imgUrl +
-                                    "' alt='species thumbnail' onerror='imgError(this);'/><div class='meta brief'><i>" +
-                                    parts[1] + "</i> | " + parts[0] + "</div><div class='meta detail hide'><i>" +
+                                    "' alt='species thumbnail' onerror='imgError(this);'/><div class='meta brief'>" +
+                                    displayName + "</div><div class='meta detail hide'><i>" +
                                     parts[1] + "</i><br>" + parts[0] + "<br>Records: " + el.count + "</div></a></div>";
                         });
                         images += "</div>";
                         $('#speciesImages').html(images);
+                    } else {
+                        $('#speciesImages').html("No species found.");
                     }
                 })
                 .fail(function( jqXHR, textStatus, errorThrown ) {
-                    alert("Error: " + textStatus + " - " + errorThrown);
+                    // alert("Error: " + textStatus + " - " + errorThrown);
+                    $('#speciesImages').html("Error: " + textStatus + " - " + errorThrown);
                 });
             }
 
             function updateLocation(latlng) {
                 //alert("Marker moved to: "+this.getLatLng().toString());
+                $('#speciesGroup span, #speciesImages span').hide();
+                $('.spinner').show();
                 $('#locationLatLng span').html(latlng.toString());
                 $('#locationLatLng span').data('latlng', latlng);
                 marker.setLatLng(latlng).addTo(map);
@@ -359,7 +368,8 @@
                     } else {
                         alert('location was not found, try a different address or place name');
                     }
-                });
+                })
+                .always(function() {  $('.spinner').hide(); });
             }
 
         </r:script>
@@ -390,15 +400,16 @@
         </div>
 
         <div class="bs-docs-example" data-content="Species group">
-            <p>Narrow down the identification by first choosing a species group.
-            <div id="speciesGroup">Specify a location first</div>
+            <p>Narrow down the identification by first choosing a species group.</p>
+            <div id="speciesGroup"><span>[Specify a location first]</span><r:img uri="/images/spinner.gif" class="spinner hide"/></div>
+            <p>Choose a species sub-group.</p>
             <div id="speciesSubGroup"></div>
             <div class="clearfix"></div>
         </div>
 
         <div class="bs-docs-example" data-content="Browse species images">
             <p>Narrow down the identification by browsing species images</p>
-            <div id="speciesImages">Specify a species group first</div>
+            <div id="speciesImages"><span>[Specify a location first]</span></div>
         </div>
 	</body>
 </html>
