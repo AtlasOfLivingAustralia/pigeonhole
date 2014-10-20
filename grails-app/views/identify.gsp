@@ -82,6 +82,10 @@
                 margin-right: 4px;
             }
 
+            .leaflet-popup-content {
+                font-size: 11px;
+            }
+
             /* Gallery styling */
             .imgCon {
                 display: inline-block;
@@ -123,7 +127,7 @@
 
         </style>
         <r:script>
-            var map, geocoding, marker, circle, radius;
+            var map, geocoding, marker, circle, radius, initalBounds;
 
             $(document).ready(function() {
 
@@ -160,6 +164,8 @@
                     //layers: [osm, MapQuestOpen_Aerial]
                 });
 
+                initalBounds = map.getBounds().toBBoxString(); // save for geocoding lookups
+
                 var baseLayers = {
                     "Street": osm,
                     "Satellite": Esri_WorldImagery
@@ -189,7 +195,7 @@
                 $('#geocodeinput').on('keydown', function(e) {
                     if (e.keyCode == 13 ) {
                         e.preventDefault();
-                        osmGeocodeAddress();
+                        geocodeAddress();
                     }
                 });
 
@@ -213,7 +219,7 @@
                     loadSpeciesGroupImages('species_subgroup:' + unescape($(this).data('group')));
                 });
 
-                %{--$("img").error(function () {--}%
+        %{--$("img").error(function () {--}%
                      %{--$(this).unbind("error").attr("src", "${createLink(uri: "/images/noImage.jpg")}");--}%
                 %{--});--}%
 
@@ -235,7 +241,7 @@
             }
 
             function geocode() {
-                osmGeocodeAddress();
+                geocodeAddress();
             }
 
             function updateSubGroups(group) {
@@ -258,12 +264,12 @@
                     $('#speciesSubGroup').html('');
 
                     $.each(data, function(index, value){
-                        console.log(index, value);
-                        var btn = (index == 0) ? 'btn-primary' : '';
+                        // console.log(index, value);
+                        var btn = ''; //(index == 0) ? 'btn-primary' : '';
                         group += "<div class='btn groupBtn " +  btn + "' data-group='" + escape(value.name) + "'>" + value.name + " <span class='badge badge-infoX'>" + value.speciesCount + "</span></div>";
 
                         if (value.childGroups.length > 0) {
-                            var hide = (index == 0) ? '' : 'hide';
+                            var hide = 'hide'; //(index == 0) ? '' : 'hide';
                             var subGroup = "<div id='subgroup_" + value.name + "' class='sub-groups " + hide + "'>";
                             $.each(value.childGroups, function(i, el){
                                 subGroup += "<div class='btn subGroupBtn' data-group='" + escape(el.name) + "'>" + el.name + " <span class='badge badge-infoX'>" + el.speciesCount + "</span></div>";
@@ -337,7 +343,7 @@
                 $('.spinner').show();
                 $('#locationLatLng span').html(latlng.toString());
                 $('#locationLatLng span').data('latlng', latlng);
-                marker.setLatLng(latlng).addTo(map);
+                marker.setLatLng(latlng).bindPopup('your location', { maxWidth:250 }).addTo(map);
                 circle.setLatLng(latlng).setRadius($('#radius').val() * 1000).addTo(map);
                 map.fitBounds(circle.getBounds());
                 //updateSpeciesGroups()
@@ -345,29 +351,36 @@
                 //console.log("zoom", map.getZoom());
             }
 
-            function osmGeocodeAddress() {
+            function geocodeAddress() {
                 var query = $('#geocodeinput').val();
                 $.ajax({
-                    url : 'http://nominatim.openstreetmap.org/search'
-                        , dataType : 'jsonp'
-                        , jsonp : 'json_callback'
-                        , data : {
-                            'q' : query
-                            , 'format' : 'json'
+                        // https://api.opencagedata.com/geocode/v1/json?q=Canberra,+ACT&key=577ca677f86a3a4589b17814ec399112
+                        url : 'https://api.opencagedata.com/geocode/v1/json',
+                        dataType : 'jsonp',
+                        jsonp : 'callback',
+                        data : {
+                            'q' : query,
+                            'key': '577ca677f86a3a4589b17814ec399112', // key for username 'nickdos' with pw 'ac..on',
+                            'bounds': initalBounds // restricts search to initla map view
                         }
-                    })
+                })
                 .done(function(data){
-                    if (data.length>0) {
-                        var res = data[0];
-                        var latlng = new L.LatLng(res.lat, res.lon);
-                        var bounds = new L.LatLngBounds([res.boundingbox[0], res.boundingbox[2]], [res.boundingbox[1], res.boundingbox[3]])
+                    //console.log("geonames", data);
+                    if (data.results.length > 0) {
+                        var res = data.results[0];
+                        var latlng = new L.LatLng(res.geometry.lat, res.geometry.lng);
+                        var bounds = new L.LatLngBounds([res.bounds.southwest.lat, res.bounds.southwest.lng], [res.bounds.northeast.lat, res.bounds.northeast.lng]);
                         map.fitBounds(bounds);
                         updateLocation(latlng);
+                        marker.setPopupContent(res.formatted + " - " + latlng.toString());
                         //marker = L.marker(latlng, {draggable: true}).addTo(map);
                         //marker.setLatLng(latlng).addTo(map);
                     } else {
                         alert('location was not found, try a different address or place name');
                     }
+                })
+                .fail(function( jqXHR, textStatus, errorThrown ) {
+                    alert("Error: " + textStatus + " - " + errorThrown);
                 })
                 .always(function() {  $('.spinner').hide(); });
             }
@@ -377,14 +390,14 @@
 	<body class="nav-species">
         <h2>Help with species identification</h2>
         <div class="bs-docs-example" data-content="Location">
-            <p>Specify a location for the sighting:</p>
             <div class="row">
-                <div class="span4">
-                    <button class="btn" onClick="geolocate()">Use my location</button>
+                <div class="span5">
+                    <p>Specify a location for the sighting:</p>
+                    <button class="btn" onClick="geolocate()"><i class="icon-map-marker" style="margin-left:-5px;"></i> Use my location</button>
                     <div style="margin: 10px 0;"><span class="label label-info">OR</span></div>
                     <div class="hide">Enter an address, location or coordinates</div>
                     <div class="input-append">
-                        <input class="span3" id="geocodeinput" type="text" placeholder="Enter an address, location or lat/lng">
+                        <input class="span4" id="geocodeinput" type="text" placeholder="Enter an address, location or lat/lng">
                         <button id="geocodebutton" class="btn" onclick="geocode()">Lookup</button>
                     </div>
                     <div>Show known species in a
@@ -392,8 +405,8 @@
                     km area surrounding this location</div>
                     <div id="locationLatLng"><span></span></div>
                 </div>
-                <div class="span4">
-                    <div id="map" style="width: 100%; height: 250px"></div>
+                <div class="span6">
+                    <div id="map" style="width: 100%; height: 280px"></div>
                     <div class="" id="mapTips">Tip: drag the marker to fine-tune your location</div>
                 </div>
             </div>
@@ -402,7 +415,7 @@
         <div class="bs-docs-example" data-content="Species group">
             <p>Narrow down the identification by first choosing a species group.</p>
             <div id="speciesGroup"><span>[Specify a location first]</span><r:img uri="/images/spinner.gif" class="spinner hide"/></div>
-            <p>Choose a species sub-group.</p>
+            <p>Select a species sub-group (optional)</p>
             <div id="speciesSubGroup"></div>
             <div class="clearfix"></div>
         </div>
