@@ -280,6 +280,7 @@
 
                     $('#speciesGroup').html(group);
                     $('#speciesImages').empty();
+                    $('#species_group p.hide').removeClass('hide');
                 })
                 .fail(function( jqXHR, textStatus, errorThrown ) {
                     alert("Error: " + textStatus + " - " + errorThrown);
@@ -389,7 +390,7 @@
 	</head>
 	<body class="nav-species">
         <h2>Help with species identification</h2>
-        <div class="bs-docs-example" data-content="Location">
+        <div class="bs-docs-example" id="location" data-content="Location">
             <div class="row">
                 <div class="span5">
                     <p>Specify a location for the sighting:</p>
@@ -412,15 +413,15 @@
             </div>
         </div>
 
-        <div class="bs-docs-example" data-content="Species group">
+        <div class="bs-docs-example" id="species_group" data-content="Species group">
             <p>Narrow down the identification by first choosing a species group.</p>
             <div id="speciesGroup"><span>[Specify a location first]</span><r:img uri="/images/spinner.gif" class="spinner hide"/></div>
-            <p>Select a species sub-group (optional)</p>
+            <p class="hide">Select a species sub-group (optional)</p>
             <div id="speciesSubGroup"></div>
             <div class="clearfix"></div>
         </div>
 
-        <div class="bs-docs-example" data-content="Browse species images">
+        <div class="bs-docs-example" id="browse_species_images" data-content="Browse species images">
             <p>Narrow down the identification by browsing species images</p>
             <div id="speciesImages"><span>[Specify a location first]</span></div>
         </div>
