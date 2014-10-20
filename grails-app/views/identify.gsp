@@ -128,6 +128,7 @@
         </style>
         <r:script>
             var map, geocoding, marker, circle, radius, initalBounds;
+            var biocacheBaseUrl = "${grailsApplication.config.biocache.baseUrl}";
 
             $(document).ready(function() {
 
@@ -138,7 +139,7 @@
                         'Imagery © <a href="http://mapbox.com">Mapbox</a>',
                     id: 'examples.map-i875mjb7'
                 });
-
+                <%--
                 var OpenStreetMap_Mapnik = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                     attribution: '&copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'
                 });
@@ -152,6 +153,7 @@
                     attribution: 'Tiles Courtesy of <a href="http://www.mapquest.com/">MapQuest</a> &mdash; Portions Courtesy NASA/JPL-Caltech and U.S. Depart. of Agriculture, Farm Service Agency',
                     subdomains: '1234'
                 });
+                --%>
 
                 var Esri_WorldImagery = L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
                     attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
@@ -219,9 +221,9 @@
                     loadSpeciesGroupImages('species_subgroup:' + unescape($(this).data('group')));
                 });
 
-        %{--$("img").error(function () {--}%
-                     %{--$(this).unbind("error").attr("src", "${createLink(uri: "/images/noImage.jpg")}");--}%
-                %{--});--}%
+                <%--$("img").error(function () {
+                     $(this).unbind("error").attr("src", "${createLink(uri: "/images/noImage.jpg")}");
+                });--%>
 
                 // mouse over affect on thumbnail images
                 $('#speciesImages').on('hover', '.imgCon', function() {
@@ -249,7 +251,7 @@
                 var latlng = $('#locationLatLng span').data('latlng');
 
                 $.ajax({
-                    url : 'http://localhost:8080/biocache-service/explore/hierarchy/groups.json'
+                    url : biocacheBaseUrl + '/explore/hierarchy/groups.json'
                         , dataType : 'jsonp'
                         , jsonp : 'callback'
                         , data : {
@@ -293,7 +295,7 @@
                 jQuery.ajaxSettings.traditional = true; // so multiple params with same key are formatted right
                 //var url = "http://biocache.ala.org.au/ws/occurrences/search?q=species_subgroup:Parrots&fq=geospatial_kosher%3Atrue&fq=multimedia:Image&facets=multimedia&lat=-35.2792511&lon=149.1113017&radius=5"
                 $.ajax({
-                    url : 'http://biocache.ala.org.au/ws/occurrences/search.json',
+                    url : biocacheBaseUrl + '/occurrences/search.json',
                         dataType : 'jsonp',
                         jsonp : 'callback',
                         data : {
