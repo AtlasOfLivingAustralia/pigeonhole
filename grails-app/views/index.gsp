@@ -112,6 +112,8 @@
 			<div id="controller-list" role="navigation">
 				<h2>Available Controllers:</h2>
 				<ul>
+                    <li><g:link uri="/identify">Help with species identification</g:link></li>
+                    <hr/>
 					<g:each var="c" in="${grailsApplication.controllerClasses.sort { it.fullName } }">
 						<li class="controller"><g:link controller="${c.logicalPropertyName}">${c.fullName}</g:link></li>
 					</g:each>
