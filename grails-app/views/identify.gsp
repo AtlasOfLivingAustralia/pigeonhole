@@ -230,11 +230,11 @@
                     $(this).find('.brief, .detail').toggleClass('hide');
                 });
 
-        }); // end document load
+            }); // end document load
 
-        function imgError(image){
-            image.onerror = "";
-            image.src = "${createLink(uri: "/images/noImage.jpg")}";
+            function imgError(image){
+                image.onerror = "";
+                image.src = "${createLink(uri: "/images/noImage.jpg")}";
                 return true;
             }
 
