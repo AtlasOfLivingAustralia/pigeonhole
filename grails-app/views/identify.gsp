@@ -3,7 +3,7 @@
 	<head>
 		<meta name="layout" content="main"/>
 		<title>Identifiy</title>
-        <r:require modules="jquery, leaflet"/>
+        <r:require modules="jquery, leaflet, inview"/>
         <style type="text/css">
             #locationLatLng {
                 color: #DDD;
@@ -77,7 +77,7 @@
                 /*margin-top: 10px;*/
             }
 
-            .sub-groups .btn {
+            .sub-groups .btn, #speciesGroup1 .btn {
                 margin-bottom: 4px;
                 margin-right: 4px;
             }
@@ -102,8 +102,9 @@
                 position: relative;
             }
             .imgCon img {
-                height: 170px;
-                min-width: 150px;
+                height: 120px;
+                min-width: 100px;
+                max-width: 300px;
             }
             .imgCon .meta {
                 opacity: 0.8;
@@ -123,6 +124,9 @@
                 color: white;
                 background-color: black;
                 opacity: 0.7;
+            }
+            .imgCon.hide {
+                display: none;
             }
 
         </style>
@@ -212,29 +216,37 @@
                     $('#speciesSubGroup .sub-groups').addClass('hide'); // hide all subgroups
                     $('#subgroup_' + $(this).data('group')).removeClass('hide'); // expose requested subgroup
                     //updateSubGroups($(this).data('group'));
-                    loadSpeciesGroupImages('species_group:' + unescape($(this).data('group')));
+                    loadSpeciesGroupImages('species_group:' + unescape($(this).data('group')), null, $(this).find('.badge').text());
                 });
 
                 $('#speciesSubGroup').on('click', '.subGroupBtn', function(e) {
                     $('#speciesSubGroup .btn').removeClass('btn-primary');
                     $(this).addClass('btn-primary');
-                    loadSpeciesGroupImages('species_subgroup:' + unescape($(this).data('group')));
+                    loadSpeciesGroupImages('species_subgroup:' + unescape($(this).data('group')), null, $(this).find('.badge').text());
                 });
-
-                <%--$("img").error(function () {
-                     $(this).unbind("error").attr("src", "${createLink(uri: "/images/noImage.jpg")}");
-                });--%>
 
                 // mouse over affect on thumbnail images
                 $('#speciesImages').on('hover', '.imgCon', function() {
                     $(this).find('.brief, .detail').toggleClass('hide');
                 });
 
+                $('#speciesImages').on('inview', '#end', function(event, isInView, visiblePartX, visiblePartY) {
+                    console.log("inview", isInView, visiblePartX, visiblePartY);
+                    if (isInView) {
+                        console.log("images bottom in view");
+                        var start = $('#speciesImages').data('start');
+                        var speciesGroup = $('#speciesImages').data('species_group');
+                        loadSpeciesGroupImages(speciesGroup, start)
+                    }
+                });
+
             }); // end document load
 
             function imgError(image){
                 image.onerror = "";
-                image.src = "${createLink(uri: "/images/noImage.jpg")}";
+                //image.src = "${createLink(uri: "/images/noImage.jpg")}";
+                //console.log("img", $(image).parents('.imgCon').html());
+                $(image).parents('.imgCon').addClass('hide');// hides species without images
                 return true;
             }
 
@@ -262,7 +274,7 @@
                         }
                 })
                 .done(function(data){
-                    var group = "<div id='speciesGroup1' class='btn-group '>";
+                    var group = "<div id='speciesGroup1' class=''>";
                     $('#speciesSubGroup').html('');
 
                     $.each(data, function(index, value){
@@ -281,17 +293,28 @@
                     });
 
                     $('#speciesGroup').html(group);
-                    $('#speciesImages').empty();
                     $('#species_group p.hide').removeClass('hide');
+                })
+                .always(function() {
+                    $('.spinner1').addClass('hide');
                 })
                 .fail(function( jqXHR, textStatus, errorThrown ) {
                     alert("Error: " + textStatus + " - " + errorThrown);
                 });
             }
 
-            function loadSpeciesGroupImages(speciesGroup) {
+            function loadSpeciesGroupImages(speciesGroup, start) {
+                if (!start) {
+                    start = 0;
+                    $('#speciesImages').empty();
+                } else {
+                    $( "#end" ).remove(); // remove the trigger element for the inview loading of more images
+                }
+
+                var pageSize = 30;
                 var radius = $('#radius').val();
                 var latlng = $('#locationLatLng span').data('latlng');
+                $('.spinner2').removeClass('hide');
                 jQuery.ajaxSettings.traditional = true; // so multiple params with same key are formatted right
                 //var url = "http://biocache.ala.org.au/ws/occurrences/search?q=species_subgroup:Parrots&fq=geospatial_kosher%3Atrue&fq=multimedia:Image&facets=multimedia&lat=-35.2792511&lon=149.1113017&radius=5"
                 $.ajax({
@@ -300,12 +323,15 @@
                         jsonp : 'callback',
                         data : {
                             'q' : '*:*',
-                            'fq': [ speciesGroup
+                            'fq': [ speciesGroup,
+                                    'rank_id:[7000 TO *]' // remove higher taxa
                                    //'geospatial_kosher:true'],
                                    ],
                             //'fq': speciesGroup,
                             'facets': 'common_name_and_lsid',
-                            'flimit': 999,
+                            'flimit': pageSize,
+                            'foffset': start,
+                            'start': 0,
                             'pageSize': 0,
                             'lat' : latlng.lat,
                             'lon' : latlng.lng,
@@ -315,9 +341,11 @@
                 .done(function(data){
                     if (data.facetResults && data.facetResults.length > 0 && data.facetResults[0].fieldResult.length > 0) {
                         //console.log(speciesGroup + ': species count = ' + data.facetResults[0].fieldResult.length);
-                        var images = "<div id='imagesGrid'>";
+                        var images = "<span id='imagesGrid'>";
+                        var newTotal = Number(start);
                         $.each(data.facetResults[0].fieldResult, function(i, el){
-                            if (i >= 30) return false;
+                            //if (i >= 30) return false;
+                            newTotal++;
                             var parts = el.label.split("|");
                             var lsid = parts[2];
                             var displayName = (parts[0]) ? parts[0] : "<i>" + parts[1] + "</i>";
@@ -328,30 +356,46 @@
                                     displayName + "</div><div class='meta detail hide'><i>" +
                                     parts[1] + "</i><br>" + parts[0] + "<br>Records: " + el.count + "</div></a></div>";
                         });
-                        images += "</div>";
-                        $('#speciesImages').html(images);
-                    } else {
-                        $('#speciesImages').html("No species found.");
-                    }
+                        images += "</span>";
+                        images += "<div id='end'>&nbsp;</div>";
+                        $('#speciesImages').append(images);
+                        $('#speciesImages').data('start', start + pageSize);
+                        $('#speciesImages').data('species_group', speciesGroup);
+                        //$('#speciesImages').data('total', total);
+                    } else if (!start) {
+                        $('#speciesImages').append("No species found.");
+                    } 
+                })
+                .always(function() {
+                    $('.spinner2').addClass('hide');
                 })
                 .fail(function( jqXHR, textStatus, errorThrown ) {
                     // alert("Error: " + textStatus + " - " + errorThrown);
-                    $('#speciesImages').html("Error: " + textStatus + " - " + errorThrown);
+                    $('#speciesImages').append("Error: " + textStatus + " - " + errorThrown);
                 });
             }
 
             function updateLocation(latlng) {
-                //alert("Marker moved to: "+this.getLatLng().toString());
-                $('#speciesGroup span, #speciesImages span').hide();
-                $('.spinner').show();
-                $('#locationLatLng span').html(latlng.toString());
-                $('#locationLatLng span').data('latlng', latlng);
-                marker.setLatLng(latlng).bindPopup('your location', { maxWidth:250 }).addTo(map);
-                circle.setLatLng(latlng).setRadius($('#radius').val() * 1000).addTo(map);
-                map.fitBounds(circle.getBounds());
-                //updateSpeciesGroups()
-                updateSubGroups();
-                //console.log("zoom", map.getZoom());
+                //console.log("Marker moved to: "+latlng.toString());
+                if (latlng) {
+                    $('#speciesGroup span, #speciesImages span').hide();
+                    $('.spinner1').removeClass('hide');
+                    clearGroupsAndImages();
+                    $('#locationLatLng span').html(latlng.toString());
+                    $('#locationLatLng span').data('latlng', latlng);
+                    marker.setLatLng(latlng).bindPopup('your location', { maxWidth:250 }).addTo(map);
+                    circle.setLatLng(latlng).setRadius($('#radius').val() * 1000).addTo(map);
+                    map.fitBounds(circle.getBounds());
+                    //updateSpeciesGroups()
+                    updateSubGroups();
+                    //console.log("zoom", map.getZoom());
+                }
+            }
+
+            function clearGroupsAndImages() {
+                $('#speciesGroup').empty();
+                $('#speciesSubGroup').empty();
+                $('#speciesImages').empty();
             }
 
             function geocodeAddress() {
@@ -417,7 +461,8 @@
 
         <div class="bs-docs-example" id="species_group" data-content="Species group">
             <p>Narrow down the identification by first choosing a species group.</p>
-            <div id="speciesGroup"><span>[Specify a location first]</span><r:img uri="/images/spinner.gif" class="spinner hide"/></div>
+            <div id="speciesGroup"><span>[Specify a location first]</span></div>
+            <r:img uri="/images/spinner.gif" class="spinner1 hide"/>
             <p class="hide">Select a species sub-group (optional)</p>
             <div id="speciesSubGroup"></div>
             <div class="clearfix"></div>
@@ -426,6 +471,7 @@
         <div class="bs-docs-example" id="browse_species_images" data-content="Browse species images">
             <p>Narrow down the identification by browsing species images</p>
             <div id="speciesImages"><span>[Specify a location first]</span></div>
+            <r:img uri="/images/spinner.gif" class="spinner2 hide"/>
         </div>
 	</body>
 </html>

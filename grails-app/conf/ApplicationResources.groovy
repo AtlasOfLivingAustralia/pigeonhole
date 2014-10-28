@@ -30,4 +30,9 @@ modules = {
         dependsOn 'leaflet'
         resource url: 'js/leaflet-plugins/leaflet.geocoding/leaflet.geocoding.js'
     }
+
+    inview {
+        dependsOn 'jquery'
+        resource url: 'js/jquery.inview.js'
+    }
 }
