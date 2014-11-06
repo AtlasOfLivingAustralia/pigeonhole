@@ -3,7 +3,7 @@
 	<head>
 		<meta name="layout" content="main"/>
 		<title>Identifiy</title>
-        <r:require modules="jquery, jqueryUIEffects, leaflet, inview"/>
+        <r:require modules="jquery, angular, leaflet, inview"/>
         <style type="text/css">
             #locationLatLng {
                 color: #DDD;
@@ -106,24 +106,6 @@
                 min-width: 100px;
                 max-width: 300px;
             }
-            #singleSpeciesImages .imgCon img {
-                height: 90px;
-                min-width: 90px;
-                max-width: 150px;
-                cursor: zoom-in;
-            }
-            #singleSpeciesImages .imgCon img.zoomed {
-                height: 100%;
-                min-width: auto;
-                max-width: none;
-                cursor: zoom-out;
-            }
-            /*#singleSpeciesImages .imgCon img {*/
-                /*-webkit-transition: all 0.5s ease;*/
-                /*-moz-transition: all 0.5s ease;*/
-                /*-o-transition: all 0.5s ease;*/
-                /*transition: all 0.5s ease;*/
-            /*}*/
             .imgCon .meta {
                 opacity: 0.8;
                 position: absolute;
@@ -147,14 +129,8 @@
                 display: none;
             }
 
-            #imgModal {
-                width: 700px;
-                /*margin-top: -300px !important; */
-                margin-left: -350px !important;
-            }
-
         </style>
-        <r:script disposition="head">
+        <r:script>
             var map, geocoding, marker, circle, radius, initalBounds;
             var biocacheBaseUrl = "${grailsApplication.config.biocache.baseUrl}";
 
@@ -255,98 +231,22 @@
                 });
 
                 $('#speciesImages').on('inview', '#end', function(event, isInView, visiblePartX, visiblePartY) {
-                    //console.log("inview", isInView, visiblePartX, visiblePartY);
+                    console.log("inview", isInView, visiblePartX, visiblePartY);
                     if (isInView) {
-                        //console.log("images bottom in view");
+                        console.log("images bottom in view");
                         var start = $('#speciesImages').data('start');
                         var speciesGroup = $('#speciesImages').data('species_group');
                         loadSpeciesGroupImages(speciesGroup, start)
                     }
                 });
 
-                $('#toggleNoImages').on('change', function(e) {
-                    $('.imgCon.noImage').toggleClass('hide');
-                });
-
-                $('#speciesImages').on('click', '.imgCon a', function() {
-                   var lsid = $(this).data('lsid');
-                   var name = $(this).find('.brief').html(); // TODO: store info in object and store object in 'data' attribute
-                   loadSpeciesPopup(lsid, name);
-                   return false;
-                });
-
-                var prevImgId, prevWidth;
-                $('#singleSpeciesImages').on('click', '.imgCon a', function() {
-                    var img = $(this).find('img');
-                    var imgId = $(img).attr('id');
-                    //var thisImgId =  $(img).attr('src');
-                    //var isZoomed = $(img).hasClass('zoomed');
-                    //$('#singleSpeciesImages img').removeClass('zoomed');
-                    //console.log("img clicked!", imgId, prevImgId, prevWidth);
-
-                    function shrink(theImg) {
-                        $(theImg).animate({
-                            width: prevWidth,
-                            height: "90"
-                        },'fast', function() {
-                            //console.log("setting preImg to null",prevImgId);
-                            $(theImg).css('maxWidth','150px').css('cursor','zoom-in');
-                            prevImgId = null;
-                        });
-                    }
-
-                    function enlarge(theImg) {
-                        $(theImg).css('maxWidth','none').css('cursor','zoom-out');
-                        prevWidth = $(theImg).width();
-                        var imageCopy = new Image();
-                        imageCopy.src = theImg.attr("src");
-
-                        $(theImg).animate({
-                            width: imageCopy.width,
-                            height: imageCopy.height
-                        },'fast', function() {
-                            console.log("setting preImg to img",prevImgId);
-                            prevImgId = imgId;
-                        });
-                    }
-
-                    if (prevImgId && prevImgId != imgId) {
-                        // shrink the prev img and enlarge this img
-                        shrink($('#singleSpeciesImages img#' + prevImgId));
-                        enlarge(img);
-                        //prevImg = img;
-                    } else if (prevImgId && prevImgId == imgId) {
-                        // same img clicked so shrink img
-                        shrink(img, null);
-                        //prevImg = null;
-                    } else {
-                        // no prev img enlarged
-                        enlarge(img);
-                        //prevImg = img;
-                    }
-
-                    %{--console.log('largeimageurl', this, $(img).data('largeimageurl'));--}%
-                    %{--var smallImgUrl = $(img).attr('src'); // keep a copy--}%
-                    %{--var largeImgUrl = $(img).data('largeimageurl');--}%
-                            %{--$(img).data('smallimageurl', smallImgUrl);--}%
-                    %{--$(img).attr('src', largeImgUrl);--}%
-                });
-
-                $('#selectedSpeciesBtn').click(function() {
-                    alert("your species is (LSID): " + $('#imgModal').data('lsid'));
-                });
-
-
             }); // end document load
 
             function imgError(image){
                 image.onerror = "";
-                image.src = "${createLink(uri: "/images/noImage.jpg")}";
-
+                //image.src = "${createLink(uri: "/images/noImage.jpg")}";
                 //console.log("img", $(image).parents('.imgCon').html());
-                //$(image).parents('.imgCon').addClass('hide');// hides species without images
-                var hide = ($('#toggleNoImages').is(':checked')) ? 'hide' : '';
-                $(image).parents('.imgCon').addClass('noImage ' + hide);// hides species without images
+                $(image).parents('.imgCon').addClass('hide');// hides species without images
                 return true;
             }
 
@@ -370,7 +270,6 @@
                             'lat' : latlng.lat
                             , 'lon' : latlng.lng
                             , 'radius' : radius
-                            , 'fq' : 'rank_id:[7000 TO *]' // TODO - check this is not being ignored by biocache-service
                             , 'speciesGroup': group
                         }
                 })
@@ -452,7 +351,7 @@
                             var displayName = (parts[0]) ? parts[0] : "<i>" + parts[1] + "</i>";
                             var imgUrl = "http://bie.ala.org.au/ws/species/image/small/" + lsid; // http://bie.ala.org.au/ws/species/image/thumbnail/urn:lsid:biodiversity.org.au:afd.taxon:aa745ff0-c776-4d0e-851d-369ba0e6f537
                             images += "<div class='imgCon'><a class='cbLink thumbImage tooltips' rel='thumbs' href='http://bie.ala.org.au/species/" +
-                                    lsid + "' target='species' data-lsid='" + lsid + "'><img src='" + imgUrl +
+                                    lsid + "' target='species'><img src='" + imgUrl +
                                     "' alt='species thumbnail' onerror='imgError(this);'/><div class='meta brief'>" +
                                     displayName + "</div><div class='meta detail hide'><i>" +
                                     parts[1] + "</i><br>" + parts[0] + "<br>Records: " + el.count + "</div></a></div>";
@@ -465,7 +364,7 @@
                         //$('#speciesImages').data('total', total);
                     } else if (!start) {
                         $('#speciesImages').append("No species found.");
-                    } 
+                    }
                 })
                 .always(function() {
                     $('.spinner2').addClass('hide');
@@ -533,52 +432,6 @@
                 .always(function() {  $('.spinner').hide(); });
             }
 
-            function loadSpeciesPopup(lsid, name) {
-                $('#imgModalLabel, #speciesDetails, #singleSpeciesImages').empty(); // clear any old values
-                $('#imgModalLabel').html(name);
-                $('#spinner3').removeClass('hide');
-                var start = 0, pageSize = 20;
-                $.ajax({
-                    url : biocacheBaseUrl + '/occurrences/search.json',
-                        dataType : 'jsonp',
-                        jsonp : 'callback',
-                        data : {
-                            'q' : 'lsid:' + lsid,
-                            'fq': [
-                                    'multimedia:Image' // images only
-                                   //'geospatial_kosher:true'],
-                                   ],
-                            'facet': 'off',
-                            //'flimit': pageSize,
-                            //'foffset': ,
-                            'start': start,
-                            'pageSize': pageSize
-                        }
-                })
-                .done(function(data){
-                    if (data.occurrences && data.occurrences.length > 0) {
-                        $.each(data.occurrences, function(i, occ){
-                            //clone imgCon div and populate with data
-                            var $clone = $('#imgConClone').clone();
-                            $clone.attr("id",""); // remove the ID
-                            $clone.removeClass("hide");
-                            $clone.find("img").attr('src', occ.smallImageUrl);
-                            $clone.find("img").attr('id', occ.image);
-                            $clone.find(".meta").addClass("hide");
-                            //console.log('clone', $clone);
-                            $('#singleSpeciesImages').append($clone);
-                        });
-                        $('#imgModal').data('lsid', lsid);
-                    }
-                })
-                .fail(function( jqXHR, textStatus, errorThrown ) {
-                    alert("Error: " + textStatus + " - " + errorThrown);
-                })
-                .always(function() {  $('#spinner3').addClass('hide'); });
-
-                $('#imgModal').modal(); // trigger modal popup
-            }
-
         </r:script>
 	</head>
 	<body class="nav-species">
@@ -616,37 +469,9 @@
         </div>
 
         <div class="bs-docs-example" id="browse_species_images" data-content="Browse species images">
-            <p>
-                Narrow down the identification by browsing species images &mdash;
-                <g:checkBox name="toggleNoImages" id="toggleNoImages" class="" value="${true}"/> hide species without images
-            </p>
-            <div id="speciesImages">
-                <span>[Specify a location first]</span>
-            </div>
+            <p>Narrow down the identification by browsing species images</p>
+            <div id="speciesImages"><span>[Specify a location first]</span></div>
             <r:img uri="/images/spinner.gif" class="spinner2 hide"/>
-        </div>
-
-        <!-- Modal -->
-        <div id="imgModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="imgModalLabel" aria-hidden="true">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                <h3 id="imgModalLabel"></h3>
-            </div>
-            <div class="modal-body">
-                <r:img uri="/images/spinner.gif" id="spinner3" class="spinner "/>
-                <div class="" id="singleSpeciesImages"></div>
-                <div id="imgConClone" class="imgCon hide">
-                    <a href="#" class="cbLink thumbImage tooltips" rel="thumbs">
-                        <img src="" alt="species thumbnail" onerror="imgError(this);"/>
-                        <div class="meta brief"></div>
-                        <div class="meta detail hide"><span class="scientificName"></span><br><span class="commonName"></span></div>
-                    </a>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-                <button class="btn btn-primary pull-left" id="selectedSpeciesBtn">Select this species</button>
-            </div>
         </div>
 	</body>
 </html>

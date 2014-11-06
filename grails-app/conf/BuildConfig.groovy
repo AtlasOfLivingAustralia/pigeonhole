@@ -66,6 +66,7 @@ grails.project.dependency.resolution = {
         //runtime ":hibernate:3.6.10.16" // or ":hibernate4:4.3.5.4"
         //runtime ":database-migration:1.4.0"
         runtime ":jquery:1.8.3"
+        runtime ":angularjs-resources:1.3.0"
         runtime ":resources:1.2.8"
         // runtime ":lesscss-resources:1.3.3"
         runtime ":ala-web-theme:0.8.1"

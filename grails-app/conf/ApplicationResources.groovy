@@ -3,6 +3,11 @@ modules = {
         resource url: 'js/application.js'
     }
 
+    jqueryUIEffects {
+        dependsOn 'jquery'
+        resource url:'js/jquery-ui.min.js'
+    }
+
     leaflet {
         defaultBundle 'leaflet'
         resource url: [dir: 'js/leaflet-0.7.3', file: 'leaflet.css']
