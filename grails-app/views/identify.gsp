@@ -153,6 +153,11 @@
                 margin-left: -350px !important;
             }
 
+            .bieBtn {
+                display: inline-block;
+                margin-left: 10px;
+            }
+
         </style>
         <r:script disposition="head">
             var map, geocoding, marker, circle, radius, initalBounds;
@@ -270,8 +275,9 @@
 
                 $('#speciesImages').on('click', '.imgCon a', function() {
                    var lsid = $(this).data('lsid');
-                   var name = $(this).find('.brief').html(); // TODO: store info in object and store object in 'data' attribute
-                   loadSpeciesPopup(lsid, name);
+                   //var name = $(this).find('.brief').html(); // TODO: store info in object and store object in 'data' attribute
+                   var displayname = $(this).data('displayname');
+                   loadSpeciesPopup(lsid, displayname);
                    return false;
                 });
 
@@ -448,14 +454,22 @@
                             //if (i >= 30) return false;
                             newTotal++;
                             var parts = el.label.split("|");
-                            var lsid = parts[2];
-                            var displayName = (parts[0]) ? parts[0] : "<i>" + parts[1] + "</i>";
-                            var imgUrl = "http://bie.ala.org.au/ws/species/image/small/" + lsid; // http://bie.ala.org.au/ws/species/image/thumbnail/urn:lsid:biodiversity.org.au:afd.taxon:aa745ff0-c776-4d0e-851d-369ba0e6f537
+                            var nameObj = {
+                                sciName: parts[1],
+                                commonName: parts[0],
+                                lsid: parts[2],
+                                shortName: (parts[0]) ? parts[0] : "<i>" + parts[1] + "</i>",
+                                fullName1: (parts[0]) ? parts[0] + " &mdash; " + "<i>" + parts[1] + "</i>" : "<i>" + parts[1] + "</i>",
+                                fullName2: (parts[0]) ? parts[0] + "<br>" + "<i>" + parts[1] + "</i>" : "<i>" + parts[1] + "</i>"
+                            };
+                            //var lsid = parts[2];
+                            //var displayName = (parts[0]) ? parts[0] : "<i>" + parts[1] + "</i>";
+                            var imgUrl = "http://bie.ala.org.au/ws/species/image/small/" + nameObj.lsid; // http://bie.ala.org.au/ws/species/image/thumbnail/urn:lsid:biodiversity.org.au:afd.taxon:aa745ff0-c776-4d0e-851d-369ba0e6f537
                             images += "<div class='imgCon'><a class='cbLink thumbImage tooltips' rel='thumbs' href='http://bie.ala.org.au/species/" +
-                                    lsid + "' target='species' data-lsid='" + lsid + "'><img src='" + imgUrl +
+                                    nameObj.lsid + "' target='species' data-lsid='" + nameObj.lsid + "' data-displayname='" + nameObj.fullName1 + "'><img src='" + imgUrl +
                                     "' alt='species thumbnail' onerror='imgError(this);'/><div class='meta brief'>" +
-                                    displayName + "</div><div class='meta detail hide'><i>" +
-                                    parts[1] + "</i><br>" + parts[0] + "<br>Records: " + el.count + "</div></a></div>";
+                                    nameObj.shortName + "</div><div class='meta detail hide'>" +
+                                    nameObj.fullName2 + "<br>Records: " + el.count + "</div></a></div>";
                         });
                         images += "</span>";
                         images += "<div id='end'>&nbsp;</div>";
@@ -536,6 +550,8 @@
             function loadSpeciesPopup(lsid, name) {
                 $('#imgModalLabel, #speciesDetails, #singleSpeciesImages').empty(); // clear any old values
                 $('#imgModalLabel').html(name);
+                $('<a class="btn btn-small bieBtn" href="http://bie.ala.org.au/species/' + lsid +
+                        '" target="bie"><i class="icon-info-sign"></i> species page</a>').appendTo($('#imgModalLabel'));
                 $('#spinner3').removeClass('hide');
                 var start = 0, pageSize = 20;
                 $.ajax({
