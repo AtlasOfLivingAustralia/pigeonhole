@@ -5,21 +5,16 @@ import org.apache.tika.mime.MimeType
 import org.apache.tika.mime.MimeTypes
 import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.multipart.MultipartHttpServletRequest
-import org.springframework.web.multipart.commons.CommonsMultipartFile
 
 import javax.servlet.http.HttpServletRequest
 
 class AjaxUploadController {
 
-    //AjaxUploaderService ajaxUploaderService
-
     def upload = {
-
         try {
 
             File uploaded = createTemporaryFile()
             InputStream inputStream = selectInputStream(request)
-
             uploadFile(inputStream, uploaded)
 
             def output = [
@@ -28,12 +23,10 @@ class AjaxUploadController {
             ]
 
             return render (output as JSON)
-
         } catch (Exception e) {
             log.error("Failed to upload file.", e)
             return render(text: [success:false, error: e.message] as JSON, contentType:'text/json')
         }
-
     }
 
     private InputStream selectInputStream(HttpServletRequest request) {
