@@ -40,6 +40,7 @@ grails.project.dependency.resolution = {
         mavenLocal()
         grailsCentral()
         mavenCentral()
+        mavenRepo "http://nexus.ala.org.au/content/groups/public/"
         mavenRepo "http://maven.ala.org.au/repository/"
         // uncomment these (or add new ones) to enable remote dependency resolution from public Maven repositories
         //mavenRepo "http://repository.codehaus.org"
@@ -51,6 +52,7 @@ grails.project.dependency.resolution = {
         // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes e.g.
         // runtime 'mysql:mysql-connector-java:5.1.27'
         // runtime 'org.postgresql:postgresql:9.3-1100-jdbc41'
+        compile 'org.apache.tika:tika-core:1.6'
         test "org.grails:grails-datastore-test-support:1.0-grails-2.3"
     }
 
@@ -61,7 +63,7 @@ grails.project.dependency.resolution = {
         // plugins for the compile step
         //compile ":scaffolding:2.0.3"
         compile ':cache:1.1.7'
-
+        //compile ":ajax-uploader:1.1"
         // plugins needed at runtime but not for compilation
         //runtime ":hibernate:3.6.10.16" // or ":hibernate4:4.3.5.4"
         //runtime ":database-migration:1.4.0"

@@ -9,42 +9,7 @@
                 color: #DDD;
             }
 
-            /* Base class */
-            .bs-docs-example {
-                position: relative;
-                margin: 15px 0;
-                padding: 50px 15px 14px;
-                *padding-top: 19px;
-                background-color: #fff;
-                border: 1px solid #ddd;
-                -webkit-border-radius: 4px;
-                -moz-border-radius: 4px;
-                border-radius: 4px;
-            }
 
-            /* Echo out a label for the example */
-            .bs-docs-example:after {
-                /* content: "Example"; */
-                content: attr(data-content);
-                position: absolute;
-                top: -1px;
-                left: -1px;
-                padding: 6px 12px 8px 12px;
-                font-size: 18px;
-                font-weight: bold;
-                background-color: #f5f5f5;
-                border: 1px solid #ddd;
-                color: #666;
-                -webkit-border-radius: 4px 0 4px 0;
-                -moz-border-radius: 4px 0 4px 0;
-                border-radius: 4px 0 4px 0;
-            }
-
-            /* Remove spacing between an example and it's code */
-            .bs-docs-example + .prettyprint {
-                margin-top: -20px;
-                padding-top: 15px;
-            }
 
             .select-mini {
                 width: auto !important;
@@ -103,12 +68,12 @@
             }
             .imgCon img {
                 height: 120px;
-                min-width: 100px;
+                /*min-width: 100px;*/
                 max-width: 300px;
             }
             #singleSpeciesImages .imgCon img {
                 height: 90px;
-                min-width: 90px;
+                /*min-width: 90px;*/
                 max-width: 150px;
                 cursor: zoom-in;
             }

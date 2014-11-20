@@ -1,11 +1,28 @@
 modules = {
     application {
         resource url: 'js/application.js'
+        resource url: 'css/app.css'
     }
 
     jqueryUIEffects {
         dependsOn 'jquery'
         resource url:'js/jquery-ui.min.js'
+    }
+
+    fileuploads {
+        dependsOn 'jquery'
+        resource url:'js/jquery.fileupload/jquery.ui.widget.js'
+        resource url:'js/jquery.fileupload/load-image.all.min.js'
+        resource url:'js/jquery.fileupload/jquery.iframe-transport.js'
+        resource url:'js/jquery.fileupload/jquery.fileupload.js'
+        resource url:'js/jquery.fileupload/jquery.fileupload-process.js'
+        resource url:'js/jquery.fileupload/jquery.fileupload-image.js'
+        //resource url:'js/jquery.fileupload/jquery.fileupload-jquery-ui.js'
+    }
+
+    exif {
+        dependsOn 'jquery'
+        resource url:'js/jquery.exif.js'
     }
 
     leaflet {
