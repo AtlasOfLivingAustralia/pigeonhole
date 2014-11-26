@@ -5,6 +5,7 @@ import org.apache.tika.mime.MimeType
 import org.apache.tika.mime.MimeTypes
 import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.multipart.MultipartHttpServletRequest
+import org.springframework.web.multipart.commons.CommonsMultipartFile
 
 import javax.servlet.http.HttpServletRequest
 
@@ -19,13 +20,15 @@ class AjaxUploadController {
 
             def output = [
                     success:true,
+                    mimeType: uploaded.mimeType, // metaClass attr
+                    filename: uploaded.fileName, // metaClass attr
                     url: "${g.createLink(uri:"/uploads/${uploaded.name}", absolute:true)}"
             ]
 
             return render (output as JSON)
         } catch (Exception e) {
             log.error("Failed to upload file.", e)
-            return render(text: [success:false, error: e.message] as JSON, contentType:'text/json')
+            return render(status: 302, text: [success:false, error: e.message] as JSON)
         }
     }
 
@@ -46,8 +49,8 @@ class AjaxUploadController {
         File uploaded
         String uuid = UUID.randomUUID().toString() // unique temp image file name
         //String mimeType = request.contentType
-        def file = request.getFile("files[]")
-        log.debug "file type = ${file.contentType}"
+        CommonsMultipartFile file = request.getFile("files[]")
+        log.debug "file type = ${file.contentType} || file class = ${file.getClass().name}"
 
         //String ext = MIMETypeUtil.fileExtensionForMIMEType(mimeType)
         MimeTypes allTypes = MimeTypes.getDefaultMimeTypes()
@@ -65,6 +68,12 @@ class AjaxUploadController {
             uploaded = new File("${grailsApplication.config.imageUploadDir}/image_${uuid}${ext}")
         } else {
             uploaded = File.createTempFile('grails', "image_${uuid}${ext}")
+        }
+
+        if (uploaded) {
+            // add some dynamic attributes
+            uploaded.metaClass.mimeType = mt.toString()
+            uploaded.metaClass.fileName = file.originalFilename
         }
 
         return uploaded

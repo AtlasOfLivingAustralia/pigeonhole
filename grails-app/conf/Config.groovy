@@ -30,10 +30,11 @@ reloadable.cfgs = ["file:/data/${appName}/config/${appName}-config.properties"]
 runWithNoExternalConfig = true
 //security.cas.bypass = true
 
+bie.baseUrl = "http://bie.ala.org.au"
 biocache.baseUrl = "http://biocache.ala.org.au/ws";
 
 imageUploadDir = '/data/cache/imageUploads/' // Path to where files will be uploaded
-
+coordinates.sources = ["Google maps", "Google earth", "GPS device", "camera/phone", "physical maps", "other"]
 
 grails.project.groupId = "au.org.ala.pigeonhole" // change this to alter the default package name and Maven publishing destination
 

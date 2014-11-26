@@ -8,7 +8,7 @@ class UrlMappings {
         }
         "/identify"(view:"/identify")
         "/identifyn-ng"(view:"/identify-ng")
-        "/submitSighting"(view:"/submitSighting")
+        "/submit/$lsid**"(controller: "/submitSighting")
         "/uploads/$file**"(controller:"image", action:"index")
         "/"(view:"/index")
         "500"(view:'/error')

@@ -41,17 +41,10 @@ grails.project.dependency.resolution = {
         grailsCentral()
         mavenCentral()
         mavenRepo "http://nexus.ala.org.au/content/groups/public/"
-        mavenRepo "http://maven.ala.org.au/repository/"
-        // uncomment these (or add new ones) to enable remote dependency resolution from public Maven repositories
-        //mavenRepo "http://repository.codehaus.org"
-        //mavenRepo "http://download.java.net/maven/2/"
-        //mavenRepo "http://repository.jboss.com/maven2/"
     }
 
     dependencies {
         // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes e.g.
-        // runtime 'mysql:mysql-connector-java:5.1.27'
-        // runtime 'org.postgresql:postgresql:9.3-1100-jdbc41'
         compile 'org.apache.tika:tika-core:1.6'
         test "org.grails:grails-datastore-test-support:1.0-grails-2.3"
     }
@@ -71,6 +64,6 @@ grails.project.dependency.resolution = {
         runtime ":angularjs-resources:1.3.0"
         runtime ":resources:1.2.8"
         // runtime ":lesscss-resources:1.3.3"
-        runtime ":ala-web-theme:0.8.1"
+        runtime ":ala-web-theme:0.8.3-SNAPSHOT"
     }
 }
