@@ -12,16 +12,18 @@
  * implied. See the License for the specific language governing
  * rights and limitations under the License.
  */
+
 package au.org.ala.pigeonhole
 
-/**
- * DTO for image data
- *
- * @author "Nick dos Remedios <Nick.dosRemedios@csiro.au>"
- */
-class ImageDto {
-    String imageLicense
-    String imageUrl
-    String imageName
-    String imageMimeType
+import org.codehaus.groovy.grails.web.json.JSONObject
+
+class EcodataService {
+
+    SightingCommand getSighting(String id) {
+        [:]
+    }
+
+    JSONObject submitSighting(SightingCommand sightingCommand) {
+        [status:200, id:"foo123"]
+    }
 }

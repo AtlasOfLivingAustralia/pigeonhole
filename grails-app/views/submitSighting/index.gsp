@@ -1,3 +1,18 @@
+%{--
+  - Copyright (C) 2014 Atlas of Living Australia
+  - All Rights Reserved.
+  -
+  - The contents of this file are subject to the Mozilla Public
+  - License Version 1.1 (the "License"); you may not use this file
+  - except in compliance with the License. You may obtain a copy of
+  - the License at http://www.mozilla.org/MPL/
+  -
+  - Software distributed under the License is distributed on an "AS
+  - IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  - implied. See the License for the specific language governing
+  - rights and limitations under the License.
+  --}%
+
 <%--
   Created by IntelliJ IDEA.
   User: dos009@csiro.au
@@ -120,7 +135,7 @@
                     node.find('.filename').append(file.name + '  (' + humanFileSize(file.size) + ')');
                     //node.attr('id', 'image_'+ imageCount++);
                     node.data('index', imageCount++);
-                    $('#imageLicenceDiv').removeClass('hide'); // show the license options
+                    $('#imageLicenseDiv').removeClass('hide'); // show the license options
                     //console.log('node data', node);
                 });
             }).on('fileuploadprocessalways', function (e, data) {
@@ -156,7 +171,7 @@
                         node.find('.imgCoords').empty().append(lat + ", " + lng).data('lat',lat).data('lng',lng);
                     }
 
-                    var dateTime = data.exif.getText('DateTimeOriginal');// || data.exif.getText('DateTime');
+                    var dateTime = (data.exif.getText('DateTimeOriginal') != 'undefined') ? data.exif.getText('DateTimeOriginal') : null;// || data.exif.getText('DateTime');
                     var gpsDate = (data.exif.getText('GPSDateStamp') != 'undefined') ? data.exif.getText('GPSDateStamp') : null;
                     var gpsTime = (data.exif.getText('GPSTimeStamp') != 'undefined') ? data.exif.getText('GPSTimeStamp') : null;
 
@@ -166,11 +181,12 @@
                         var timeArr = gpsTime.split(','), timeArr2 = [];
                         $.each(timeArr, function(i, e) {
                             // correct for missing leading zeros on values: 2 -> 02
-                            timeArr2.push(('0' + e).slice(-2));
+                            timeArr2.push(('0' + parseInt(e)).slice(-2));
                         });
                         //var timeStr = ('0' + timeArr[0]).slice(-2)
                         var date = gpsDate.replace(/:/g,'-') + 'T' + timeArr2.join(':') + 'Z'; // ISO date format
-                        node.find('.imgDate').empty().append(date);
+                        node.find('.imgDate').html(date);
+                        node.find('.imgDate').data('date', date);
                         // TODO: add the next line to the function when user clicks 'Use image metadata'
                         //node.find('#timeZoneOfset').val('0'); // UTC time so no offset
                     }
@@ -178,12 +194,13 @@
                         // add date & time
                         hasMetaData = true;
                         var isoDateStr = parseExifDateTime(dateTime) || dateTime;
-                        node.find('.imgDate').empty().append(isoDateStr);
+                        node.find('.imgDate').html(isoDateStr);
+                        node.find('.imgDate').data('date', isoDateStr);
                     }
 
                     if (hasMetaData) {
                         // activate the button
-                        node.find('.imageData').removeAttr('disabled').attr('title','Use image date &amp; location for this sighting');
+                        node.find('.imageData').removeAttr('disabled').attr('title','Use image date/time & GPS coordinates for this sighting');
                     }
                 }
                 if (file.error) {
@@ -212,9 +229,11 @@
                         .prop('href', result.url);
                     node.find('.preview').wrap(link);
                     // populate hidden input fields
-                    node.find('#imageUrl').val(result.url).attr('name', 'images['+ index + '].imageUrl');
-                    node.find('#imageName').val(result.filename).attr('name', 'images['+ index + '].imageName');
-                    node.find('#imageMimeType').val(result.mimeType).attr('name', 'images['+ index + '].imageMimeType');
+                    node.find('.imageUrl').val(result.url).attr('name', 'associatedMedia['+ index + '].imageUrl');
+                    node.find('.imageName').val(result.filename).attr('name', 'associatedMedia['+ index + '].imageName');
+                    node.find('.imageMimeType').val(result.mimeType).attr('name', 'associatedMedia['+ index + '].imageMimeType');
+                    node.find('.imageLicense').val($('#imageLicense').val()).attr('name', 'associatedMedia['+ index + '].imageLicense');
+                    insertImageMetadata(node);
                 } else if (data.error) {
                 // in case an error still returns a 200 OK... (our service shouldn't)
                     var error = $('<div class="alert alert-error"/>').text(data.error);
@@ -239,7 +258,38 @@
             var prefix = (hours >= 0) ? '+' : '-';
             $('#timeZoneOffset').val(prefix + ('0' + hours).slice(-2) + ':' + ('0' + minutes).slice(-2));
 
+            $('#files').on('click', 'button.imageData', function() {
+                //console.log('imageData', e, this);
+                insertImageMetadata($(this).parents('.imageRow'));
+                return false;
+            });
+
+            $('#files').on('click', 'button.imageRemove', function() {
+                $(this).parents('.imageRow').remove();
+            });
+
+            $('#imageLicense').change(function() {
+                $('input.imageLicense').val($(this).val());
+            });
+
         });
+
+        function insertImageMetadata(imageRow) {
+            // imageRow is a jQuery object
+            var dateTime = imageRow.find('.imgDate').data('date');
+            if (dateTime) {
+                $('#date').val(dateTime.substring(0,10));
+                $('#time').val(dateTime.substring(11,19));
+                $('#timeZoneOffset').val(dateTime.substring(19));
+            }
+            var lat = imageRow.find('.imgCoords').data('lat');
+            var lng = imageRow.find('.imgCoords').data('lng');
+            if (lat && lng) {
+                $('#decimalLatitude').val(lat);
+                $('#decimalLongitude').val(lng);
+                $('#georeferenceProtocol').val('camera/phone');
+            }
+        }
 
         /**
         * Convert bytes to human readable form.
@@ -363,9 +413,9 @@
     %{--</div>--}%
     <!-- The container for the uploaded files -->
     <div id="files" class="files"></div>
-    <div id="imageLicenceDiv" class="hide">
-        <label for="imageLicence">Licence:</label>
-        <select name="imageLicence " id="imageLicence">
+    <div id="imageLicenseDiv" class="hide">
+        <label for="imageLicense">Licence:</label>
+        <select name="imageLicense " id="imageLicense">
             <option value="Creative Commons Attribution">Creative Commons Attribution</option>
             <option value="Creative Commons Attribution-Noncommercial">Creative Commons Attribution-Noncommercial</option>
             <option value="Creative Commons Attribution-Share Alike">Creative Commons Attribution-Share Alike</option>
@@ -376,9 +426,9 @@
 
 <div class="bs-docs-example" id="dateTime" data-content="Date &amp; Time">
     <label for="date">Date (dd-mm-yyyy):</label>
-    <input type="text" name="date" id="date" class="input-auto" value="${record?.date}"/>
+    <input type="text" name="date" id="date" class="input-auto" value="${sighting?.date}"/>
     <label for="date">Time (24 hour time in hh:mm):</label>
-    <input type="text" name="time" id="time" class="input-auto" value="${record?.time}"/>
+    <input type="text" name="time" id="time" class="input-auto" value="${sighting?.time}"/>
     %{--<label for="timeZoneOffset">Timezone offset</label>--}%
     %{--<input type="text" name="timeZoneOffset" id="timeZoneOffset" value="${sighting?.timeZoneOffset}"/>--}%
     <input type="hidden" name="timeZoneOffset" id="timeZoneOffset" value="${sighting?.timeZoneOffset}"/>
@@ -387,23 +437,23 @@
 <div class="bs-docs-example" id="location" data-content="Location">
     <div class="">
         <label for="decimalLatitude">Latitiude (decimal):</label>
-        <input type="text" name="decimalLatitude" id="decimalLatitude" class="input-auto" value="${record?.decimalLatitude}"/>
+        <input type="text" name="decimalLatitude" id="decimalLatitude" class="input-auto" value="${sighting?.decimalLatitude}"/>
         <label for="decimalLongitude">Longitude (decimal):</label>
-        <input type="text" name="decimalLongitude" id="decimalLongitude" class="input-auto" value="${record?.decimalLongitude}"/>
+        <input type="text" name="decimalLongitude" id="decimalLongitude" class="input-auto" value="${sighting?.decimalLongitude}"/>
         <label for="coordinateUncertaintyInMeters">Accuracy (metres):</label>
-        <input type="text" name="coordinateUncertaintyInMeters" id="coordinateUncertaintyInMeters" class="input-auto" value="${record?.coordinateUncertaintyInMeters}"/>
+        <input type="text" name="coordinateUncertaintyInMeters" id="coordinateUncertaintyInMeters" class="input-auto" value="${sighting?.coordinateUncertaintyInMeters}"/>
         <br>
         <label for="georeferenceProtocol">Source of coordinates:</label>
-        <g:select from="${coordinateSources}" id="georeferenceProtocol" name="georeferenceProtocol"/>
+        <g:select from="${coordinateSources}" id="georeferenceProtocol" name="georeferenceProtocol" value="${sighting?.georeferenceProtocol}"/>
         <label for="locationRemark">Location description:</label>
-        <textarea id="locationRemark" name="locationRemark" class="" rows="4" value="${record?.decimalLatitude}">${record?.locationRemark}</textarea>
+        <textarea id="locationRemark" name="locationRemark" class="" rows="2" value="${sighting?.decimalLatitude}">${sighting?.locationRemark}</textarea>
     </div>
 </div>
 
 <div class="bs-docs-example" id="details" data-content="Notes">
     <section class="sightings-block ui-corner-all">
         %{--<label for="occurrenceRemarks">Notes</label>--}%
-        <textarea name="occurrenceRemarks" rows="4" cols="90" id="occurrenceRemarks"></textarea>
+        <textarea name="occurrenceRemarks" rows="4" cols="90" id="occurrenceRemarks">${sighting?.occurrenceRemarks}</textarea>
     </section>
 </div>
 
@@ -417,9 +467,10 @@
     <div class="span10">
         <div class="metadata">
             Filename: <span class="filename"></span>
-            <input type="hidden" name="images[0].imageName" id="imageName" value=""/>
-            <input type="hidden" name="images[0].imageMimeType" id="imageMimeType" value=""/>
-            <input type="hidden" name="images[0].imageUrl" id="imageUrl" value=""/>
+            <input type="hidden" class="imageName" value=""/>
+            <input type="hidden" class="imageMimeType" value=""/>
+            <input type="hidden" class="imageUrl" value=""/>
+            <input type="hidden" class="imageLicense" value=""/>
         </div>
         <div class="metadata">
             Image date: <span class="imgDate">not available</span>

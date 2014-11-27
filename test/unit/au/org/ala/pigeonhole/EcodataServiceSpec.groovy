@@ -12,16 +12,24 @@
  * implied. See the License for the specific language governing
  * rights and limitations under the License.
  */
+
 package au.org.ala.pigeonhole
 
+import grails.test.mixin.TestFor
+import spock.lang.Specification
+
 /**
- * DTO for image data
- *
- * @author "Nick dos Remedios <Nick.dosRemedios@csiro.au>"
+ * See the API for {@link grails.test.mixin.services.ServiceUnitTestMixin} for usage instructions
  */
-class ImageDto {
-    String imageLicense
-    String imageUrl
-    String imageName
-    String imageMimeType
+@TestFor(EcodataService)
+class EcodataServiceSpec extends Specification {
+
+    def setup() {
+    }
+
+    def cleanup() {
+    }
+
+    void "test something"() {
+    }
 }
