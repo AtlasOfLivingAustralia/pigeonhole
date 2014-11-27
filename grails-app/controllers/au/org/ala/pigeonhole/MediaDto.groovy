@@ -15,13 +15,23 @@
 package au.org.ala.pigeonhole
 
 /**
- * DTO for image data
+ * DTO for multimedia data
+ * see http://tools.gbif.org/dwca-validator/extension.do?id=http://rs.gbif.org/terms/1.0/Multimedia
  *
  * @author "Nick dos Remedios <Nick.dosRemedios@csiro.au>"
  */
-class ImageDto {
-    String imageLicense
-    String imageUrl
-    String imageName
-    String imageMimeType
+class MediaDto {
+//    String imageLicense
+//    String imageUrl
+//    String imageName
+//    String imageMimeType
+    String type // one of: StillImage, Sound or MovingImage
+    String format // mimetype
+    String identifier // url
+    String title
+    String description
+    String created // ISO date/time format
+    String creator // person who produced the media file
+    String license
+    String rightsHolder
 }

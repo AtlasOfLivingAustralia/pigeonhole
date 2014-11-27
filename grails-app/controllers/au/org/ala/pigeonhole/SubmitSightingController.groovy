@@ -23,7 +23,7 @@ class SubmitSightingController {
 
     def index(String id) {
         log.debug "index: id = ${id}"
-        [taxon: getTaxon(id), coordinateSources: grailsApplication.config.coordinates.sources]
+        [taxon: getTaxon(id), coordinateSources: grailsApplication.config.coordinates.sources, user:authService.userDetails()]
     }
 
     def edit(String id) {
@@ -33,7 +33,7 @@ class SubmitSightingController {
 
     def upload(SightingCommand sighting) {
         //log.debug "upload sighting: ${sighting as JSON}"
-        def userId = authService.userId()
+        def userId = authService.userId?:99999
 
         if (!sighting.validate()) {
             sighting.errors.allErrors.each {
@@ -45,7 +45,7 @@ class SubmitSightingController {
         sighting.userId = userId
         JSONObject result = new JSONObject()
 
-        if (false) {
+        if (1) {
             result = ecodataService.submitSighting(sighting)
             render(status: result.status, text: result as JSON, contentType: "application/json")
         } else {

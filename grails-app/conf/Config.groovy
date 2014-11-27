@@ -44,9 +44,18 @@ reloadable.cfgs = ["file:/data/${appName}/config/${appName}-config.properties"]
 
 runWithNoExternalConfig = true
 //security.cas.bypass = true
+security.cas.casServerName = 'https://auth.ala.org.au'
+security.cas.uriFilterPattern = '/,/.*'
+security.cas.authenticateOnlyIfLoggedInPattern = "/records"
+security.cas.uriExclusionFilterPattern = '/images.*,/css.*,/js.*'
+security.cas.loginUrl = 'https://auth.ala.org.au/cas/login'
+security.cas.logoutUrl = 'https://auth.ala.org.au/cas/logout'
+security.cas.casServerUrlPrefix = 'https://auth.ala.org.au/cas'
+security.cas.bypass = false // set to true for non-ALA deployment
 
 bie.baseUrl = "http://bie.ala.org.au"
 biocache.baseUrl = "http://biocache.ala.org.au/ws";
+ecodata.baseUrl = "http://144.6.225.49:8080/ecodata"
 
 imageUploadDir = '/data/cache/imageUploads/' // Path to where files will be uploaded
 coordinates.sources = ["Google maps", "Google earth", "GPS device", "camera/phone", "physical maps", "other"]
@@ -133,10 +142,18 @@ grails.hibernate.osiv.readonly = false
 environments {
     development {
         grails.logging.jul.usebridge = true
+        grails.hostname = "dev.ala.org.au"
+        grails.serverURL = "http://${grails.hostname}:8090/${appName}"
+        security.cas.appServerName = "http://${grails.hostname}:8090"
+        security.cas.contextPath = "${appName}"
     }
     production {
         grails.logging.jul.usebridge = false
         // TODO: grails.serverURL = "http://www.changeme.com"
+        grails.hostname = "sightings.ala.org.au"
+        grails.serverURL = "http://${grails.hostname}}"
+        security.cas.appServerName = "http://${grails.hostname}"
+        security.cas.contextPath = ""
     }
 }
 

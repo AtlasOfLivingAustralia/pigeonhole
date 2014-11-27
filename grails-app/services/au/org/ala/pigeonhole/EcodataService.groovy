@@ -15,15 +15,50 @@
 
 package au.org.ala.pigeonhole
 
+import grails.converters.JSON
+import groovyx.net.http.ContentType
+import groovyx.net.http.HTTPBuilder
 import org.codehaus.groovy.grails.web.json.JSONObject
 
 class EcodataService {
+    def grailsApplication
 
     SightingCommand getSighting(String id) {
-        [:]
+        SightingCommand sc = new SightingCommand()
+        // TODO implement webservice GET, etc
+        sc
     }
 
     JSONObject submitSighting(SightingCommand sightingCommand) {
-        [status:200, id:"foo123"]
+        // TODO implement webservice POST
+        def url = grailsApplication.config.ecodata.baseUrl + "/record"
+        def json = sightingCommand.asJSON()
+        def result = doJsonPost(url, json)
+        log.debug "ecodata result = ${result}"
+
+        [status:result.status?:200, text: result.id?:result.error]
+    }
+
+    def doJsonPost(String url, String postBody) {
+        //println "post = " + postBody
+        log.debug "url = ${url} "
+        log.debug "postBody = ${postBody} "
+        def http = new HTTPBuilder(url)
+        http.request( groovyx.net.http.Method.POST, groovyx.net.http.ContentType.JSON ) {
+            body = postBody
+            requestContentType = ContentType.JSON
+
+            response.success = { resp, json ->
+                //log.debug "bulk lookup = " + json
+                log.debug "json is a ${json.getClass().name}"
+                return json
+            }
+
+            response.failure = { resp ->
+                def error = [error: "Unexpected error: ${resp.statusLine.statusCode} : ${resp.statusLine.reasonPhrase}", status: resp.statusLine.statusCode]
+                log.error "Oops: " + error.error
+                return error
+            }
+        }
     }
 }

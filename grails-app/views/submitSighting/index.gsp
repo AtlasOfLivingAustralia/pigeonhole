@@ -229,10 +229,11 @@
                         .prop('href', result.url);
                     node.find('.preview').wrap(link);
                     // populate hidden input fields
-                    node.find('.imageUrl').val(result.url).attr('name', 'associatedMedia['+ index + '].imageUrl');
-                    node.find('.imageName').val(result.filename).attr('name', 'associatedMedia['+ index + '].imageName');
-                    node.find('.imageMimeType').val(result.mimeType).attr('name', 'associatedMedia['+ index + '].imageMimeType');
-                    node.find('.imageLicense').val($('#imageLicense').val()).attr('name', 'associatedMedia['+ index + '].imageLicense');
+                    node.find('.identifier').val(result.url).attr('name', 'associatedMedia['+ index + '].identifier');
+                    node.find('.title').val(result.filename).attr('name', 'associatedMedia['+ index + '].title');
+                    node.find('.format').val(result.mimeType).attr('name', 'associatedMedia['+ index + '].format');
+                    node.find('.creator').val("${user?.userDisplayName?:'ALA User'}").attr('name', 'associatedMedia['+ index + '].creator');
+                    node.find('.license').val($('#imageLicense').val()).attr('name', 'associatedMedia['+ index + '].license');
                     insertImageMetadata(node);
                 } else if (data.error) {
                 // in case an error still returns a 200 OK... (our service shouldn't)
@@ -269,7 +270,7 @@
             });
 
             $('#imageLicense').change(function() {
-                $('input.imageLicense').val($(this).val());
+                $('input.license').val($(this).val());
             });
 
         });
@@ -374,9 +375,9 @@
             </g:else>
             <table class="countTable">
                 <tr>
-                    <td><label for="count">Number seen:</label></td>
-                    %{--<td><input type="text" name="count" class="input-small input-auto smartspinner" value="1" size="2" data-validation-engine="validate[custom[integer], min[1]]" id="count"></td>--}%
-                    <td><g:select from="${0..99}" name="count" class="input-small input-auto smartspinner" value="${1}" data-validation-engine="validate[custom[integer], min[1]]" id="count"/></td>
+                    <td><label for="individualCount">Number seen:</label></td>
+                    %{--<td><input type="text" name="individualCount" class="input-small input-auto smartspinner" value="1" size="2" data-validation-engine="validate[custom[integer], min[1]]" id="individualCount"></td>--}%
+                    <td><g:select from="${0..99}" name="individualCount" class="input-small input-auto smartspinner" value="${1}" data-validation-engine="validate[custom[integer], min[1]]" id="individualCount"/></td>
                     <td><label for="identificationVerificationStatus">Confidence in identification:</label></td>
                     <td><select name="identificationVerificationStatus" id="identificationVerificationStatus" class="">
                         <option value="Confident">Confident</option>
@@ -465,12 +466,13 @@
 <div class="hide imageRow row-fluid" id="uploadActionsTmpl">
     <div class="span2"><span class="preview pull-right"></span></div>
     <div class="span10">
-        <div class="metadata">
+        <div class="metadata media">
             Filename: <span class="filename"></span>
-            <input type="hidden" class="imageName" value=""/>
-            <input type="hidden" class="imageMimeType" value=""/>
-            <input type="hidden" class="imageUrl" value=""/>
-            <input type="hidden" class="imageLicense" value=""/>
+            <input type="hidden" class="title" value=""/>
+            <input type="hidden" class="format" value=""/>
+            <input type="hidden" class="identifier" value=""/>
+            <input type="hidden" class="license" value=""/>
+            <input type="hidden" class="creator" value=""/>
         </div>
         <div class="metadata">
             Image date: <span class="imgDate">not available</span>
