@@ -43,7 +43,7 @@ class SubmitSightingController {
         }
 
         sighting.userId = userId
-        JSONObject result = new JSONObject()
+        JSONObject result
 
         if (1) {
             result = ecodataService.submitSighting(sighting)

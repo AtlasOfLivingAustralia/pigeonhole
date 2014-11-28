@@ -185,17 +185,19 @@
                         });
                         //var timeStr = ('0' + timeArr[0]).slice(-2)
                         var date = gpsDate.replace(/:/g,'-') + 'T' + timeArr2.join(':') + 'Z'; // ISO date format
-                        node.find('.imgDate').html(date);
-                        node.find('.imgDate').data('date', date);
+                        //node.find('.imgDate').html(date);
+                        node.find('.imgDate').data('datetime', date);
                         // TODO: add the next line to the function when user clicks 'Use image metadata'
                         //node.find('#timeZoneOfset').val('0'); // UTC time so no offset
                     }
-                    else if (dateTime) {
+                    if (dateTime) {
                         // add date & time
                         hasMetaData = true;
                         var isoDateStr = parseExifDateTime(dateTime) || dateTime;
                         node.find('.imgDate').html(isoDateStr);
-                        node.find('.imgDate').data('date', isoDateStr);
+                        if (! node.find('.imgDate').data('datetime')) {
+                            node.find('.imgDate').data('datetime', isoDateStr);
+                        }
                     }
 
                     if (hasMetaData) {
@@ -229,11 +231,12 @@
                         .prop('href', result.url);
                     node.find('.preview').wrap(link);
                     // populate hidden input fields
-                    node.find('.identifier').val(result.url).attr('name', 'associatedMedia['+ index + '].identifier');
-                    node.find('.title').val(result.filename).attr('name', 'associatedMedia['+ index + '].title');
-                    node.find('.format').val(result.mimeType).attr('name', 'associatedMedia['+ index + '].format');
-                    node.find('.creator').val("${user?.userDisplayName?:'ALA User'}").attr('name', 'associatedMedia['+ index + '].creator');
-                    node.find('.license').val($('#imageLicense').val()).attr('name', 'associatedMedia['+ index + '].license');
+                    node.find('.media').val(result.url).attr('name', 'associatedMedia['+ index + ']');
+                    // node.find('.identifier').val(result.url).attr('name', 'associatedMedia['+ index + '].identifier');
+                    // node.find('.title').val(result.filename).attr('name', 'associatedMedia['+ index + '].title');
+                    // node.find('.format').val(result.mimeType).attr('name', 'associatedMedia['+ index + '].format');
+                    // node.find('.creator').val("${user?.userDisplayName?:'ALA User'}").attr('name', 'associatedMedia['+ index + '].creator');
+                    // node.find('.license').val($('#imageLicense').val()).attr('name', 'associatedMedia['+ index + '].license');
                     insertImageMetadata(node);
                 } else if (data.error) {
                 // in case an error still returns a 200 OK... (our service shouldn't)
@@ -277,10 +280,11 @@
 
         function insertImageMetadata(imageRow) {
             // imageRow is a jQuery object
-            var dateTime = imageRow.find('.imgDate').data('date');
+            var dateTime = imageRow.find('.imgDate').data('datetime');
             if (dateTime) {
-                $('#date').val(dateTime.substring(0,10));
-                $('#time').val(dateTime.substring(11,19));
+                $('#eventDateTime').val(dateTime);
+                $('#eventDateNoTime').val(dateTime.substring(0,10));
+                $('#eventTime').val(dateTime.substring(11,19));
                 $('#timeZoneOffset').val(dateTime.substring(19));
             }
             var lat = imageRow.find('.imgCoords').data('lat');
@@ -426,12 +430,13 @@
 </div>
 
 <div class="bs-docs-example" id="dateTime" data-content="Date &amp; Time">
-    <label for="date">Date (dd-mm-yyyy):</label>
-    <input type="text" name="date" id="date" class="input-auto" value="${sighting?.date}"/>
-    <label for="date">Time (24 hour time in hh:mm):</label>
-    <input type="text" name="time" id="time" class="input-auto" value="${sighting?.time}"/>
+    <label for="eventDateNoTime">Date (dd-mm-yyyy):</label>
+    <input type="text" name="eventDateNoTime" id="eventDateNoTime" class="input-auto" value="${sighting?.eventDateNoTime}"/>
+    <label for="eventTime">Time (24 hour time in hh:mm):</label>
+    <input type="text" name="eventTime" id="eventTime" class="input-auto" value="${sighting?.eventTime}"/>
     %{--<label for="timeZoneOffset">Timezone offset</label>--}%
     %{--<input type="text" name="timeZoneOffset" id="timeZoneOffset" value="${sighting?.timeZoneOffset}"/>--}%
+    <input type="hidden" name="eventDateTime" id="eventDateTime" value="${sighting?.eventDate?:sighting?.eventDateTime}"/>
     <input type="hidden" name="timeZoneOffset" id="timeZoneOffset" value="${sighting?.timeZoneOffset}"/>
 </div>
 
@@ -468,11 +473,12 @@
     <div class="span10">
         <div class="metadata media">
             Filename: <span class="filename"></span>
-            <input type="hidden" class="title" value=""/>
-            <input type="hidden" class="format" value=""/>
-            <input type="hidden" class="identifier" value=""/>
-            <input type="hidden" class="license" value=""/>
-            <input type="hidden" class="creator" value=""/>
+            <input type="hidden" class="media" value=""/>
+            %{--<input type="hidden" class="title" value=""/>--}%
+            %{--<input type="hidden" class="format" value=""/>--}%
+            %{--<input type="hidden" class="identifier" value=""/>--}%
+            %{--<input type="hidden" class="license" value=""/>--}%
+            %{--<input type="hidden" class="creator" value=""/>--}%
         </div>
         <div class="metadata">
             Image date: <span class="imgDate">not available</span>

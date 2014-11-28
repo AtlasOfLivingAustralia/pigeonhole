@@ -15,6 +15,7 @@
 package au.org.ala.pigeonhole
 
 import grails.web.JSONBuilder
+import grails.util.Holders
 
 /**
  * Command class for the sighting (based on DarwinCore terms)
@@ -28,9 +29,12 @@ class SightingCommand {
     String scientificName
     Integer individualCount
     String identificationVerificationStatus // identification confidence
-    List<MediaDto> associatedMedia = [].withDefault { new MediaDto() }
-    String date
-    String time
+    //List<MediaDto> associatedMedia = [].withDefault { new MediaDto() }
+    List<String> associatedMedia = [].withDefault { new String() }
+    String eventDate // can be date or ISO date with time
+    String eventDateNoTime // date only
+    String eventDateTime // ISO date + time
+    String eventTime // time only
     String timeZoneOffset
     Double decimalLatitude
     Double decimalLongitude
@@ -47,13 +51,16 @@ class SightingCommand {
 
     static constraints = {
         scientificName blank: false
-        date blank: false
-        time blank: false
+        eventDate blank: false
+        eventTime blank: false
     }
+
     public String getEventDate() {
         String dt
-        if (date && time) {
-            dt = "${date}T${time}${timeZoneOffset?:'Z'}"
+        if (eventDateTime) {
+            dt = eventDateTime
+        } else if (eventDate && eventTime) {
+            dt = "${eventDate}T${eventTime}${timeZoneOffset?:'Z'}"
         }
         dt
     }
@@ -65,21 +72,23 @@ class SightingCommand {
      * @param excludes
      * @return JSON (String)
      */
-    public String asJSON(List excludes = []) {
-        if (!excludes) {
-            excludes = ['errors', 'eventDate', 'timeZoneOffset', 'class', 'constraints']
-        }
+    public String asJSON(List excludes = Holders.config.sighting.fields.excludes) {
         def wantedProps = [:]
-        this.properties.each { propName, propValue ->
-            if (!excludes.contains(propName) && propValue) {
+        log.debug "excludes = ${excludes}"
+        //this.properties.each { propName, propValue ->
+        SightingCommand.declaredFields.findAll { !it.synthetic && !excludes.contains(it.name) }.each {
+            log.debug "it: ${it.name} = $it || m - ${it.modifiers} || t - ${it.type}"
+            def propName = it.name
+            def propValue = this.getProperty(propName)
+            log.debug "val: ${propValue} || ${propValue.getClass().name}"
+            //if (!excludes.contains(propName) && propValue) {
                 // also exclude empty fields
+                //log.debug "propValue type = ${propValue.getClass().name} || ${propValue}"
                 wantedProps.put(propName, propValue?:'')
-            }
+            //}
         }
         def builder = new JSONBuilder().build {
-            wantedProps.each {
-
-            }
+            wantedProps
         }
         log.debug "builder: ${builder.toString(true)}"
 

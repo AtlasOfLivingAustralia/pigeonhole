@@ -57,8 +57,9 @@ bie.baseUrl = "http://bie.ala.org.au"
 biocache.baseUrl = "http://biocache.ala.org.au/ws";
 ecodata.baseUrl = "http://144.6.225.49:8080/ecodata"
 
-imageUploadDir = '/data/cache/imageUploads/' // Path to where files will be uploaded
+media.UploadDir = '/data/cache/imageUploads/' // Path to where files will be uploaded
 coordinates.sources = ["Google maps", "Google earth", "GPS device", "camera/phone", "physical maps", "other"]
+sighting.fields.excludes = ['errors','timeZoneOffset','eventDateNoTime','eventDateTime','class','log','constraints','$constraints']
 
 grails.project.groupId = "au.org.ala.pigeonhole" // change this to alter the default package name and Maven publishing destination
 

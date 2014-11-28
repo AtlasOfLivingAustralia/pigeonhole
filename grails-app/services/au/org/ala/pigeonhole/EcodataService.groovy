@@ -29,7 +29,7 @@ class EcodataService {
         sc
     }
 
-    JSONObject submitSighting(SightingCommand sightingCommand) {
+    Map submitSighting(SightingCommand sightingCommand) {
         // TODO implement webservice POST
         def url = grailsApplication.config.ecodata.baseUrl + "/record"
         def json = sightingCommand.asJSON()

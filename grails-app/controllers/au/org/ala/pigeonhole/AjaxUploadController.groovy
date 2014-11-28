@@ -37,7 +37,8 @@ class AjaxUploadController {
                     success:true,
                     mimeType: uploaded.mimeType, // metaClass attr
                     filename: uploaded.fileName, // metaClass attr
-                    url: "${g.createLink(uri:"/uploads/${uploaded.name}", absolute:true)}"
+                    //url: "${g.createLink(uri:"/uploads/${uploaded.name}", absolute:true)}"
+                    url: "http://fielddata.ala.org.au/media/5477b4b53dff0a1e61d47514/0_P1010659.JPG" // TODO remove hardcoded value!!!
             ]
 
             return render (output as JSON)
@@ -72,17 +73,20 @@ class AjaxUploadController {
         MimeType mt = allTypes.forName(file.contentType)
         String ext = mt.getExtension()
 
-        if (grailsApplication.config?.containsKey('imageUploadDir')) {
-            File uploadDir = new File(grailsApplication.config.imageUploadDir)
+        if (grailsApplication.config?.containsKey('media')) {
+            File uploadDir = new File(grailsApplication.config.media.UploadDir)
+            def filename = file.originalFilename
 
             if (!uploadDir.exists()) {
                 uploadDir.mkdirs() ? log.info("Created temp image dir: ${uploadDir.absolutePath}")
-                                   : log.warn("Failed to create temp image dir: ${uploadDir.absolutePath}")
+                                   : log.error("Failed to create temp image dir: ${uploadDir.absolutePath} - PLEASE FIX")
             }
 
-            uploaded = new File("${grailsApplication.config.imageUploadDir}/image_${uuid}${ext}")
+            //uploaded = new File("${grailsApplication.config.imageUploadDir}/image_${uuid}${ext}")
+            uploaded = new File("${grailsApplication.config.imageUploadDir}/${filename}")
         } else {
-            uploaded = File.createTempFile('grails', "image_${uuid}${ext}")
+            //uploaded = File.createTempFile('grails', "image_${uuid}${ext}")
+            uploaded = File.createTempFile('grails', "${filename}")
         }
 
         if (uploaded) {
