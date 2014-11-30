@@ -57,7 +57,7 @@ bie.baseUrl = "http://bie.ala.org.au"
 biocache.baseUrl = "http://biocache.ala.org.au/ws";
 ecodata.baseUrl = "http://144.6.225.49:8080/ecodata"
 
-media.UploadDir = '/data/cache/imageUploads/' // Path to where files will be uploaded
+media.uploadDir = '/data/cache/imageUploads/' // Path to where files will be uploaded
 coordinates.sources = ["Google maps", "Google earth", "GPS device", "camera/phone", "physical maps", "other"]
 sighting.fields.excludes = ['errors','timeZoneOffset','eventDateNoTime','eventDateTime','class','log','constraints','$constraints']
 

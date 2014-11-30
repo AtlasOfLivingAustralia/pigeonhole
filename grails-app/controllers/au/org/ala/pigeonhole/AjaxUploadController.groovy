@@ -74,7 +74,7 @@ class AjaxUploadController {
         String ext = mt.getExtension()
 
         if (grailsApplication.config?.containsKey('media')) {
-            File uploadDir = new File(grailsApplication.config.media.UploadDir)
+            File uploadDir = new File("${grailsApplication.config.media.uploadDir}")
             def filename = file.originalFilename
 
             if (!uploadDir.exists()) {
@@ -83,7 +83,7 @@ class AjaxUploadController {
             }
 
             //uploaded = new File("${grailsApplication.config.imageUploadDir}/image_${uuid}${ext}")
-            uploaded = new File("${grailsApplication.config.imageUploadDir}/${filename}")
+            uploaded = new File("${grailsApplication.config.media.uploadDir}/${filename}")
         } else {
             //uploaded = File.createTempFile('grails', "image_${uuid}${ext}")
             uploaded = File.createTempFile('grails', "${filename}")
@@ -94,6 +94,8 @@ class AjaxUploadController {
             uploaded.metaClass.mimeType = mt.toString()
             uploaded.metaClass.fileName = file.originalFilename
         }
+
+        log.debug "uploaded = ${uploaded.absolutePath}"
 
         return uploaded
     }

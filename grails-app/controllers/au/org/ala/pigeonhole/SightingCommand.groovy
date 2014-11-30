@@ -27,15 +27,15 @@ class SightingCommand {
     String userId
     String guid
     String scientificName
-    Integer individualCount
+    List<String> tags = [].withDefault { new String() } // taxonomic tags
     String identificationVerificationStatus // identification confidence
-    //List<MediaDto> associatedMedia = [].withDefault { new MediaDto() }
-    List<String> associatedMedia = [].withDefault { new String() }
+    Integer individualCount
+    List<MediaDto> multimedia = [].withDefault { new MediaDto() }
     String eventDate // can be date or ISO date with time
     String eventDateNoTime // date only
     String eventDateTime // ISO date + time
     String eventTime // time only
-    String timeZoneOffset
+    String timeZoneOffset = (((TimeZone.getDefault().getRawOffset() / 1000) / 60) / 60)
     Double decimalLatitude
     Double decimalLongitude
     String geodeticDatum = "WGS84"
@@ -50,7 +50,7 @@ class SightingCommand {
     //Date lastUpdated
 
     static constraints = {
-        scientificName blank: false
+        //scientificName blank: false
         eventDate blank: false
         eventTime blank: false
     }
@@ -59,8 +59,9 @@ class SightingCommand {
         String dt
         if (eventDateTime) {
             dt = eventDateTime
-        } else if (eventDate && eventTime) {
-            dt = "${eventDate}T${eventTime}${timeZoneOffset?:'Z'}"
+        } else if (eventDateNoTime && eventTime) {
+            def isoDate = eventDateNoTime.split('-').reverse().join('-')
+            dt = "${isoDate}T${eventTime}${timeZoneOffset?:'Z'}"
         }
         dt
     }
@@ -81,11 +82,7 @@ class SightingCommand {
             def propName = it.name
             def propValue = this.getProperty(propName)
             log.debug "val: ${propValue} || ${propValue.getClass().name}"
-            //if (!excludes.contains(propName) && propValue) {
-                // also exclude empty fields
-                //log.debug "propValue type = ${propValue.getClass().name} || ${propValue}"
-                wantedProps.put(propName, propValue?:'')
-            //}
+            wantedProps.put(propName, propValue?:'')
         }
         def builder = new JSONBuilder().build {
             wantedProps

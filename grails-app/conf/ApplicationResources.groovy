@@ -35,6 +35,11 @@ modules = {
         //resource url:'js/jquery.fileupload/jquery.fileupload-jquery-ui.js'
     }
 
+    moment {
+        resource url:'js/moment.min.js'
+        resource url:'js/moment-duration-format.js'
+    }
+
     exif {
         dependsOn 'jquery'
         resource url:'js/jquery.exif.js'

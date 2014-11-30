@@ -23,7 +23,12 @@ class SubmitSightingController {
 
     def index(String id) {
         log.debug "index: id = ${id}"
-        [taxon: getTaxon(id), coordinateSources: grailsApplication.config.coordinates.sources, user:authService.userDetails()]
+        [
+                taxon: getTaxon(id),
+                sighting: new SightingCommand(),
+                coordinateSources: grailsApplication.config.coordinates.sources,
+                user:authService.userDetails()
+        ]
     }
 
     def edit(String id) {

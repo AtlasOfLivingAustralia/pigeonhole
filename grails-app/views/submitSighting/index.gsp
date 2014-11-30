@@ -26,7 +26,7 @@
 <head>
     <meta name="layout" content="main"/>
     <title>Submit a sighting</title>
-    <r:require modules="fileuploads, exif"/>
+    <r:require modules="fileuploads, exif, moment"/>
     <style type="text/css">
 
     .fileinput-button {
@@ -175,25 +175,28 @@
                     var gpsDate = (data.exif.getText('GPSDateStamp') != 'undefined') ? data.exif.getText('GPSDateStamp') : null;
                     var gpsTime = (data.exif.getText('GPSTimeStamp') != 'undefined') ? data.exif.getText('GPSTimeStamp') : null;
 
-                    if (gpsDate && gpsTime) {
-                        // add date & time from GPS (in Zulu time)
+                    if (gpsTime) {
+                        // determine local time offset from UTC
+                        // by working out difference between DateTimeOriginal and GPSTimeStamp to get timezone (offset)
+                        // gpsDate is not always set - if absent assume same date as 'DateTimeOriginal'
+                        var date = gpsDate || dateTime.substring(0,10); //dateTime.substring(0,10)
+                        date = date.replace(/:/g,'-') + ' ' + parseGpsTime(gpsTime); // comvert YYYY:MM:DD to YYYY-MM-DD
+                        var gpsMoment = moment(date);
+                        var datetimeTemp = parseExifDateTime(dateTime, false);
+                        var localMoment = moment(datetimeTemp);
+                        var gpsDiff = localMoment.diff(gpsMoment, 'minutes');
+                        var prefix = (gpsDiff >= 0) ? '+' : '';
+                        var gpsOffset = prefix + moment.duration(gpsDiff, 'minutes').format("hh:mm");
+                        $('#timeZoneOffset').val(gpsOffset);
+                        //console.log('gpsDate 1', date, '|', gpsMoment.format());
+                        //console.log('gpsDate 2', datetimeTemp, '|', localMoment.format());
+                        //console.log('diff', gpsOffset, gpsOffset);
                         hasMetaData = true;
-                        var timeArr = gpsTime.split(','), timeArr2 = [];
-                        $.each(timeArr, function(i, e) {
-                            // correct for missing leading zeros on values: 2 -> 02
-                            timeArr2.push(('0' + parseInt(e)).slice(-2));
-                        });
-                        //var timeStr = ('0' + timeArr[0]).slice(-2)
-                        var date = gpsDate.replace(/:/g,'-') + 'T' + timeArr2.join(':') + 'Z'; // ISO date format
-                        //node.find('.imgDate').html(date);
-                        node.find('.imgDate').data('datetime', date);
-                        // TODO: add the next line to the function when user clicks 'Use image metadata'
-                        //node.find('#timeZoneOfset').val('0'); // UTC time so no offset
                     }
                     if (dateTime) {
                         // add date & time
                         hasMetaData = true;
-                        var isoDateStr = parseExifDateTime(dateTime) || dateTime;
+                        var isoDateStr = parseExifDateTime(dateTime, true) || dateTime;
                         node.find('.imgDate').html(isoDateStr);
                         if (! node.find('.imgDate').data('datetime')) {
                             node.find('.imgDate').data('datetime', isoDateStr);
@@ -231,12 +234,12 @@
                         .prop('href', result.url);
                     node.find('.preview').wrap(link);
                     // populate hidden input fields
-                    node.find('.media').val(result.url).attr('name', 'associatedMedia['+ index + ']');
-                    // node.find('.identifier').val(result.url).attr('name', 'associatedMedia['+ index + '].identifier');
-                    // node.find('.title').val(result.filename).attr('name', 'associatedMedia['+ index + '].title');
-                    // node.find('.format').val(result.mimeType).attr('name', 'associatedMedia['+ index + '].format');
-                    // node.find('.creator').val("${user?.userDisplayName?:'ALA User'}").attr('name', 'associatedMedia['+ index + '].creator');
-                    // node.find('.license').val($('#imageLicense').val()).attr('name', 'associatedMedia['+ index + '].license');
+                    //node.find('.media').val(result.url).attr('name', 'associatedMedia['+ index + ']');
+                    node.find('.identifier').val(result.url).attr('name', 'multimedia['+ index + '].identifier');
+                    node.find('.title').val(result.filename).attr('name', 'multimedia['+ index + '].title');
+                    node.find('.format').val(result.mimeType).attr('name', 'multimedia['+ index + '].format');
+                    node.find('.creator').val("${user?.userDisplayName?:'ALA User'}").attr('name', 'multimedia['+ index + '].creator');
+                    node.find('.license').val($('#imageLicense').val()).attr('name', 'multimedia['+ index + '].license');
                     insertImageMetadata(node);
                 } else if (data.error) {
                 // in case an error still returns a 200 OK... (our service shouldn't)
@@ -256,10 +259,11 @@
 
             // pass in local time offset from UTC
             //var offset = ( new Date().getTimezoneOffset() / 60 ) * -1; // converted to hours (e.g. +11)
+            console.log('initialoffset', $('#timeZoneOffset').val());
             var offset = new Date().getTimezoneOffset() * -1;
             var hours = offset / 60;
             var minutes = offset % 60;
-            var prefix = (hours >= 0) ? '+' : '-';
+            var prefix = (hours >= 0) ? '+' : '';
             $('#timeZoneOffset').val(prefix + ('0' + hours).slice(-2) + ':' + ('0' + minutes).slice(-2));
 
             $('#files').on('click', 'button.imageData', function() {
@@ -276,6 +280,11 @@
                 $('input.license').val($(this).val());
             });
 
+            // Clear the #eventDateNoTime field (extracted from photo EXIF data) if user changes either the date or time field
+            $('#eventDateNoTime, #eventTime').keyup(function() {
+                $('#eventDateTime').val('');
+            });
+
         });
 
         function insertImageMetadata(imageRow) {
@@ -283,7 +292,7 @@
             var dateTime = imageRow.find('.imgDate').data('datetime');
             if (dateTime) {
                 $('#eventDateTime').val(dateTime);
-                $('#eventDateNoTime').val(dateTime.substring(0,10));
+                $('#eventDateNoTime').val(isoToAusDate(dateTime.substring(0,10)));
                 $('#eventTime').val(dateTime.substring(11,19));
                 $('#timeZoneOffset').val(dateTime.substring(19));
             }
@@ -294,6 +303,17 @@
                 $('#decimalLongitude').val(lng);
                 $('#georeferenceProtocol').val('camera/phone');
             }
+        }
+
+        function isoToAusDate(isoDate) {
+            var dateParts = isoDate.substring(0,10).split('-');
+            var ausDate = isoDate.substring(0,10); // fallback
+
+            if (dateParts.length == 3) {
+                ausDate = dateParts.reverse().join('-');
+            }
+
+            return ausDate;
         }
 
         /**
@@ -323,7 +343,7 @@
         * @param dataTimeStr
         * @returns dateTimeObj (JS Date)
         */
-        function parseExifDateTime(dataTimeStr) {
+        function parseExifDateTime(dataTimeStr, includeOffset) {
             //first split on space to get date and time parts
             console.log('dataTimeStr', dataTimeStr);
             //var dateTimeObj;
@@ -334,7 +354,13 @@
                 //var time = bigParts[1].split(':');
                 var offset = $('#timeZoneOffset').val() || '+10:00';
                 //offset = (offset >= 0) ? '+' + offset : offset;
-                var isoDateStr = date.join('-') + 'T' + bigParts[1] + offset;
+                var isoDateStr = date.join('-') + 'T' + bigParts[1];
+                if (includeOffset) {
+                    isoDateStr += offset;
+                } else {
+                    isoDateStr = isoDateStr.replace('T', ' ');
+                }
+                //alert('includeOffset = ' + includeOffset + ' - ' + isoDateStr);
                 %{--try {--}%
                     %{--dateTimeObj = new Date(isoDateStr); // TODO add timezone support (ask user)--}%
                 %{--} catch(ex) {--}%
@@ -344,6 +370,16 @@
             }
 
             return isoDateStr;
+        }
+
+        function parseGpsTime(time) {
+            // e.g. 15,5,8.01
+            var bits = [];
+            $.each(time.split(','), function(i, it) {
+                //bits.push(parseInt(it));
+                bits.push(('0' + parseInt(it)).slice(-2));
+            });
+            return bits.join(':');
         }
 
     </r:script>
@@ -473,12 +509,13 @@
     <div class="span10">
         <div class="metadata media">
             Filename: <span class="filename"></span>
-            <input type="hidden" class="media" value=""/>
-            %{--<input type="hidden" class="title" value=""/>--}%
-            %{--<input type="hidden" class="format" value=""/>--}%
-            %{--<input type="hidden" class="identifier" value=""/>--}%
-            %{--<input type="hidden" class="license" value=""/>--}%
-            %{--<input type="hidden" class="creator" value=""/>--}%
+            %{--<input type="hidden" class="media" value=""/>--}%
+            %{--TODO: convert to a proper form and allow user to change these and other values via a hide/show option--}%
+            <input type="hidden" class="title" value=""/>
+            <input type="hidden" class="format" value=""/>
+            <input type="hidden" class="identifier" value=""/>
+            <input type="hidden" class="license" value=""/>
+            <input type="hidden" class="creator" value=""/>
         </div>
         <div class="metadata">
             Image date: <span class="imgDate">not available</span>

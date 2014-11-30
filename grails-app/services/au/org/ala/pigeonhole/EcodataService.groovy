@@ -35,7 +35,8 @@ class EcodataService {
         def json = sightingCommand.asJSON()
         def result = doJsonPost(url, json)
         log.debug "ecodata result = ${result}"
-
+        // if error return Map below
+        // else return Map key/values as JSON
         [status:result.status?:200, text: result.id?:result.error]
     }
 
@@ -49,7 +50,8 @@ class EcodataService {
             requestContentType = ContentType.JSON
 
             response.success = { resp, json ->
-                //log.debug "bulk lookup = " + json
+                log.debug "json = " + json
+                log.debug "resp = ${resp}"
                 log.debug "json is a ${json.getClass().name}"
                 return json
             }
