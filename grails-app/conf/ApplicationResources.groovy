@@ -19,13 +19,26 @@ modules = {
         resource url: 'css/app.css'
     }
 
-    jqueryUIEffects {
+    jqueryMigrate {
         dependsOn 'jquery'
+        resource url:'http://code.jquery.com/jquery-migrate-1.2.1.min.js'
+    }
+
+    jqueryUIEffects {
+        dependsOn 'jqueryMigrate'
         resource url:'js/jquery-ui.min.js'
     }
 
+    alaAutocomplete {
+        dependsOn 'jqueryMigrate'
+        resource url:'js/typeahead.bundle.js'
+        //resource url:'css/alaAutocomplete.css'
+        //resource url:'http://twitter.github.io/typeahead.js/css/examples.css'
+        resource url:'js/alaAutocomplete.js'
+    }
+
     fileuploads {
-        dependsOn 'jquery'
+        dependsOn 'jqueryMigrate'
         resource url:'js/jquery.fileupload/jquery.ui.widget.js'
         resource url:'js/jquery.fileupload/load-image.all.min.js'
         resource url:'js/jquery.fileupload/jquery.iframe-transport.js'
@@ -41,7 +54,7 @@ modules = {
     }
 
     exif {
-        dependsOn 'jquery'
+        dependsOn 'jqueryMigrate'
         resource url:'js/jquery.exif.js'
     }
 

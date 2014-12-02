@@ -26,7 +26,7 @@
 <head>
     <meta name="layout" content="main"/>
     <title>Submit a sighting</title>
-    <r:require modules="fileuploads, exif, moment"/>
+    <r:require modules="fileuploads, exif, moment, alaAutocomplete"/>
     <style type="text/css">
 
     .fileinput-button {
@@ -415,7 +415,7 @@
 <div class="bs-docs-example" id="species" data-content="Species">
     <g:set var="speciesSearchForm">
         <div class="input-append">
-            <input class="input-xlarge" id="speciesLookup" type="text">
+            <input class="input-xlarge typeahead" id="speciesLookup" type="text">
             <button class="btn" type="button">Undo</button>
         </div>
     </g:set>
