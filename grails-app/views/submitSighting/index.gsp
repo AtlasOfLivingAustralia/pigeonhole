@@ -20,7 +20,7 @@
   Time: 4:35 PM
   To change this template use File | Settings | File Templates.
 --%>
-<%@ page contentType="text/html;charset=UTF-8" %>
+<%@ page import="grails.converters.JSON" contentType="text/html;charset=UTF-8" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -285,6 +285,38 @@
                 $('#eventDateTime').val('');
             });
 
+           %{-- // popuplate the species groups and subgroup dropdowns
+            var groupsObj = {};
+            $.getJSON("${grailsApplication.config.bie.baseUrl}/subgroups.json?callback=?")
+            .done(function(data) {
+                $.each(data, function(i,g) {
+                    groupsObj[g.speciesGroup] = g.taxa;
+                    $('#speciesGroups')
+                        .append($("<option/>")
+                        .attr("value",g.speciesGroup)
+                        .text(g.speciesGroup));
+                });
+            })
+            .fail(function( jqXHR, textStatus, errorThrown ) {
+                alert("Error: " + textStatus + " - " + errorThrown);
+            })
+            .always(function() {
+                // clean-up & spinner deactivations, etc
+            });--}%
+
+            var speciesGroupsObj = ${(speciesGroupsMap).encodeAsJson()};
+            $('#speciesGroups').change(function(e) {
+                var group = $(this).val();
+                var noSelectOpt = '-- Choose a sub group --'; //$('#speciesSubgroups option:first-child').text();
+                console.log('noSelectOpt', noSelectOpt);
+                $('#speciesSubgroups').empty().append($("<option/>").attr("value","").text(noSelectOpt));
+                $.each(speciesGroupsObj[group], function(i, el) {
+                    $('#speciesSubgroups')
+                        .append($("<option/>")
+                        .attr("value",el.common)
+                        .text(el.common));
+                });
+            });
         });
 
         function insertImageMetadata(imageRow) {
@@ -361,12 +393,6 @@
                     isoDateStr = isoDateStr.replace('T', ' ');
                 }
                 //alert('includeOffset = ' + includeOffset + ' - ' + isoDateStr);
-                %{--try {--}%
-                    %{--dateTimeObj = new Date(isoDateStr); // TODO add timezone support (ask user)--}%
-                %{--} catch(ex) {--}%
-                    %{--console.error("Error parsing EXIF date time: " + isoDateStr, ex);--}%
-                %{--}--}%
-                %{--console.log('isoDateStr', isoDateStr, dateTimeObj);--}%
             }
 
             return isoDateStr;
@@ -376,8 +402,7 @@
             // e.g. 15,5,8.01
             var bits = [];
             $.each(time.split(','), function(i, it) {
-                //bits.push(parseInt(it));
-                bits.push(('0' + parseInt(it)).slice(-2));
+                bits.push(('0' + parseInt(it)).slice(-2)); // zero pad
             });
             return bits.join(':');
         }
@@ -399,15 +424,20 @@
         ${raw(speciesSearchForm)}
     </div>
     <div class="row-fluid ${taxon?.guid ? '':'hide'}">
-        <div class="span8">
+        <div class="span6">
             <g:if test="${taxon}">
-                <span class="sciName">
-                    <a href="${grailsApplication.config.bie.baseUrl}/species/${taxon.guid}" title="view species page" target="BIE">${taxon.scientificName}</a>
-                </span>
-                <span class="commonName">${taxon.commonName}</span>
-                <g:if test="${taxon.thumbnail}">
-                    <img src="${taxon.thumbnail}" class="speciesThumbnail" alt="thumbnail image of ${taxon.commonName?:taxon.scientificName}"/>
-                </g:if>
+                <div class="alert alert-info">
+                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                    <g:if test="${taxon.thumbnail}">
+                        <img src="${taxon.thumbnail}" class="speciesThumbnail" alt="thumbnail image of ${taxon.commonName?:taxon.scientificName}"/>
+                    </g:if>&nbsp;&nbsp;
+                    <span class="sciName">
+                        <a href="${grailsApplication.config.bie.baseUrl}/species/${taxon.guid}" title="view species page" target="BIE">${taxon.scientificName}</a>
+                    </span>
+                    <span class="commonName">${taxon.commonName}</span>
+                    <input type="hidden" name="guid" id="guid" value="${taxon?.guid}"/>
+                    <input type="hidden" name="scientificName" id="scientificName" value="${taxon?.scientificName}"/>
+                </div>
             </g:if>
             <g:else>
                 <span class="noTaxa">Type a scientific or common name into the box below and choose from the auto-complete list.</span>
@@ -417,23 +447,22 @@
                 <tr>
                     <td><label for="individualCount">Number seen:</label></td>
                     %{--<td><input type="text" name="individualCount" class="input-small input-auto smartspinner" value="1" size="2" data-validation-engine="validate[custom[integer], min[1]]" id="individualCount"></td>--}%
-                    <td><g:select from="${0..99}" name="individualCount" class="input-small input-auto smartspinner" value="${1}" data-validation-engine="validate[custom[integer], min[1]]" id="individualCount"/></td>
+                    <td><g:select from="${1..99}" name="individualCount" class="input-small input-auto smartspinner" value="${sighting?.individualCount}" data-validation-engine="validate[custom[integer], min[1]]" id="individualCount"/></td>
                     <td><label for="identificationVerificationStatus">Confidence in identification:</label></td>
-                    <td><select name="identificationVerificationStatus" id="identificationVerificationStatus" class="">
-                        <option value="Confident">Confident</option>
-                        <option value="Uncertain">Uncertain</option>
-                    </select></td>
+                    <td><g:select from="${['Confident','Uncertain']}" name="identificationVerificationStatus" id="identificationVerificationStatus" value="${sighting?.identificationVerificationStatus}"/></td>
                 </tr>
             </table>
         </div>
-        <div class="${taxon?.guid ? '':'hide'} span4" id="searchAgain">
+        <div class="${taxon?.guid ? '':'hide'} span6" id="searchAgain">
             Not the right species? To change identification, type a scientific
             or common name into the box below and choose from the auto-complete list.
             ${raw(speciesSearchForm)}
+            <br>
+            Not sure about the identity of the species. Narrow down to a species group and sub-group instead:
+            <g:select name="tags" from="${speciesGroupsMap.keySet()}" id="speciesGroups" noSelection="['':'-- Choose a species group --']"/>
+            <g:select name="tags" from="${[]}" id="speciesSubgroups" noSelection="['':'-- Select a group first --']"/>
         </div>
     </div>
-    <input type="hidden" name="guid" id="guid" value="${taxon?.guid}"/>
-    <input type="hidden" name="scientificName" id="scientificName" value="${taxon?.scientificName}"/>
 </div>
 
 <div class="bs-docs-example" id="media" data-content="Media">
@@ -456,12 +485,7 @@
     <div id="files" class="files"></div>
     <div id="imageLicenseDiv" class="hide">
         <label for="imageLicense">Licence:</label>
-        <select name="imageLicense " id="imageLicense">
-            <option value="Creative Commons Attribution">Creative Commons Attribution</option>
-            <option value="Creative Commons Attribution-Noncommercial">Creative Commons Attribution-Noncommercial</option>
-            <option value="Creative Commons Attribution-Share Alike">Creative Commons Attribution-Share Alike</option>
-            <option value="Creative Commons Attribution-Noncommercial-Share Alike">Creative Commons Attribution-Noncommercial-Share Alike</option>
-        </select>
+        <g:select from="${grailsApplication.config.sighting.licenses}" name="imageLicense" id="imageLicense" value="${sighting?.multimedia?.get(0)?.license}"/>
     </div>
 </div>
 

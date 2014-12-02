@@ -51,7 +51,7 @@ security.cas.uriExclusionFilterPattern = '/images.*,/css.*,/js.*'
 security.cas.loginUrl = 'https://auth.ala.org.au/cas/login'
 security.cas.logoutUrl = 'https://auth.ala.org.au/cas/logout'
 security.cas.casServerUrlPrefix = 'https://auth.ala.org.au/cas'
-security.cas.bypass = false // set to true for non-ALA deployment
+security.cas.bypass  // set to true for non-ALA deployment
 
 bie.baseUrl = "http://bie.ala.org.au"
 biocache.baseUrl = "http://biocache.ala.org.au/ws";
@@ -60,6 +60,7 @@ ecodata.baseUrl = "http://144.6.225.49:8080/ecodata"
 media.uploadDir = '/data/cache/imageUploads/' // Path to where files will be uploaded
 coordinates.sources = ["Google maps", "Google earth", "GPS device", "camera/phone", "physical maps", "other"]
 sighting.fields.excludes = ['errors','timeZoneOffset','eventDateNoTime','eventDateTime','class','log','constraints','$constraints']
+sighting.licenses = ['Creative Commons Attribution','Creative Commons Attribution-Noncommercial','Creative Commons Attribution-Share Alike','Creative Commons Attribution-Noncommercial-Share Alike']
 
 grails.project.groupId = "au.org.ala.pigeonhole" // change this to alter the default package name and Maven publishing destination
 
@@ -146,7 +147,7 @@ environments {
         grails.hostname = "dev.ala.org.au"
         grails.serverURL = "http://${grails.hostname}:8090/${appName}"
         security.cas.appServerName = "http://${grails.hostname}:8090"
-        security.cas.contextPath = "${appName}"
+        security.cas.contextPath = "/${appName}"
     }
     production {
         grails.logging.jul.usebridge = false
@@ -224,7 +225,10 @@ log4j = {
             'grails.app.filters.au.org.ala'
     ]
 
-    debug 'grails.app.controllers.au.org.ala','ala','au.org.ala.web' // 'au.org.ala.cas.client',
+    debug 'grails.app.controllers.au.org.ala',
+            'ala',
+            'au.org.ala.web',
+            'au.org.ala.cas.client'
 
     error  'org.codehaus.groovy.grails.web.servlet',        // controllers
             'org.codehaus.groovy.grails.web.pages',          // GSP

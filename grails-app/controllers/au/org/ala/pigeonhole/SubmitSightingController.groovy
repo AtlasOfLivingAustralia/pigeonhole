@@ -19,42 +19,44 @@ import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.JSONObject
 
 class SubmitSightingController {
-    def httpWebService, authService, ecodataService
+    def httpWebService, authService, ecodataService, bieService
 
     def index(String id) {
-        log.debug "index: id = ${id}"
+        //def sighting
         [
                 taxon: getTaxon(id),
-                sighting: new SightingCommand(),
+                //sighting: sighting?:new SightingCommand(),
                 coordinateSources: grailsApplication.config.coordinates.sources,
+                speciesGroupsMap: bieService.getSpeciesGroupsMap(),
                 user:authService.userDetails()
         ]
     }
 
     def edit(String id) {
         SightingCommand sighting = ecodataService.getSighting(id)
-        render view: "index", mode: [taxon: getTaxon(sighting.guid), sighting: sighting, coordinateSources: grailsApplication.config.coordinates.sources]
+        render view: "index", mode: [taxon: getTaxon(sighting.guid), sighting: sighting, coordinateSources: grailsApplication.config.coordinates.sources, user:authService.userDetails()]
     }
 
     def upload(SightingCommand sighting) {
         //log.debug "upload sighting: ${sighting as JSON}"
-        def userId = authService.userId?:99999
+        def userId = authService.userId ?: 99999
+        def debug = true;
+
+        sighting.userId = userId
+        JSONObject result
 
         if (!sighting.validate()) {
             sighting.errors.allErrors.each {
                 log.warn "upload validation error: ${it}"
             }
-            chain action:"index", id:"${sighting.guid}", model: [sighting: sighting, taxon: getTaxon(sighting.guid)]
-        }
-
-        sighting.userId = userId
-        JSONObject result
-
-        if (1) {
+            log.debug "chaining - sighting = ${sighting}"
+            // chain action: "index", id: "${sighting.guid}", model: [sighting: sighting, taxon: getTaxon(sighting.guid), coordinateSources: grailsApplication.config.coordinates.sources, user:authService.userDetails()]
+            chain action: "index", id: "${sighting.guid}", model: [sighting: sighting]
+        } else if (debug) {
+            render sighting as JSON
+        } else {
             result = ecodataService.submitSighting(sighting)
             render(status: result.status, text: result as JSON, contentType: "application/json")
-        } else {
-            render sighting as JSON
         }
     }
 

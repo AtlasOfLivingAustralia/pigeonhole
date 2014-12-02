@@ -37,7 +37,7 @@ class EcodataService {
         log.debug "ecodata result = ${result}"
         // if error return Map below
         // else return Map key/values as JSON
-        [status:result.status?:200, text: result.id?:result.error]
+        [status:result.status?:200, text: result.error?:result]
     }
 
     def doJsonPost(String url, String postBody) {

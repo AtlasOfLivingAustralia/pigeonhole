@@ -51,8 +51,8 @@ class SightingCommand {
 
     static constraints = {
         //scientificName blank: false
-        eventDate blank: false
-        eventTime blank: false
+        eventDateNoTime blank: false
+        //eventTime blank: false
     }
 
     public String getEventDate() {

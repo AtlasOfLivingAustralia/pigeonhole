@@ -37,8 +37,8 @@ class AjaxUploadController {
                     success:true,
                     mimeType: uploaded.mimeType, // metaClass attr
                     filename: uploaded.fileName, // metaClass attr
-                    //url: "${g.createLink(uri:"/uploads/${uploaded.name}", absolute:true)}"
-                    url: "http://fielddata.ala.org.au/media/5477b4b53dff0a1e61d47514/0_P1010659.JPG" // TODO remove hardcoded value!!!
+                    url: "${g.createLink(uri:"/uploads/${uploaded.name}", absolute:true)}"
+                    //url: "http://fielddata.ala.org.au/media/5477b4b53dff0a1e61d47514/0_P1010659.JPG" // TODO remove hardcoded value!!!
             ]
 
             return render (output as JSON)
