@@ -24,6 +24,10 @@ import org.springframework.web.multipart.commons.CommonsMultipartFile
 
 import javax.servlet.http.HttpServletRequest
 
+/**
+ * Server side code for the jQuery fileupload plugin, which performs an AJAX
+ * file upload in the background
+ */
 class AjaxUploadController {
 
     def upload = {
@@ -41,7 +45,7 @@ class AjaxUploadController {
                     //url: "http://fielddata.ala.org.au/media/5477b4b53dff0a1e61d47514/0_P1010659.JPG" // TODO remove hardcoded value!!!
             ]
 
-            return render (output as JSON)
+            return render (status: 200, text: output as JSON)
         } catch (Exception e) {
             log.error("Failed to upload file.", e)
             return render(status: 302, text: [success:false, error: e.message] as JSON)

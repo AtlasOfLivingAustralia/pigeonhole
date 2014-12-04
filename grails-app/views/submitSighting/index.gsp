@@ -57,12 +57,23 @@
         display: inline-block;
     }
 
-    select {
+    select.slim {
         height: 26px;
         width: auto;
         font-size: 13px;
         line-height: 18px;
         margin-bottom: 4px;
+    }
+
+    select.narrow {
+        width: auto;
+        margin-bottom: 0px;
+    }
+
+    .label {
+        font-size: 12px;
+        padding: 4px 6px;
+        margin-right: 5px;
     }
 
     /*#species input[type='text'] {*/
@@ -104,14 +115,22 @@
 
     </style>
     <r:script>
+        // global var to pass in GSP/Grails values into external JS files
+        GSP_VARS = {
+            biocacheBaseUrl: "${(grailsApplication.config.biocache.baseUrl)}",
+            bieBaseUrl: "${(grailsApplication.config.bie.baseUrl)}",
+            uploadUrl: "${createLink(uri:"/ajaxUpload/upload")}",
+            id: "${params.id}"
+        };
+
+
         $(function () {
             // console.log("jquery check", $('#species').text());
             // upload code taken from http://blueimp.github.io/jQuery-File-Upload/basic-plus.html
-            var url = '${createLink(uri:"/ajaxUpload/upload")}';
             var imageCount = 0;
 
             $('#fileupload').fileupload({
-                url: url,
+                url: GSP_VARS.uploadUrl,
                 dataType: 'json',
                 autoUpload: true,
                 acceptFileTypes: /(\.|\/)(gif|jpe?g|png)$/i,
@@ -285,38 +304,87 @@
                 $('#eventDateTime').val('');
             });
 
-           %{-- // popuplate the species groups and subgroup dropdowns
-            var groupsObj = {};
-            $.getJSON("${grailsApplication.config.bie.baseUrl}/subgroups.json?callback=?")
-            .done(function(data) {
-                $.each(data, function(i,g) {
-                    groupsObj[g.speciesGroup] = g.taxa;
-                    $('#speciesGroups')
-                        .append($("<option/>")
-                        .attr("value",g.speciesGroup)
-                        .text(g.speciesGroup));
-                });
-            })
-            .fail(function( jqXHR, textStatus, errorThrown ) {
-                alert("Error: " + textStatus + " - " + errorThrown);
-            })
-            .always(function() {
-                // clean-up & spinner deactivations, etc
-            });--}%
+            // close button on bootstrap alert boxes
+            $("[data-hide]").on("click", function(){
+                $(this).closest("." + $(this).attr("data-hide")).hide();
+                clearTaxonDetails();
+            });
 
             var speciesGroupsObj = ${(speciesGroupsMap).encodeAsJson()};
             $('#speciesGroups').change(function(e) {
                 var group = $(this).val();
                 var noSelectOpt = '-- Choose a sub group --'; //$('#speciesSubgroups option:first-child').text();
-                console.log('noSelectOpt', noSelectOpt);
+                console.log('noSelectOpt', noSelectOpt, group);
                 $('#speciesSubgroups').empty().append($("<option/>").attr("value","").text(noSelectOpt));
-                $.each(speciesGroupsObj[group], function(i, el) {
-                    $('#speciesSubgroups')
-                        .append($("<option/>")
-                        .attr("value",el.common)
-                        .text(el.common));
-                });
+
+                if (group) {
+                    $.each(speciesGroupsObj[group], function(i, el) {
+                        $('#speciesSubgroups')
+                            .append($("<option/>")
+                            .attr("value",el.common)
+                            .text(el.common));
+                    });
+                    addTagLabel(group);
+                    $('#browseSpecesImages').removeClass('disabled').removeAttr('disabled');
+                } else {
+                    $('#browseSpecesImages').addClass('disabled').attr('disabled','');
+                }
             });
+
+            $('#speciesSubgroups').change(function(e) {
+                addTagLabel($(this).val());
+            });
+
+            $('#species').on('click', 'a.remove', function(e) {
+                e.preventDefault();
+                $(this).parent().remove();
+            });
+
+            %{--$('#browseSpecesImages').click(function(e) {--}%
+                %{--e.preventDefault();--}%
+                %{--var group =  $('#speciesGroups').val();--}%
+                %{--var subgroup =  $('#speciesSubgroups').val();--}%
+
+                %{--$('#speciesBrowserModal').modal('show');--}%
+                %{--loadSpeciesGroupImages((subgroup || group) , 0);--}%
+            %{--});--}%
+
+            $('#speciesLookup').alaAutocomplete(); // will trigger a change event on #guid when item is selected
+
+            $('#guid').change(function(e) {
+                $('#speciesLookup').alaAutocomplete.reset();
+                var guid = $(this).val();
+
+                if (guid) {
+                    $.getJSON("${grailsApplication.config.bie.baseUrl}/ws/species/shortProfile/" + guid + ".json?callback=?")
+                    .done(function(data) {
+                        if (data.scientificName) {
+                            $('#taxonDetails').removeClass('hide').show();
+
+                            $('.sciName a').attr('href', "${grailsApplication.config.bie.baseUrl}/species/" + guid).html(data.scientificName);
+                            $('.speciesThumbnail').attr('src', '${grailsApplication.config.bie.baseUrl}/ws/species/image/thumbnail/' + guid);
+                            if (data.commonName) {
+                                $('.commonName').text(data.commonName);
+                            } else {
+                                //$('.commonName').hide();
+                            }
+                        }
+                    })
+                    .fail(function( jqXHR, textStatus, errorThrown ) {
+                        alert("Error: " + textStatus + " - " + errorThrown);
+                    })
+                    .always(function() {
+                        // clean-up & spinner deactivations, etc
+                    });
+                }
+
+            });
+
+            // load species info if id is in the URL
+            if (GSP_VARS.id) {
+                $('#guid').val(GSP_VARS.id).change();
+            }
+
         });
 
         function insertImageMetadata(imageRow) {
@@ -346,6 +414,22 @@
             }
 
             return ausDate;
+        }
+
+        function clearTaxonDetails() {
+            $('#taxonDetails .commonName').html('');
+            $('#taxonDetails img').attr('src','');
+            $('#taxonDetails a').attr('href','').html('');
+            $('#guid, #scientificName').val('');
+        }
+
+        function addTagLabel(group) {
+            if (group) {
+                var close = ' <a href="#" class="remove"><i class="remove icon-remove icon-white">&nbsp;</i></a>';
+                var input = '<input type="hidden" value="' + group + '" name="tags"/>';
+                var label = $('<span class="label label-info"/>').append(input + group + close).after('&nbsp;');
+                $('#species').append(label);
+            }
         }
 
         /**
@@ -413,54 +497,39 @@
 <h2>Submit a Sighting</h2>
 <form action="${g.createLink(controller:'submitSighting', action:'upload')}" method="POST">
 <div class="bs-docs-example" id="species" data-content="Species">
-    <g:set var="speciesSearchForm">
-        <div class="input-append">
-            <input class="input-xlarge typeahead" id="speciesLookup" type="text">
-            <button class="btn" type="button">Undo</button>
-        </div>
-    </g:set>
-    <div id="noGuid" class="${taxon?.guid ? 'hide' : ''}">
-        <div class="noTaxa">Type a scientific or common name into the box below and choose from the auto-complete list.</div>
-        ${raw(speciesSearchForm)}
-    </div>
-    <div class="row-fluid ${taxon?.guid ? '':'hide'}">
+    <div class="row-fluid">
         <div class="span6">
-            <g:if test="${taxon}">
-                <div class="alert alert-info">
-                    <button type="button" class="close" data-dismiss="alert">&times;</button>
-                    <g:if test="${taxon.thumbnail}">
-                        <img src="${taxon.thumbnail}" class="speciesThumbnail" alt="thumbnail image of ${taxon.commonName?:taxon.scientificName}"/>
-                    </g:if>&nbsp;&nbsp;
-                    <span class="sciName">
-                        <a href="${grailsApplication.config.bie.baseUrl}/species/${taxon.guid}" title="view species page" target="BIE">${taxon.scientificName}</a>
-                    </span>
-                    <span class="commonName">${taxon.commonName}</span>
-                    <input type="hidden" name="guid" id="guid" value="${taxon?.guid}"/>
-                    <input type="hidden" name="scientificName" id="scientificName" value="${taxon?.scientificName}"/>
-                </div>
-            </g:if>
-            <g:else>
-                <span class="noTaxa">Type a scientific or common name into the box below and choose from the auto-complete list.</span>
-                ${raw(speciesSearchForm)}
-            </g:else>
+            <div id="taxonDetails" class="alert alert-info hide">
+                <button type="button" class="close" data-hide="alert">&times;</button>
+                <img src="" class="speciesThumbnail" alt="thumbnail image of species"/>
+                <span class="sciName">
+                    <a href="" title="view species page" target="BIE">species name</a>
+                </span>
+                <span class="commonName">common name</span>
+                <input type="hidden" name="guid" id="guid" value="${taxon?.guid}"/>
+                <input type="hidden" name="scientificName" id="scientificName" value="${taxon?.scientificName}"/>
+            </div>
             <table class="countTable">
                 <tr>
                     <td><label for="individualCount">Number seen:</label></td>
                     %{--<td><input type="text" name="individualCount" class="input-small input-auto smartspinner" value="1" size="2" data-validation-engine="validate[custom[integer], min[1]]" id="individualCount"></td>--}%
-                    <td><g:select from="${1..99}" name="individualCount" class="input-small input-auto smartspinner" value="${sighting?.individualCount}" data-validation-engine="validate[custom[integer], min[1]]" id="individualCount"/></td>
+                    <td><g:select from="${1..99}" name="individualCount" class="slim input-auto smartspinner" value="${sighting?.individualCount}" data-validation-engine="validate[custom[integer], min[1]]" id="individualCount"/></td>
                     <td><label for="identificationVerificationStatus">Confidence in identification:</label></td>
-                    <td><g:select from="${['Confident','Uncertain']}" name="identificationVerificationStatus" id="identificationVerificationStatus" value="${sighting?.identificationVerificationStatus}"/></td>
+                    <td><g:select from="${['Confident','Uncertain']}" name="identificationVerificationStatus" class="slim" id="identificationVerificationStatus" value="${sighting?.identificationVerificationStatus}"/></td>
                 </tr>
             </table>
         </div>
-        <div class="${taxon?.guid ? '':'hide'} span6" id="searchAgain">
-            Not the right species? To change identification, type a scientific
-            or common name into the box below and choose from the auto-complete list.
-            ${raw(speciesSearchForm)}
-            <br>
-            Not sure about the identity of the species. Narrow down to a species group and sub-group instead:
-            <g:select name="tags" from="${speciesGroupsMap.keySet()}" id="speciesGroups" noSelection="['':'-- Choose a species group --']"/>
-            <g:select name="tags" from="${[]}" id="speciesSubgroups" noSelection="['':'-- Select a group first --']"/>
+        <div class="span6">
+            <div class="noTaxa">Type a scientific or common name into the box below and choose from the auto-complete list.</div>
+            <div class="matchedTaxa hide">Not the right species? To change identification, type a scientific
+            or common name into the box below and choose from the auto-complete list.</div>
+            <input class="input-xlarge typeahead" id="speciesLookup" type="text">
+            <div id="">
+                Not sure about the identity of the species? Narrow down to a species group and sub-group:
+                <g:select name="tag" from="${speciesGroupsMap.keySet()}" id="speciesGroups" class="narrow" noSelection="['':'-- Species group --']"/>
+                <g:select name="tag" from="${[]}" id="speciesSubgroups" class="narrow" noSelection="['':'-- Subgroup (select a group first) --']"/>
+                %{--<button id="browseSpecesImages" class="btn disabled" disabled>Browse images</button>--}%
+            </div>
         </div>
     </div>
 </div>
@@ -485,7 +554,7 @@
     <div id="files" class="files"></div>
     <div id="imageLicenseDiv" class="hide">
         <label for="imageLicense">Licence:</label>
-        <g:select from="${grailsApplication.config.sighting.licenses}" name="imageLicense" id="imageLicense" value="${sighting?.multimedia?.get(0)?.license}"/>
+        <g:select from="${grailsApplication.config.sighting.licenses}" name="imageLicense" class="slim" id="imageLicense" value="${sighting?.multimedia?.get(0)?.license}"/>
     </div>
 </div>
 
@@ -510,7 +579,7 @@
         <input type="text" name="coordinateUncertaintyInMeters" id="coordinateUncertaintyInMeters" class="input-auto" value="${sighting?.coordinateUncertaintyInMeters}"/>
         <br>
         <label for="georeferenceProtocol">Source of coordinates:</label>
-        <g:select from="${coordinateSources}" id="georeferenceProtocol" name="georeferenceProtocol" value="${sighting?.georeferenceProtocol}"/>
+        <g:select from="${coordinateSources}" id="georeferenceProtocol" class="slim" name="georeferenceProtocol" value="${sighting?.georeferenceProtocol}"/>
         <label for="locationRemark">Location description:</label>
         <textarea id="locationRemark" name="locationRemark" class="" rows="2" value="${sighting?.decimalLatitude}">${sighting?.locationRemark}</textarea>
     </div>
@@ -554,7 +623,22 @@
         </div>
         <div class="error hide"></div>
     </div>
-</div>
+</div><!-- /#uploadActionsTmpl-->
+
+<!-- Modal -->
+<div id="speciesBrowserModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="myModalLabel">Browse species images</h3>
+    </div>
+    <div class="modal-body">
+        <div id="speciesImages"></div>
+    </div>
+    <div class="modal-footer">
+        <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+        %{--<button class="btn btn-primary">Save changes</button>--}%
+    </div>
+</div><!-- /#speciesBrowserModal -->
 </form>
 </body>
 </html>

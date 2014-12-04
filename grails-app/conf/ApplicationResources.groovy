@@ -32,7 +32,7 @@ modules = {
     alaAutocomplete {
         dependsOn 'jqueryMigrate'
         resource url:'js/typeahead.bundle.js'
-        //resource url:'css/alaAutocomplete.css'
+        resource url:'css/alaAutocomplete.css'
         //resource url:'http://twitter.github.io/typeahead.js/css/examples.css'
         resource url:'js/alaAutocomplete.js'
     }
@@ -46,6 +46,11 @@ modules = {
         resource url:'js/jquery.fileupload/jquery.fileupload-process.js'
         resource url:'js/jquery.fileupload/jquery.fileupload-image.js'
         //resource url:'js/jquery.fileupload/jquery.fileupload-jquery-ui.js'
+    }
+
+    imageBrowser {
+        dependsOn 'jqueryMigrate'
+        resource url:'js/imageBrowser.js'
     }
 
     moment {

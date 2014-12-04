@@ -53,7 +53,7 @@ class SubmitSightingController {
             // chain action: "index", id: "${sighting.guid}", model: [sighting: sighting, taxon: getTaxon(sighting.guid), coordinateSources: grailsApplication.config.coordinates.sources, user:authService.userDetails()]
             chain action: "index", id: "${sighting.guid}", model: [sighting: sighting]
         } else if (debug) {
-            render sighting as JSON
+            render sighting.asJSON()
         } else {
             result = ecodataService.submitSighting(sighting)
             render(status: result.status, text: result as JSON, contentType: "application/json")

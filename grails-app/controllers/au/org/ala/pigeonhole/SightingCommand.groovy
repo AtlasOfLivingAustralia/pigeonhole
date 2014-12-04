@@ -82,7 +82,13 @@ class SightingCommand {
             def propName = it.name
             def propValue = this.getProperty(propName)
             log.debug "val: ${propValue} || ${propValue.getClass().name}"
-            wantedProps.put(propName, propValue?:'')
+            if (propValue instanceof List) {
+                log.debug "List found"
+                propValue = propValue.findAll {it} // remove empty and null values (and 0 and false)
+            }
+            if (propValue) {
+                wantedProps.put(propName, propValue?:'')
+            }
         }
         def builder = new JSONBuilder().build {
             wantedProps

@@ -15,39 +15,73 @@
 
 // Requires Bootstrap 2.3.2 and TypeAhead (http://twitter.github.io/typeahead.js)
 
-var bieJson = new Bloodhound({
-    datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
-    queryTokenizer: Bloodhound.tokenizers.whitespace,
-    //prefetch: '../data/films/post_1960.json',
-    remote: {
-        url: 'http://bie.ala.org.au/search/auto.jsonp?q=%QUERY',
-        filter: function (resp) {
-            var results = [];
-            $.each(resp.autoCompleteList, function(i, el) {
-                if (el.matchedNames.length > 0) {
-                    results.push({name: el.matchedNames[0] });
-                } else {
-                    results.push({name: el.name });
-                }
+(function($){
+    if (!$.alaAutocomplete) { // check the plugin namespace does not already exist
+        // call with $('#foo').alaAutocomplete({})
+        $.fn.alaAutocomplete = function (options) {
+            var $this = this;
+
+            // This is the easiest way to have default options.
+            var settings = $.extend({
+                // These are the defaults.
+                guidSelector: "#guid",
+                nameSelector: "#scientificName",
+                maxHits: 10
+            }, options );
+
+            var bieJson = new Bloodhound({
+                datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
+                queryTokenizer: Bloodhound.tokenizers.whitespace,
+                limit: settings.maxHits,
+                //prefetch: '../data/films/post_1960.json',
+                remote: {
+                    url: 'http://bie.ala.org.au/search/auto.jsonp?q=%QUERY',
+                    filter: function (resp) {
+                        var results = [];
+                        $.each(resp.autoCompleteList, function (i, el) {
+                            if (el.matchedNames.length > 0) {
+                                results.push({name: el.matchedNames[0], sciname: el.name, guid: el.guid });
+                            } else {
+                                results.push({name: el.name, sciname: el.name, guid: el.guid });
+                            }
+                        });
+                        //return resp.autoCompleteList;
+                        return results;
+                    },
+                    ajax: { dataType: 'jsonp' }}
             });
-            //return resp.autoCompleteList;
-            return results;
-        },
-        ajax: { dataType: 'jsonp' }}
-});
 
-bieJson.initialize();
+            bieJson.initialize();
 
-var ta = $('.typeahead').typeahead(null, {
-    name: 'species-lookup',
-    displayKey: 'name',
-    source: bieJson.ttAdapter()
-}).on('typeahead:autocompleted typeahead:selected', function (obj, datum) {
-    //console.log('typeahead:autocompleted', obj, datum);
-    $('#guid').val(datum.guid);
-}).on('typeahead:cursorchanged', function () {
-    //console.log('typeahead:cursorchanged');
-    $('#guid').val('');
-});
-$('.twitter-typeahead').addClass('form-control');
-$('.tt-dropdown-menu').width($('.typeahead').width());
+            var ta = $($this).typeahead(null, {
+                name: 'species-lookup',
+                displayKey: 'name',
+                source: bieJson.ttAdapter()
+            }).on('typeahead:autocompleted typeahead:selected', function (obj, datum) {
+                //console.log('typeahead:autocompleted', obj, datum);
+                $(settings.guidSelector).val(datum.guid).change();
+                $(settings.nameSelector).val(datum.sciname).change();
+            }).on('typeahead:cursorchanged', function () {
+                //console.log('typeahead:cursorchanged');
+                $(settings.guidSelector).val('');
+                $(settings.nameSelector).val('');
+            });
+
+            jQuery('.twitter-typeahead').addClass('form-control'); // fix for grouped buttons
+            $('.tt-dropdown-menu').width($('.typeahead').width()); // fix for grouped buttons
+
+            // add a reset method to clear the autocomplete input
+            $.fn.alaAutocomplete.reset = function() {
+                console.log('reset typeahead');
+                ta.typeahead('val', '');
+                //$($this).trigger('blur');
+                //$('.tt-input').val('');
+            };
+
+            return $this; // for chaining;
+        };
+
+
+
+    }
+})(jQuery);
