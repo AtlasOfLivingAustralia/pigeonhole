@@ -80,17 +80,17 @@ class AjaxUploadController {
         if (grailsApplication.config?.containsKey('media')) {
             File uploadDir = new File("${grailsApplication.config.media.uploadDir}")
             def filename = file.originalFilename
-
+            log.debug "image upload filename: ${filename}"
             if (!uploadDir.exists()) {
                 uploadDir.mkdirs() ? log.info("Created temp image dir: ${uploadDir.absolutePath}")
                                    : log.error("Failed to create temp image dir: ${uploadDir.absolutePath} - PLEASE FIX")
             }
 
-            //uploaded = new File("${grailsApplication.config.imageUploadDir}/image_${uuid}${ext}")
-            uploaded = new File("${grailsApplication.config.media.uploadDir}/${filename}")
+            uploaded = new File("${grailsApplication.config.media.uploadDir}/image_${uuid}${ext}")
+            //uploaded = new File("${grailsApplication.config.media.uploadDir}/${filename}")
         } else {
-            //uploaded = File.createTempFile('grails', "image_${uuid}${ext}")
-            uploaded = File.createTempFile('grails', "${filename}")
+            uploaded = File.createTempFile('grails', "image_${uuid}${ext}")
+            //uploaded = File.createTempFile('grails', "${filename}")
         }
 
         if (uploaded) {

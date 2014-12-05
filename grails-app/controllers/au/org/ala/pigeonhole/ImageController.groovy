@@ -15,15 +15,16 @@
 
 package au.org.ala.pigeonhole
 
-import org.apache.commons.io.FilenameUtils
-
 import javax.activation.MimetypesFileTypeMap
 
+/**
+ * Serve images saved in cache directory so they can be harvested by down-line systems
+ */
 class ImageController {
 
     def index(String file) {
         log.debug "file = ${file} || params.file = ${params.file}"
-        String fileName = "${grailsApplication.config.imageUploadDir}${file}"
+        String fileName = "${grailsApplication.config.media.uploadDir}${file}"
         File imageFile = new File(fileName)
 
         if (imageFile.exists()) {

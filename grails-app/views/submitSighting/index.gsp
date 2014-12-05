@@ -549,7 +549,7 @@
             </table>
         </div>
         <div class="span6">
-            <div id="taxonDetails" class="label label-info">
+            <div id="taxonDetails" class="hide label label-info">
                 <table>
                     <tr>
                         <td><img src="" class="speciesThumbnail" alt="thumbnail image of species" style="width:75px; height:75px;"/></td>

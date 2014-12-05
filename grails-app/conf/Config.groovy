@@ -148,6 +148,13 @@ environments {
         grails.serverURL = "http://${grails.hostname}:8090/${appName}"
         security.cas.appServerName = "http://${grails.hostname}:8090"
         security.cas.contextPath = "/${appName}"
+        submit.debug = true
+    }
+    test {
+        grails.hostname = "144.6.225.49"
+        grails.serverURL = "http://${grails.hostname}:8080/${appName}"
+        security.cas.appServerName = "http://${grails.hostname}:8080"
+        security.cas.contextPath = "/${appName}"
     }
     production {
         grails.logging.jul.usebridge = false
@@ -158,10 +165,10 @@ environments {
         security.cas.contextPath = ""
     }
 }
-
+theAppname = appName
 // log4j configuration
 if (!logging.dir) {
-    logging.dir = (System.getProperty('catalina.base') ? System.getProperty('catalina.base') + '/logs'  : '/var/log/tomcat6')
+    logging.dir = (System.getProperty('catalina.base') ? System.getProperty('catalina.base') + '/logs'  : '/var/log/tomcat7')
 }
 log4j = {
     appenders {
@@ -170,34 +177,34 @@ log4j = {
                 console name: "stdout",
                         layout: pattern(conversionPattern: "%d %-5p [%c{1}]  %m%n"),
                         threshold: org.apache.log4j.Level.DEBUG
-                rollingFile name: "${config.appName}Log",
+                rollingFile name: "${config.theAppname}Log",
                         maxFileSize: 104857600,
-                        file: config.logging.dir+"/${config.appName}.log",
+                        file: config.logging.dir+"/${config.theAppname}.log",
                         threshold: org.apache.log4j.Level.INFO,
                         layout: pattern(conversionPattern: "%d %-5p [%c{1}]  %m%n")
                 rollingFile name: "stacktrace",
                         maxFileSize: 104857600,
-                        file: config.logging.dir+"/${config.appName}-stacktrace.log"
+                        file: config.logging.dir+"/${config.theAppname}-stacktrace.log"
             }
             test {
-                rollingFile name: "${config.appName}Log",
+                rollingFile name: "${config.theAppname}Log",
                         maxFileSize: 104857600,
-                        file: config.logging.dir+"/${config.appName}.log",
+                        file: config.logging.dir+"/${config.theAppname}.log",
                         threshold: org.apache.log4j.Level.INFO,
                         layout: pattern(conversionPattern: "%d %-5p [%c{1}]  %m%n")
                 rollingFile name: "stacktrace",
                         maxFileSize: 104857600,
-                        file: config.logging.dir+"${config.appName}-stacktrace.log"
+                        file: config.logging.dir+"${config.theAppname}-stacktrace.log"
             }
             production {
-                rollingFile name: "${config.appName}Log",
+                rollingFile name: "${config.theAppname}Log",
                         maxFileSize: 104857600,
-                        file: config.logging.dir+"${config.appName}.log",
+                        file: config.logging.dir+"${config.theAppname}.log",
                         threshold: org.apache.log4j.Level.INFO,
                         layout: pattern(conversionPattern: "%d %-5p [%c{1}]  %m%n")
                 rollingFile name: "stacktrace",
                         maxFileSize: 104857600,
-                        file: config.logging.dir+"/${config.appName}-stacktrace.log"
+                        file: config.logging.dir+"/${config.theAppname}-stacktrace.log"
             }
         }
     }
@@ -225,10 +232,10 @@ log4j = {
             'grails.app.filters.au.org.ala'
     ]
 
-    debug 'grails.app.controllers.au.org.ala',
-            'ala',
-            'au.org.ala.web',
-            'au.org.ala.cas.client'
+//    debug 'grails.app.controllers.au.org.ala',
+//            //'ala',
+//            'au.org.ala.web'//,
+//            //'au.org.ala.cas.client'
 
     error  'org.codehaus.groovy.grails.web.servlet',        // controllers
             'org.codehaus.groovy.grails.web.pages',          // GSP
