@@ -72,8 +72,20 @@
 
     .label {
         font-size: 12px;
-        padding: 4px 6px;
+        font-weight: normal;
+        padding: 9px 10px 7px;
         margin-right: 5px;
+    }
+
+    a.remove {
+        display: inline-block;
+        vertical-align: top;
+        margin-left: 5px;
+        margin-top: -2px;
+    }
+
+    #tagsBlock {
+        margin: 10px 0;
     }
 
     /*#species input[type='text'] {*/
@@ -84,15 +96,27 @@
     /*margin-bottom: 4px;*/
     /*}*/
 
-    span.sciName {
+    #taxonDetails table {
         display: inline-block;
-        font-size: 15px;
-        font-weight: bold;
-        font-style: italic;
+    }
+    #taxonDetails table td {
+        padding: 0px 5px 0px 0;
     }
 
-    span.commonName {
-        display: inline-block;
+    .sciName {
+        display: block;
+        font-size: 14px;
+        font-weight: bold;
+        font-style: italic;
+        margin-bottom: 10px;
+    }
+
+    .sciName a {
+        color: white;
+    }
+
+    .commonName {
+        display: block;
         font-size: 13px;
     }
 
@@ -423,12 +447,17 @@
             $('#guid, #scientificName').val('');
         }
 
+        /**
+        * Adds a visual tag (label/badge) to the page when either group/subgroup select changes
+        *
+        * @param group
+        */
         function addTagLabel(group) {
             if (group) {
-                var close = ' <a href="#" class="remove"><i class="remove icon-remove icon-white">&nbsp;</i></a>';
+                var close = '<a href="#" class="remove" title="remove this item"><i class="remove icon-remove icon-white">&nbsp;</i></a>';
                 var input = '<input type="hidden" value="' + group + '" name="tags"/>';
                 var label = $('<span class="label label-info"/>').append(input + group + close).after('&nbsp;');
-                $('#species').append(label);
+                $('#tagsBlock').append(label);
             }
         }
 
@@ -496,18 +525,18 @@
 <body class="nav-species">
 <h2>Submit a Sighting</h2>
 <form action="${g.createLink(controller:'submitSighting', action:'upload')}" method="POST">
-<div class="bs-docs-example" id="species" data-content="Species">
+<div class="boxed-heading" id="species" data-content="Species">
     <div class="row-fluid">
         <div class="span6">
-            <div id="taxonDetails" class="alert alert-info hide">
-                <button type="button" class="close" data-hide="alert">&times;</button>
-                <img src="" class="speciesThumbnail" alt="thumbnail image of species"/>
-                <span class="sciName">
-                    <a href="" title="view species page" target="BIE">species name</a>
-                </span>
-                <span class="commonName">common name</span>
-                <input type="hidden" name="guid" id="guid" value="${taxon?.guid}"/>
-                <input type="hidden" name="scientificName" id="scientificName" value="${taxon?.scientificName}"/>
+            <div class="noTaxa">Type a scientific or common name into the box below and choose from the auto-complete list.</div>
+            <div class="matchedTaxa hide">Not the right species? To change identification, type a scientific
+            or common name into the box below and choose from the auto-complete list.</div>
+            <input class="input-xlarge typeahead" id="speciesLookup" type="text">
+            <div id="">
+                Not sure about the identity of the species? Narrow down to a species group and sub-group:
+                <g:select name="tag" from="${speciesGroupsMap.keySet()}" id="speciesGroups" class="narrow" noSelection="['':'-- Species group --']"/>
+                <g:select name="tag" from="${[]}" id="speciesSubgroups" class="narrow" noSelection="['':'-- Subgroup (select a group first) --']"/>
+                %{--<button id="browseSpecesImages" class="btn disabled" disabled>Browse images</button>--}%
             </div>
             <table class="countTable">
                 <tr>
@@ -520,21 +549,38 @@
             </table>
         </div>
         <div class="span6">
-            <div class="noTaxa">Type a scientific or common name into the box below and choose from the auto-complete list.</div>
-            <div class="matchedTaxa hide">Not the right species? To change identification, type a scientific
-            or common name into the box below and choose from the auto-complete list.</div>
-            <input class="input-xlarge typeahead" id="speciesLookup" type="text">
-            <div id="">
-                Not sure about the identity of the species? Narrow down to a species group and sub-group:
-                <g:select name="tag" from="${speciesGroupsMap.keySet()}" id="speciesGroups" class="narrow" noSelection="['':'-- Species group --']"/>
-                <g:select name="tag" from="${[]}" id="speciesSubgroups" class="narrow" noSelection="['':'-- Subgroup (select a group first) --']"/>
-                %{--<button id="browseSpecesImages" class="btn disabled" disabled>Browse images</button>--}%
+            <div id="taxonDetails" class="label label-info">
+                <table>
+                    <tr>
+                        <td><img src="" class="speciesThumbnail" alt="thumbnail image of species" style="width:75px; height:75px;"/></td>
+                        <td>
+                            <div class="sciName">
+                                <a href="" title="view species page" target="BIE">species name</a>
+                            </div>
+                            <div class="commonName">common name</div>
+                        </td>
+                    </tr>
+                </table>
+                <input type="hidden" name="guid" id="guid" value="${taxon?.guid}"/>
+                <input type="hidden" name="scientificName" id="scientificName" value="${taxon?.scientificName}"/>
+                <a href="#" class="remove" title="remove this item"><i class="remove icon-remove icon-white">&nbsp;</i></a>
             </div>
+            <div id="tagsBlock"></div>
+            %{--<div id="taxonDetails" class="alert alert-info hide">--}%
+                %{--<button type="button" class="close" data-hide="alert">&times;</button>--}%
+                %{--<img src="" class="speciesThumbnail" alt="thumbnail image of species"/>--}%
+                %{--<span class="sciName">--}%
+                    %{--<a href="" title="view species page" target="BIE">species name</a>--}%
+                %{--</span>--}%
+                %{--<span class="commonName">common name</span>--}%
+                %{--<input type="hidden" name="guid" id="guid" value="${taxon?.guid}"/>--}%
+                %{--<input type="hidden" name="scientificName" id="scientificName" value="${taxon?.scientificName}"/>--}%
+            %{--</div>--}%
         </div>
     </div>
 </div>
 
-<div class="bs-docs-example" id="media" data-content="Media">
+<div class="boxed-heading" id="media" data-content="Media">
     <!-- The fileinput-button span is used to style the file input field as button -->
     <span class="btn btn-success fileinput-button tooltips" title="Select one or more photos to upload (you can also simply drag and drop files onto the page).">
         <i class="icon icon-white icon-plus"></i>
@@ -558,7 +604,7 @@
     </div>
 </div>
 
-<div class="bs-docs-example" id="dateTime" data-content="Date &amp; Time">
+<div class="boxed-heading" id="dateTime" data-content="Date &amp; Time">
     <label for="eventDateNoTime">Date (dd-mm-yyyy):</label>
     <input type="text" name="eventDateNoTime" id="eventDateNoTime" class="input-auto" value="${sighting?.eventDateNoTime}"/>
     <label for="eventTime">Time (24 hour time in hh:mm):</label>
@@ -569,7 +615,7 @@
     <input type="hidden" name="timeZoneOffset" id="timeZoneOffset" value="${sighting?.timeZoneOffset}"/>
 </div>
 
-<div class="bs-docs-example" id="location" data-content="Location">
+<div class="boxed-heading" id="location" data-content="Location">
     <div class="">
         <label for="decimalLatitude">Latitiude (decimal):</label>
         <input type="text" name="decimalLatitude" id="decimalLatitude" class="input-auto" value="${sighting?.decimalLatitude}"/>
@@ -585,7 +631,7 @@
     </div>
 </div>
 
-<div class="bs-docs-example" id="details" data-content="Notes">
+<div class="boxed-heading" id="details" data-content="Notes">
     <section class="sightings-block ui-corner-all">
         %{--<label for="occurrenceRemarks">Notes</label>--}%
         <textarea name="occurrenceRemarks" rows="4" cols="90" id="occurrenceRemarks">${sighting?.occurrenceRemarks}</textarea>

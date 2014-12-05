@@ -579,7 +579,7 @@
 	</head>
 	<body class="nav-species">
         <h2>Help with species identification</h2>
-        <div class="bs-docs-example" id="location" data-content="Location">
+        <div class="boxed-heading" id="location" data-content="Location">
             <div class="row">
                 <div class="span5">
                     <p>Specify a location for the sighting:</p>
@@ -602,7 +602,7 @@
             </div>
         </div>
 
-        <div class="bs-docs-example" id="species_group" data-content="Species group">
+        <div class="boxed-heading" id="species_group" data-content="Species group">
             <p>Narrow down the identification by first choosing a species group.</p>
             <div id="speciesGroup"><span>[Specify a location first]</span></div>
             <r:img uri="/images/spinner.gif" class="spinner1 hide"/>
@@ -611,7 +611,7 @@
             <div class="clearfix"></div>
         </div>
 
-        <div class="bs-docs-example" id="browse_species_images" data-content="Browse species images">
+        <div class="boxed-heading" id="browse_species_images" data-content="Browse species images">
             <p>
                 Narrow down the identification by browsing species images &mdash;
                 <g:checkBox name="toggleNoImages" id="toggleNoImages" class="" value="${true}"/> hide species without images
