@@ -17,6 +17,8 @@ package au.org.ala.pigeonhole
 import grails.web.JSONBuilder
 import grails.util.Holders
 
+import java.text.ParseException
+
 /**
  * Command class for the sighting (based on DarwinCore terms)
  *
@@ -46,12 +48,17 @@ class SightingCommand {
     String occurrenceRemarks
     String submissionMethod = "website"
 
-    //Date dateCreated
-    //Date lastUpdated
-
     static constraints = {
-        //scientificName blank: false
-        eventDateNoTime blank: false
+
+        eventDateNoTime(blank: false, validator: {
+            try {
+                Date.parse('dd-MM-yyyy', it)
+                return true
+            } catch (ParseException e) {
+                return false
+            }
+        })
+        eventTime(nullable: true,  matches: "\\d{2}:\\d{2}(?::\\d{2})")
         //eventTime blank: false
     }
 
@@ -60,10 +67,59 @@ class SightingCommand {
         if (eventDateTime) {
             dt = eventDateTime
         } else if (eventDateNoTime && eventTime) {
-            def isoDate = eventDateNoTime.split('-').reverse().join('-')
-            dt = "${isoDate}T${eventTime}${timeZoneOffset?:'Z'}"
+            def isoDate = getIsoDate(eventDateNoTime)
+            def time = getValidTime(eventTime)
+
+            if (isoDate && time) {
+                dt = "${isoDate}T${eventTime}${timeZoneOffset?:'Z'}"
+            }
         }
+
         dt
+    }
+    /**
+     * Parse and check input date (Australian format DD-MM-YYYY) to
+     * iso format (YYYY-MM-DD). If invalid, will return null
+     *
+     * @param input
+     * @return
+     */
+    private String getIsoDate(String input) throws IllegalArgumentException {
+        String output
+        def dateBits = input.split('-')
+
+        if (dateBits.length == 3) {
+            output = dateBits.reverse().join('-') // Aus date to iso date format
+        } else {
+            throw new IllegalArgumentException("The date entered, " + input + " is invalid.")
+        }
+
+        output
+    }
+
+    /**
+     * Parse and check input time (String).
+     * If invalid, will return null
+     *
+     * @param input
+     * @return
+     */
+    private String getValidTime(String input) throws IllegalArgumentException  {
+        String output
+        def timeBits = input.split(':')
+
+        if (timeBits.length == 2) {
+            // assume time without seconds
+            timeBits.push("00")
+        }
+
+        if (timeBits.length == 3) {
+            output = timeBits.join(':')
+        } else {
+            throw new IllegalArgumentException("The time entered, " + input + " is invalid.")
+        }
+
+        output
     }
 
     /**

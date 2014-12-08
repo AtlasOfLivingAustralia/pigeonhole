@@ -56,6 +56,9 @@ $(document).ready(function() {
         updateLocation(this.getLatLng());
     });
 
+    radius = $('#coordinateUncertaintyInMeters').val();
+    circle = L.circle(null, radius,  {color: '#df4a21'});
+
     L.Icon.Default.imagePath = GSP_VARS.leafletImagesDir; //"${g.createLink(uri:'/js/leaflet-0.7.3/images')}";
 
     map.on('locationfound', onLocationFound);
@@ -91,6 +94,10 @@ $(document).ready(function() {
         if (lat && lng) {
             updateMapWithLocation(lat, lng);
         }
+    });
+
+    $('#coordinateUncertaintyInMeters').change(function() {
+        updateLocation(marker.getLatLng());
     });
 
     $('#bookmarkLocation').click(function(e) {
@@ -145,6 +152,7 @@ function updateLocation(latlng) {
         $('#decimalLatitude').val(latlng.lat);
         $('#decimalLongitude').val(latlng.lng);
         marker.setLatLng(latlng).bindPopup('your location', { maxWidth:250 }).addTo(map);
+        circle.setLatLng(latlng).setRadius($('#coordinateUncertaintyInMeters').val()).addTo(map);
         $('#georeferenceProtocol').val('Google maps');
         $('#bookmarkLocation').removeClass('disabled').removeAttr('disabled'); // activate button
     }

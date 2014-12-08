@@ -53,6 +53,11 @@
         margin-bottom: 2px;
     }
 
+    .validationErrors input {
+        border: 1px solid red;
+        color: red;
+    }
+
     label {
         display: inline-block;
     }
@@ -554,6 +559,16 @@
 </head>
 <body class="nav-species">
 <h2>Submit a Sighting</h2>
+<g:hasErrors bean="${sighting}">
+    <div class="container-fluid">
+        <div class="alert alert-error">
+            ${flash.message}
+            <g:eachError var="err" bean="${sighting}">
+                <li><g:message code="sighting.field.${err.field}"/></li>
+            </g:eachError>
+        </div>
+    </div>
+</g:hasErrors>
 <form action="${g.createLink(controller:'submitSighting', action:'upload')}" method="POST">
 <!-- Species -->
 <div class="boxed-heading" id="species" data-content="Species">
@@ -600,16 +615,6 @@
                 <a href="#" class="remove" title="remove this item"><i class="remove icon-remove icon-white">&nbsp;</i></a>
             </div>
             <div id="tagsBlock"></div>
-            %{--<div id="taxonDetails" class="alert alert-info hide">--}%
-                %{--<button type="button" class="close" data-hide="alert">&times;</button>--}%
-                %{--<img src="" class="speciesThumbnail" alt="thumbnail image of species"/>--}%
-                %{--<span class="sciName">--}%
-                    %{--<a href="" title="view species page" target="BIE">species name</a>--}%
-                %{--</span>--}%
-                %{--<span class="commonName">common name</span>--}%
-                %{--<input type="hidden" name="guid" id="guid" value="${taxon?.guid}"/>--}%
-                %{--<input type="hidden" name="scientificName" id="scientificName" value="${taxon?.scientificName}"/>--}%
-            %{--</div>--}%
         </div>
     </div>
 </div>
@@ -639,26 +644,6 @@
     </div>
 </div>
 
-<!-- Date -->
-<div class="boxed-heading" id="dateTime" data-content="Date &amp; Time">
-    <table class="formInputTable">
-        <tr>
-            <td><label for="eventDateNoTime">Date (dd-mm-yyyy):</label>
-                <input type="text" name="eventDateNoTime" id="eventDateNoTime" class="input-auto" value="${sighting?.eventDateNoTime}"/></td>
-            <td><label for="eventTime">Time (24 hour time in hh:mm):</label>
-                <input type="text" name="eventTime" id="eventTime" class="input-auto" value="${sighting?.eventTime}"/></td>
-        </tr>
-    </table>
-    %{--<label for="eventDateNoTime">Date (dd-mm-yyyy):</label>--}%
-    %{--<input type="text" name="eventDateNoTime" id="eventDateNoTime" class="input-auto" value="${sighting?.eventDateNoTime}"/>--}%
-    %{--<label for="eventTime">Time (24 hour time in hh:mm):</label>--}%
-    %{--<input type="text" name="eventTime" id="eventTime" class="input-auto" value="${sighting?.eventTime}"/>--}%
-    %{--<label for="timeZoneOffset">Timezone offset</label>--}%
-    %{--<input type="text" name="timeZoneOffset" id="timeZoneOffset" value="${sighting?.timeZoneOffset}"/>--}%
-    <input type="hidden" name="eventDateTime" id="eventDateTime" value="${sighting?.eventDate?:sighting?.eventDateTime}"/>
-    <input type="hidden" name="timeZoneOffset" id="timeZoneOffset" value="${sighting?.timeZoneOffset}"/>
-</div>
-
 <!-- Location -->
 <div class="boxed-heading" id="location" data-content="Location">
     <div class="row-fluid">
@@ -674,7 +659,7 @@
                 </tr>
                 <tr>
                     <td><label for="coordinateUncertaintyInMeters">Accuracy (metres):</label></td>
-                    <td><input type="text" name="coordinateUncertaintyInMeters" id="coordinateUncertaintyInMeters" class="input-auto" value="${sighting?.coordinateUncertaintyInMeters}"/></td>
+                    <td><input type="text" name="coordinateUncertaintyInMeters" id="coordinateUncertaintyInMeters" class="input-auto" value="${sighting?.coordinateUncertaintyInMeters?:50}"/></td>
                 </tr>
                 <tr>
                     <td><label for="georeferenceProtocol">Source of coordinates:</label></td>
@@ -694,7 +679,7 @@
         <div class="span6" id="mapWidget">
             <div class="form-horizontal">
                 <button class="btn" id="useMyLocation"><i class="icon-map-marker" style="margin-left:-5px;"></i> Use my location</button>
-                <span class="badge badge-info">OR</span>
+                <span class="badge badge-infoX">OR</span>
                 <div class="input-append">
                     <input class="input-large" id="geocodeinput" type="text" placeholder="Enter an address, location or lat/lng">
                     <button id="geocodebutton" class="btn">Lookup</button>
@@ -707,11 +692,29 @@
 </div>
 
 <!-- Notes -->
-<div class="boxed-heading" id="details" data-content="Notes">
-    <section class="sightings-block ui-corner-all">
-        %{--<label for="occurrenceRemarks">Notes</label>--}%
-        <textarea name="occurrenceRemarks" rows="4" cols="90" id="occurrenceRemarks">${sighting?.occurrenceRemarks}</textarea>
-    </section>
+<div class="boxed-heading" id="details" data-content="Details">
+    <div class="row-fluid">
+        <div class="span6">
+            <table class="formInputTable">
+                <tr class="${hasErrors(bean:sighting,field:'eventDateNoTime','validationErrors')}">
+                    <td><label for="eventDateNoTime">Date:</label></td>
+                    <td><input type="text" name="eventDateNoTime" id="eventDateNoTime" class="input-auto" placeholder="DD-MM-YYYY" value="${sighting?.eventDateNoTime}"/><i class="icon-asterisk" style="vertical-align: super;"></i></td>
+                </tr>
+                <tr>
+                    <td><label for="eventTime">Time:</label></td>
+                    <td><input type="text" name="eventTime" id="eventTime" class="input-auto" placeholder="HH:MM[:SS]" value="${sighting?.eventTime}"/></td>
+                </tr>
+            </table>
+            <input type="hidden" name="eventDateTime" id="eventDateTime" value="${sighting?.eventDate?:sighting?.eventDateTime}"/>
+            <input type="hidden" name="timeZoneOffset" id="timeZoneOffset" value="${sighting?.timeZoneOffset}"/>
+        </div>
+        <div class="span6">
+            <section class="sightings-block ui-corner-all" style="vertical-align: top;">
+                <label for="occurrenceRemarks">Notes</label>
+                <textarea name="occurrenceRemarks" rows="4" cols="90" id="occurrenceRemarks">${sighting?.occurrenceRemarks}</textarea>
+            </section>
+        </div>
+    </div>
 </div>
 
 <div style="text-align: center;">

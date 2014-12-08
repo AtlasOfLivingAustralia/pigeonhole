@@ -22,10 +22,8 @@ class SubmitSightingController {
     def httpWebService, authService, ecodataService, bieService
 
     def index(String id) {
-        //def sighting
         [
                 taxon: getTaxon(id),
-                //sighting: sighting?:new SightingCommand(),
                 coordinateSources: grailsApplication.config.coordinates.sources,
                 speciesGroupsMap: bieService.getSpeciesGroupsMap(),
                 user:authService.userDetails()
@@ -50,8 +48,9 @@ class SubmitSightingController {
                 log.warn "upload validation error: ${it}"
             }
             log.debug "chaining - sighting = ${sighting}"
+            flash.message = "There was a problem with one or more fields, please fix these errors (in red)"
             // chain action: "index", id: "${sighting.guid}", model: [sighting: sighting, taxon: getTaxon(sighting.guid), coordinateSources: grailsApplication.config.coordinates.sources, user:authService.userDetails()]
-            chain action: "index", id: "${sighting.guid}", model: [sighting: sighting]
+            chain action: "index", id: "${sighting.guid?:''}", model: [sighting: sighting]
         } else if (debug) {
             render sighting.asJSON()
         } else {
