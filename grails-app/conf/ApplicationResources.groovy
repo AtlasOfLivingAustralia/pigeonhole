@@ -69,6 +69,11 @@ modules = {
         resource url: [dir: 'js/leaflet-0.7.3', file: 'leaflet.js']
     }
 
+    sightingMap {
+        dependsOn 'leaflet'
+        resource url: '/js/initLeafletMap.js'
+    }
+
     leafletLocate {
         dependsOn 'leaflet'
         resource url: 'js/leaflet-plugins/leaflet-locatecontrol-gh-pages/src/L.Control.Locate.js'

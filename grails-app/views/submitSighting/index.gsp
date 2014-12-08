@@ -26,7 +26,7 @@
 <head>
     <meta name="layout" content="main"/>
     <title>Submit a sighting</title>
-    <r:require modules="fileuploads, exif, moment, alaAutocomplete"/>
+    <r:require modules="fileuploads, exif, moment, alaAutocomplete, sightingMap"/>
     <style type="text/css">
 
     .fileinput-button {
@@ -64,13 +64,23 @@
         line-height: 18px;
         margin-bottom: 4px;
     }
+    select.slim2 {
+        height: 26px;
+        width: auto;
+        font-size: 13px;
+        line-height: 18px;
+    }
 
     select.narrow {
         width: auto;
         margin-bottom: 0px;
     }
 
-    .label {
+    input#speciesLookup {
+        /*margin-top: 5px;*/
+    }
+
+    #species .label {
         font-size: 12px;
         font-weight: normal;
         padding: 9px 10px 7px;
@@ -96,6 +106,19 @@
     /*margin-bottom: 4px;*/
     /*}*/
 
+    #mapWidget {
+        margin-top: -30px;
+    }
+
+    #mapWidget > .input-append, #mapWidget > .btn, #mapWidget > .label {
+        display: inline-block;
+        margin-bottom: 0;
+        margin-top: 5px;
+    }
+    #mapWidget #map {
+        margin: 10px 0;
+    }
+
     #taxonDetails table {
         display: inline-block;
     }
@@ -120,8 +143,12 @@
         font-size: 13px;
     }
 
-    table.countTable td {
-        padding: 10px 5px 10px 0;
+    table.formInputTable {
+        margin: 5px 0 5px 0;
+    }
+
+    table.formInputTable td {
+        padding: 1px 8px 1px 0;
     }
 
     #occurrenceRemarks {
@@ -144,7 +171,8 @@
             biocacheBaseUrl: "${(grailsApplication.config.biocache.baseUrl)}",
             bieBaseUrl: "${(grailsApplication.config.bie.baseUrl)}",
             uploadUrl: "${createLink(uri:"/ajaxUpload/upload")}",
-            id: "${params.id}"
+            id: "${params.id}",
+            leafletImagesDir: "${g.createLink(uri:'/js/leaflet-0.7.3/images')}"
         };
 
 
@@ -373,7 +401,7 @@
                 %{--loadSpeciesGroupImages((subgroup || group) , 0);--}%
             %{--});--}%
 
-            $('#speciesLookup').alaAutocomplete(); // will trigger a change event on #guid when item is selected
+            $('#speciesLookup').alaAutocomplete({maxHits: 5}); // will trigger a change event on #guid when item is selected
 
             $('#guid').change(function(e) {
                 $('#speciesLookup').alaAutocomplete.reset();
@@ -392,6 +420,8 @@
                             } else {
                                 //$('.commonName').hide();
                             }
+                            $('#noTaxa').hide();
+                            $('#matchedTaxa').show();
                         }
                     })
                     .fail(function( jqXHR, textStatus, errorThrown ) {
@@ -423,8 +453,8 @@
             var lat = imageRow.find('.imgCoords').data('lat');
             var lng = imageRow.find('.imgCoords').data('lng');
             if (lat && lng) {
-                $('#decimalLatitude').val(lat);
-                $('#decimalLongitude').val(lng);
+                $('#decimalLatitude').val(lat).change();
+                $('#decimalLongitude').val(lng).change();
                 $('#georeferenceProtocol').val('camera/phone');
             }
         }
@@ -525,26 +555,30 @@
 <body class="nav-species">
 <h2>Submit a Sighting</h2>
 <form action="${g.createLink(controller:'submitSighting', action:'upload')}" method="POST">
+<!-- Species -->
 <div class="boxed-heading" id="species" data-content="Species">
     <div class="row-fluid">
         <div class="span6">
-            <div class="noTaxa">Type a scientific or common name into the box below and choose from the auto-complete list.</div>
-            <div class="matchedTaxa hide">Not the right species? To change identification, type a scientific
+            <div id="noTaxa">Type a scientific or common name into the box below and choose from the auto-complete list.</div>
+            <div id="matchedTaxa" style="display: none;">Not the right species? To change identification, type a scientific
             or common name into the box below and choose from the auto-complete list.</div>
             <input class="input-xlarge typeahead" id="speciesLookup" type="text">
-            <div id="">
-                Not sure about the identity of the species? Narrow down to a species group and sub-group:
-                <g:select name="tag" from="${speciesGroupsMap.keySet()}" id="speciesGroups" class="narrow" noSelection="['':'-- Species group --']"/>
-                <g:select name="tag" from="${[]}" id="speciesSubgroups" class="narrow" noSelection="['':'-- Subgroup (select a group first) --']"/>
-                %{--<button id="browseSpecesImages" class="btn disabled" disabled>Browse images</button>--}%
-            </div>
-            <table class="countTable">
+            <table class="formInputTable">
                 <tr>
-                    <td><label for="individualCount">Number seen:</label></td>
+                    <td colspan="2">Not sure about the identity of the species? Narrow down to a species group and sub-group:</td>
+                </tr>
+                <tr>
+                    <td colspan="2">Tags:
+                        <g:select name="tag" from="${speciesGroupsMap.keySet()}" id="speciesGroups" class="slim" noSelection="['':'-- Species group --']"/>
+                        <g:select name="tag" from="${[]}" id="speciesSubgroups" class="slim" noSelection="['':'-- Subgroup (select a group first) --']"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td><label for="individualCount">Number seen:</label>
                     %{--<td><input type="text" name="individualCount" class="input-small input-auto smartspinner" value="1" size="2" data-validation-engine="validate[custom[integer], min[1]]" id="individualCount"></td>--}%
-                    <td><g:select from="${1..99}" name="individualCount" class="slim input-auto smartspinner" value="${sighting?.individualCount}" data-validation-engine="validate[custom[integer], min[1]]" id="individualCount"/></td>
-                    <td><label for="identificationVerificationStatus">Confidence in identification:</label></td>
-                    <td><g:select from="${['Confident','Uncertain']}" name="identificationVerificationStatus" class="slim" id="identificationVerificationStatus" value="${sighting?.identificationVerificationStatus}"/></td>
+                    <g:select from="${1..99}" name="individualCount" class="slim input-auto smartspinner" value="${sighting?.individualCount}" data-validation-engine="validate[custom[integer], min[1]]" id="individualCount"/></td>
+                    <td><label for="identificationVerificationStatus">Confidence in identification:</label>
+                    <g:select from="${['Confident','Uncertain']}" name="identificationVerificationStatus" class="slim" id="identificationVerificationStatus" value="${sighting?.identificationVerificationStatus}"/></td>
                 </tr>
             </table>
         </div>
@@ -580,6 +614,7 @@
     </div>
 </div>
 
+<!-- Media -->
 <div class="boxed-heading" id="media" data-content="Media">
     <!-- The fileinput-button span is used to style the file input field as button -->
     <span class="btn btn-success fileinput-button tooltips" title="Select one or more photos to upload (you can also simply drag and drop files onto the page).">
@@ -604,33 +639,74 @@
     </div>
 </div>
 
+<!-- Date -->
 <div class="boxed-heading" id="dateTime" data-content="Date &amp; Time">
-    <label for="eventDateNoTime">Date (dd-mm-yyyy):</label>
-    <input type="text" name="eventDateNoTime" id="eventDateNoTime" class="input-auto" value="${sighting?.eventDateNoTime}"/>
-    <label for="eventTime">Time (24 hour time in hh:mm):</label>
-    <input type="text" name="eventTime" id="eventTime" class="input-auto" value="${sighting?.eventTime}"/>
+    <table class="formInputTable">
+        <tr>
+            <td><label for="eventDateNoTime">Date (dd-mm-yyyy):</label>
+                <input type="text" name="eventDateNoTime" id="eventDateNoTime" class="input-auto" value="${sighting?.eventDateNoTime}"/></td>
+            <td><label for="eventTime">Time (24 hour time in hh:mm):</label>
+                <input type="text" name="eventTime" id="eventTime" class="input-auto" value="${sighting?.eventTime}"/></td>
+        </tr>
+    </table>
+    %{--<label for="eventDateNoTime">Date (dd-mm-yyyy):</label>--}%
+    %{--<input type="text" name="eventDateNoTime" id="eventDateNoTime" class="input-auto" value="${sighting?.eventDateNoTime}"/>--}%
+    %{--<label for="eventTime">Time (24 hour time in hh:mm):</label>--}%
+    %{--<input type="text" name="eventTime" id="eventTime" class="input-auto" value="${sighting?.eventTime}"/>--}%
     %{--<label for="timeZoneOffset">Timezone offset</label>--}%
     %{--<input type="text" name="timeZoneOffset" id="timeZoneOffset" value="${sighting?.timeZoneOffset}"/>--}%
     <input type="hidden" name="eventDateTime" id="eventDateTime" value="${sighting?.eventDate?:sighting?.eventDateTime}"/>
     <input type="hidden" name="timeZoneOffset" id="timeZoneOffset" value="${sighting?.timeZoneOffset}"/>
 </div>
 
+<!-- Location -->
 <div class="boxed-heading" id="location" data-content="Location">
-    <div class="">
-        <label for="decimalLatitude">Latitiude (decimal):</label>
-        <input type="text" name="decimalLatitude" id="decimalLatitude" class="input-auto" value="${sighting?.decimalLatitude}"/>
-        <label for="decimalLongitude">Longitude (decimal):</label>
-        <input type="text" name="decimalLongitude" id="decimalLongitude" class="input-auto" value="${sighting?.decimalLongitude}"/>
-        <label for="coordinateUncertaintyInMeters">Accuracy (metres):</label>
-        <input type="text" name="coordinateUncertaintyInMeters" id="coordinateUncertaintyInMeters" class="input-auto" value="${sighting?.coordinateUncertaintyInMeters}"/>
-        <br>
-        <label for="georeferenceProtocol">Source of coordinates:</label>
-        <g:select from="${coordinateSources}" id="georeferenceProtocol" class="slim" name="georeferenceProtocol" value="${sighting?.georeferenceProtocol}"/>
-        <label for="locationRemark">Location description:</label>
-        <textarea id="locationRemark" name="locationRemark" class="" rows="2" value="${sighting?.decimalLatitude}">${sighting?.locationRemark}</textarea>
+    <div class="row-fluid">
+        <div class="span6">
+            <table class="formInputTable">
+                <tr>
+                    <td><label for="decimalLatitude">Latitude (decimal):</label></td>
+                    <td><input type="text" name="decimalLatitude" id="decimalLatitude" class="input-auto" value="${sighting?.decimalLatitude}"/></td>
+                </tr>
+                <tr>
+                    <td><label for="decimalLongitude">Longitude (decimal):</label></td>
+                    <td><input type="text" name="decimalLongitude" id="decimalLongitude" class="input-auto" value="${sighting?.decimalLongitude}"/></td>
+                </tr>
+                <tr>
+                    <td><label for="coordinateUncertaintyInMeters">Accuracy (metres):</label></td>
+                    <td><input type="text" name="coordinateUncertaintyInMeters" id="coordinateUncertaintyInMeters" class="input-auto" value="${sighting?.coordinateUncertaintyInMeters}"/></td>
+                </tr>
+                <tr>
+                    <td><label for="georeferenceProtocol">Source of coordinates:</label></td>
+                    <td><g:select from="${coordinateSources}" id="georeferenceProtocol" class="slim" name="georeferenceProtocol" value="${sighting?.georeferenceProtocol}"/></td>
+                </tr>
+                <tr>
+                    <td><label for="locationRemark">Location description:</label></td>
+                    <td><textarea id="locationRemark" name="locationRemark" class="" rows="4" value="${sighting?.decimalLatitude}">${sighting?.locationRemark}</textarea></td>
+                </tr>
+                <tr>
+                    <td><label for="locationRemark">Bookmarked locations:</label></td>
+                    <td><div class="form-horizontal"><g:select name="bookmarkedLocations" id="bookmarkedLocations" class="slim2" from="${bookmarkedLocations}" noSelection="['':'-- saved locations --']"/>
+                        <button id="bookmarkLocation" class="btn btn-small disabled" disabled="disabled">Add Bookmark</button></div></td>
+                </tr>
+            </table>
+        </div>
+        <div class="span6" id="mapWidget">
+            <div class="form-horizontal">
+                <button class="btn" id="useMyLocation"><i class="icon-map-marker" style="margin-left:-5px;"></i> Use my location</button>
+                <span class="badge badge-info">OR</span>
+                <div class="input-append">
+                    <input class="input-large" id="geocodeinput" type="text" placeholder="Enter an address, location or lat/lng">
+                    <button id="geocodebutton" class="btn">Lookup</button>
+                </div>
+            </div>
+            <div id="map" style="width: 100%; height: 280px"></div>
+            <div class="" id="mapTips">Tip: drag the marker to fine-tune your location</div>
+        </div>
     </div>
 </div>
 
+<!-- Notes -->
 <div class="boxed-heading" id="details" data-content="Notes">
     <section class="sightings-block ui-corner-all">
         %{--<label for="occurrenceRemarks">Notes</label>--}%
