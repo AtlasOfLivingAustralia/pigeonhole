@@ -16,8 +16,11 @@ package au.org.ala.pigeonhole
 
 import grails.web.JSONBuilder
 import grails.util.Holders
+import org.apache.commons.lang.time.DateUtils;
 
+import java.text.DateFormat
 import java.text.ParseException
+import java.text.SimpleDateFormat
 
 /**
  * Command class for the sighting (based on DarwinCore terms)
@@ -58,21 +61,29 @@ class SightingCommand {
                 return false
             }
         })
-        eventTime(nullable: true,  matches: "\\d{2}:\\d{2}(?::\\d{2})")
+        eventTime(nullable: true,  matches: "^([0-1]?[0-9]|[2][0-3]):([0-5][0-9])(:[0-5][0-9])?\$") // \\d{2}:\\d{2}(:\\d{2})?")
         //eventTime blank: false
     }
 
     public String getEventDate() {
         String dt
+
         if (eventDateTime) {
             dt = eventDateTime
         } else if (eventDateNoTime && eventTime) {
-            def isoDate = getIsoDate(eventDateNoTime)
+            def date = getIsoDate(eventDateNoTime)
             def time = getValidTime(eventTime)
 
-            if (isoDate && time) {
-                dt = "${isoDate}T${eventTime}${timeZoneOffset?:'Z'}"
+            if (date && time) {
+                log.debug "iso check: ${date}T${time}${timeZoneOffset?:'Z'}"
+                Date isoDate = DateUtils.parseDate("${date}T${time}${timeZoneOffset?:'Z'}", [ "yyyy-MM-dd'T'HH:mm:ssZZ" ] as String[])
+                DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZZ");
+                dt = df.format(isoDate)
             }
+        } else if (eventDateNoTime) {
+            Date isoDate = Date.parse('dd-MM-yyyy', eventDateNoTime)
+            DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+            dt = df.format(isoDate) + "${timeZoneOffset ?: 'Z'}";
         }
 
         dt
@@ -106,14 +117,14 @@ class SightingCommand {
      */
     private String getValidTime(String input) throws IllegalArgumentException  {
         String output
-        def timeBits = input.split(':')
+        List timeBits = input.split(':')
 
-        if (timeBits.length == 2) {
-            // assume time without seconds
-            timeBits.push("00")
+        if (timeBits.size() == 2) {
+            // assume time without seconds - add zero seconds
+            timeBits.add("00")
         }
 
-        if (timeBits.length == 3) {
+        if (timeBits.size() == 3) {
             output = timeBits.join(':')
         } else {
             throw new IllegalArgumentException("The time entered, " + input + " is invalid.")

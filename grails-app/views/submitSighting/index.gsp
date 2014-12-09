@@ -700,7 +700,7 @@
                     <td><label for="eventDateNoTime">Date:</label></td>
                     <td><input type="text" name="eventDateNoTime" id="eventDateNoTime" class="input-auto" placeholder="DD-MM-YYYY" value="${sighting?.eventDateNoTime}"/><i class="icon-asterisk" style="vertical-align: super;"></i></td>
                 </tr>
-                <tr>
+                <tr class="${hasErrors(bean:sighting,field:'eventTime','validationErrors')}">
                     <td><label for="eventTime">Time:</label></td>
                     <td><input type="text" name="eventTime" id="eventTime" class="input-auto" placeholder="HH:MM[:SS]" value="${sighting?.eventTime}"/></td>
                 </tr>
