@@ -55,7 +55,7 @@
 
     .validationErrors input {
         border: 1px solid red;
-        color: red;
+        /*color: red;*/
     }
 
     label {
@@ -101,6 +101,7 @@
 
     #tagsBlock {
         margin: 10px 0;
+        text-align: bottom;
     }
 
     /*#species input[type='text'] {*/
@@ -110,6 +111,12 @@
     /*line-height: 18px;*/
     /*margin-bottom: 4px;*/
     /*}*/
+
+    #species .row-fluid .span6 {
+        display: table-cell;
+        vertical-align: bottom;
+        float: none;
+    }
 
     #mapWidget {
         margin-top: -30px;
@@ -123,12 +130,15 @@
     #mapWidget #map {
         margin: 10px 0;
     }
-
+    #taxonDetails {
+        margin-bottom: 5px;
+        display: inline-block;
+    }
     #taxonDetails table {
         display: inline-block;
     }
     #taxonDetails table td {
-        padding: 0px 5px 0px 0;
+        padding: 5px 9px 0px 4px;
     }
 
     .sciName {
@@ -140,7 +150,7 @@
     }
 
     .sciName a {
-        color: white;
+        /*color: white;*/
     }
 
     .commonName {
@@ -394,7 +404,7 @@
 
             $('#species').on('click', 'a.remove', function(e) {
                 e.preventDefault();
-                $(this).parent().remove();
+                $(this).parent().hide();
             });
 
             %{--$('#browseSpecesImages').click(function(e) {--}%
@@ -406,7 +416,7 @@
                 %{--loadSpeciesGroupImages((subgroup || group) , 0);--}%
             %{--});--}%
 
-            $('#speciesLookup').alaAutocomplete({maxHits: 5}); // will trigger a change event on #guid when item is selected
+            $('#speciesLookup').alaAutocomplete({maxHits: 15}); // will trigger a change event on #guid when item is selected
 
             $('#guid').change(function(e) {
                 $('#speciesLookup').alaAutocomplete.reset();
@@ -491,7 +501,7 @@
             if (group) {
                 var close = '<a href="#" class="remove" title="remove this item"><i class="remove icon-remove icon-white">&nbsp;</i></a>';
                 var input = '<input type="hidden" value="' + group + '" name="tags"/>';
-                var label = $('<span class="label label-info"/>').append(input + group + close).after('&nbsp;');
+                var label = $('<span class="label label-infoX"/>').append(input + group + close).after('&nbsp;');
                 $('#tagsBlock').append(label);
             }
         }
@@ -564,7 +574,7 @@
         <div class="alert alert-error">
             ${flash.message}
             <g:eachError var="err" bean="${sighting}">
-                <li><g:message code="sighting.field.${err.field}"/></li>
+                <li><g:message code="sighting.field.${err.field}"/> - <g:fieldError bean="${sighting}"  field="${err.field}"/></li>
             </g:eachError>
         </div>
     </div>
@@ -598,7 +608,7 @@
             </table>
         </div>
         <div class="span6">
-            <div id="taxonDetails" class="hide label label-info">
+            <div id="taxonDetails" class="well well-small" style="display: none;">
                 <table>
                     <tr>
                         <td><img src="" class="speciesThumbnail" alt="thumbnail image of species" style="width:75px; height:75px;"/></td>
@@ -612,7 +622,7 @@
                 </table>
                 <input type="hidden" name="guid" id="guid" value="${taxon?.guid}"/>
                 <input type="hidden" name="scientificName" id="scientificName" value="${taxon?.scientificName}"/>
-                <a href="#" class="remove" title="remove this item"><i class="remove icon-remove icon-white">&nbsp;</i></a>
+                <a href="#" class="remove" title="remove this item"><i class="remove icon-remove">&nbsp;</i></a>
             </div>
             <div id="tagsBlock"></div>
         </div>
@@ -705,7 +715,7 @@
                     <td><input type="text" name="eventTime" id="eventTime" class="input-auto" placeholder="HH:MM[:SS]" value="${sighting?.eventTime}"/></td>
                 </tr>
             </table>
-            <input type="hidden" name="eventDateTime" id="eventDateTime" value="${sighting?.eventDate?:sighting?.eventDateTime}"/>
+            <input type="hidden" name="eventDateTime" id="eventDateTime" value=""/>
             <input type="hidden" name="timeZoneOffset" id="timeZoneOffset" value="${sighting?.timeZoneOffset}"/>
         </div>
         <div class="span6">

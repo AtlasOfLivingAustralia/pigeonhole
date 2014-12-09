@@ -16,6 +16,7 @@ package au.org.ala.pigeonhole
 
 import grails.web.JSONBuilder
 import grails.util.Holders
+import groovy.util.logging.Log4j
 import org.apache.commons.lang.time.DateUtils;
 
 import java.text.DateFormat
@@ -27,6 +28,7 @@ import java.text.SimpleDateFormat
  *
  * @author "Nick dos Remedios <Nick.dosRemedios@csiro.au>"
  */
+@Log4j
 @grails.validation.Validateable
 class SightingCommand {
     String userId
@@ -41,8 +43,8 @@ class SightingCommand {
     String eventDateTime // ISO date + time
     String eventTime // time only
     String timeZoneOffset = (((TimeZone.getDefault().getRawOffset() / 1000) / 60) / 60)
-    Double decimalLatitude
-    Double decimalLongitude
+    BigDecimal decimalLatitude
+    BigDecimal decimalLongitude
     String geodeticDatum = "WGS84"
     Integer coordinateUncertaintyInMeters
     String georeferenceProtocol
@@ -52,17 +54,24 @@ class SightingCommand {
     String submissionMethod = "website"
 
     static constraints = {
-
-        eventDateNoTime(blank: false, validator: {
+        scientificName(nullable: true, validator: { val, obj->
+            // one of scientificName or tags must be specified
+            if ( (!val && !obj.tags)) {
+                return 'sighting.sciname.tags'
+            }
+        })
+        eventDateNoTime(blank: false, validator: { val, obj ->
             try {
-                Date.parse('dd-MM-yyyy', it)
+                Date.parse('dd-MM-yyyy', val)
                 return true
-            } catch (ParseException e) {
-                return false
+            } catch (Exception e) {
+                return 'sighting.date.format'
             }
         })
         eventTime(nullable: true,  matches: "^([0-1]?[0-9]|[2][0-3]):([0-5][0-9])(:[0-5][0-9])?\$") // \\d{2}:\\d{2}(:\\d{2})?")
-        //eventTime blank: false
+        coordinateUncertaintyInMeters(nullable: true, range: 1..10000)
+        decimalLatitude(nullable: true, scale: 8, range: -90..90)
+        decimalLongitude(nullable: true,  scale: 8, range: -180..180)
     }
 
     public String getEventDate() {

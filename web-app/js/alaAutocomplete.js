@@ -35,7 +35,7 @@
                 limit: settings.maxHits,
                 //prefetch: '../data/films/post_1960.json',
                 remote: {
-                    url: 'http://bie.ala.org.au/search/auto.jsonp?q=%QUERY',
+                    url: 'http://bie.ala.org.au/search/auto.jsonp?limit=' + settings.maxHits + '&q=%QUERY',
                     filter: function (resp) {
                         var results = [];
                         $.each(resp.autoCompleteList, function (i, el) {
