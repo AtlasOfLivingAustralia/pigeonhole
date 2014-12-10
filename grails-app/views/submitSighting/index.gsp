@@ -32,6 +32,8 @@
     .fileinput-button {
         position: relative;
         overflow: hidden;
+        vertical-align: top;
+        margin: 4px 5px 5px 0;
     }
     .fileinput-button input {
         position: absolute;
@@ -119,7 +121,7 @@
     }
 
     #mapWidget {
-        margin-top: -30px;
+        margin-top: -20px;
     }
 
     #mapWidget > .input-append, #mapWidget > .btn, #mapWidget > .label {
@@ -568,6 +570,7 @@
     </r:script>
 </head>
 <body class="nav-species">
+<g:render template="/topMenu" />
 <h2>Submit a Sighting</h2>
 <g:hasErrors bean="${sighting}">
     <div class="container-fluid">
@@ -638,8 +641,8 @@
         <!-- The file input field used as target for the file upload widget -->
         <input id="fileupload" type="file" name="files[]" multiple>
     </span>
-    <span style="display: inline-block; margin-left: 10px;">Optional. If you have any photos, then add them here and we'll attempt
-    to pull out date and location information from the photo metadata.</span>
+    <span style="display: inline-block;">Optional. Add one or more images. Image metadata will be used to automatically set date and location fields (where available)
+        <br>Hint: you can drag and drop files onto this window</span>
     <br>
     <br>
     <!-- The global progress bar -->
@@ -657,7 +660,7 @@
 <!-- Location -->
 <div class="boxed-heading" id="location" data-content="Location">
     <div class="row-fluid">
-        <div class="span6">
+        <div class="span6" style="margin-bottom: 30px;">
             <table class="formInputTable">
                 <tr>
                     <td><label for="decimalLatitude">Latitude (decimal):</label></td>
@@ -689,14 +692,14 @@
         <div class="span6" id="mapWidget">
             <div class="form-horizontal">
                 <button class="btn" id="useMyLocation"><i class="icon-map-marker" style="margin-left:-5px;"></i> Use my location</button>
-                <span class="badge badge-infoX">OR</span>
+                &nbsp;<span class="badge badge-infoX"> OR </span>&nbsp;
                 <div class="input-append">
                     <input class="input-large" id="geocodeinput" type="text" placeholder="Enter an address, location or lat/lng">
                     <button id="geocodebutton" class="btn">Lookup</button>
                 </div>
             </div>
             <div id="map" style="width: 100%; height: 280px"></div>
-            <div class="" id="mapTips">Tip: drag the marker to fine-tune your location</div>
+            <div class="" id="mapTips">Hint: drag the marker to fine-tune your location</div>
         </div>
     </div>
 </div>
@@ -704,7 +707,7 @@
 <!-- Notes -->
 <div class="boxed-heading" id="details" data-content="Details">
     <div class="row-fluid">
-        <div class="span6">
+        <div class="span4">
             <table class="formInputTable">
                 <tr class="${hasErrors(bean:sighting,field:'eventDateNoTime','validationErrors')}">
                     <td><label for="eventDateNoTime">Date:</label></td>
@@ -718,9 +721,9 @@
             <input type="hidden" name="eventDateTime" id="eventDateTime" value=""/>
             <input type="hidden" name="timeZoneOffset" id="timeZoneOffset" value="${sighting?.timeZoneOffset}"/>
         </div>
-        <div class="span6">
+        <div class="span8">
             <section class="sightings-block ui-corner-all" style="vertical-align: top;">
-                <label for="occurrenceRemarks">Notes</label>
+                <label for="occurrenceRemarks" style="vertical-align: top;margin-top: 8px;margin-right: 5px;">Notes: </label>
                 <textarea name="occurrenceRemarks" rows="4" cols="90" id="occurrenceRemarks">${sighting?.occurrenceRemarks}</textarea>
             </section>
         </div>

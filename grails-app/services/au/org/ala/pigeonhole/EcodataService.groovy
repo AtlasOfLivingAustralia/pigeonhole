@@ -18,10 +18,11 @@ package au.org.ala.pigeonhole
 import grails.converters.JSON
 import groovyx.net.http.ContentType
 import groovyx.net.http.HTTPBuilder
+import org.codehaus.groovy.grails.web.json.JSONArray
 import org.codehaus.groovy.grails.web.json.JSONObject
 
 class EcodataService {
-    def grailsApplication
+    def grailsApplication, httpWebService
 
     SightingCommand getSighting(String id) {
         SightingCommand sc = new SightingCommand()
@@ -38,6 +39,22 @@ class EcodataService {
         // if error return Map below
         // else return Map key/values as JSON
         [status:result.status?:200, text: result.error?:result]
+    }
+
+    def JSONArray getSightingsForUserId(String userId) {
+        JSONObject res = httpWebService.getJson("${grailsApplication.config.ecodata.baseUrl}/record/user/${userId}")
+        JSONArray sightings
+
+        if (res?.records) {
+            sightings = res.records
+        }
+
+        sightings
+    }
+
+    def JSONArray getRecentSightings() {
+        //log.debug "records = " + httpWebService.getJson("${grailsApplication.config.ecodata.baseUrl}/record")
+        httpWebService.getJson("${grailsApplication.config.ecodata.baseUrl}/record")
     }
 
     def doJsonPost(String url, String postBody) {

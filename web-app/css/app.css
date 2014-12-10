@@ -49,3 +49,8 @@
     margin-top: -20px;
     padding-top: 15px;
 }
+
+/* Links menu  */
+#sightingLinks {
+    float: right;
+}
