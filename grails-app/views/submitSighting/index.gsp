@@ -26,7 +26,7 @@
 <head>
     <meta name="layout" content="main"/>
     <title>Submit a sighting</title>
-    <r:require modules="fileuploads, exif, moment, alaAutocomplete, sightingMap"/>
+    <r:require modules="fileuploads, exif, moment, alaAutocomplete, sightingMap, datepicker"/>
     <style type="text/css">
 
     .fileinput-button {
@@ -45,6 +45,10 @@
         font-size: 200px;
         direction: ltr;
         cursor: pointer;
+    }
+
+    .form-horizontal {
+        line-height: 3;
     }
 
     .input-auto {
@@ -103,7 +107,12 @@
 
     #tagsBlock {
         margin: 10px 0;
-        text-align: bottom;
+    }
+    
+    .helphint {
+        display: inline-block;
+        margin-bottom: 5px;
+        color: grey;
     }
 
     /*#species input[type='text'] {*/
@@ -121,7 +130,7 @@
     }
 
     #mapWidget {
-        margin-top: -20px;
+        /*margin-top: -20px;*/
     }
 
     #mapWidget > .input-append, #mapWidget > .btn, #mapWidget > .label {
@@ -253,8 +262,8 @@
                         lng = lng.split(',');
                         var latRef = data.exif.getText('GPSLatitudeRef') || "N";
                         var lngRef = data.exif.getText('GPSLongitudeRef') || "W";
-                        lat = ((Number(lat[0]) + Number(lat[1])/60 + Number(lat[2])/3600) * (latRef == "N" ? 1 : -1)).toFixed(8);
-                        lng = ((Number(lng[0]) + Number(lng[1])/60 + Number(lng[2])/3600) * (lngRef == "W" ? -1 : 1)).toFixed(8);
+                        lat = ((Number(lat[0]) + Number(lat[1])/60 + Number(lat[2])/3600) * (latRef == "N" ? 1 : -1)).toFixed(10);
+                        lng = ((Number(lng[0]) + Number(lng[1])/60 + Number(lng[2])/3600) * (lngRef == "W" ? -1 : 1)).toFixed(10);
                         hasMetaData = true;
                         node.find('.imgCoords').empty().append(lat + ", " + lng).data('lat',lat).data('lng',lng);
                     }
@@ -354,16 +363,19 @@
             var prefix = (hours >= 0) ? '+' : '';
             $('#timeZoneOffset').val(prefix + ('0' + hours).slice(-2) + ':' + ('0' + minutes).slice(-2));
 
+            // use image data button
             $('#files').on('click', 'button.imageData', function() {
                 //console.log('imageData', e, this);
                 insertImageMetadata($(this).parents('.imageRow'));
                 return false;
             });
 
+            // remove image button
             $('#files').on('click', 'button.imageRemove', function() {
                 $(this).parents('.imageRow').remove();
             });
 
+            // image license drop-down
             $('#imageLicense').change(function() {
                 $('input.license').val($(this).val());
             });
@@ -379,6 +391,7 @@
                 clearTaxonDetails();
             });
 
+            // species group drop-down
             var speciesGroupsObj = ${(speciesGroupsMap).encodeAsJson()};
             $('#speciesGroups').change(function(e) {
                 var group = $(this).val();
@@ -400,26 +413,21 @@
                 }
             });
 
+            // species subgroup drop-down
             $('#speciesSubgroups').change(function(e) {
                 addTagLabel($(this).val());
             });
 
+            // remove species/secientificName box
             $('#species').on('click', 'a.remove', function(e) {
                 e.preventDefault();
                 $(this).parent().hide();
             });
 
-            %{--$('#browseSpecesImages').click(function(e) {--}%
-                %{--e.preventDefault();--}%
-                %{--var group =  $('#speciesGroups').val();--}%
-                %{--var subgroup =  $('#speciesSubgroups').val();--}%
-
-                %{--$('#speciesBrowserModal').modal('show');--}%
-                %{--loadSpeciesGroupImages((subgroup || group) , 0);--}%
-            %{--});--}%
-
+            // autocomplete on species lookup
             $('#speciesLookup').alaAutocomplete({maxHits: 15}); // will trigger a change event on #guid when item is selected
 
+            // detect change on #guid input (autocomplete selection) and load spceies details
             $('#guid').change(function(e) {
                 $('#speciesLookup').alaAutocomplete.reset();
                 var guid = $(this).val();
@@ -455,6 +463,14 @@
             if (GSP_VARS.id) {
                 $('#guid').val(GSP_VARS.id).change();
             }
+
+            if ("${sighting?.decimalLongitude}") {
+                // trigger map to refresh
+                $('#decimalLongitude').change();
+            }
+
+            // date picker
+            $('#eventDateNoTime').datepicker({format: 'dd-mm-yyyy'});
 
         });
 
@@ -660,7 +676,19 @@
 <!-- Location -->
 <div class="boxed-heading" id="location" data-content="Location">
     <div class="row-fluid">
-        <div class="span6" style="margin-bottom: 30px;">
+        <div class="span6" id="mapWidget">
+            <div class="form-horizontal">
+                <button class="btn" id="useMyLocation"><i class="icon-map-marker" style="margin-left:-5px;"></i> Use my location</button>
+                &nbsp;<span class="badge badge-infoX"> OR </span>&nbsp;
+                <div class="input-append">
+                    <input class="input-large" id="geocodeinput" type="text" placeholder="Enter an address, location or lat/lng">
+                    <button id="geocodebutton" class="btn">Lookup</button>
+                </div>
+            </div>
+            <div id="map" style="width: 100%; height: 280px"></div>
+            <div class="" id="mapTips">Hint: drag the marker to fine-tune your location</div>
+        </div>
+        <div class="span6" style="margin-bottom: 0px;">
             <table class="formInputTable">
                 <tr>
                     <td><label for="decimalLatitude">Latitude (decimal):</label></td>
@@ -679,8 +707,12 @@
                     <td><g:select from="${coordinateSources}" id="georeferenceProtocol" class="slim" name="georeferenceProtocol" value="${sighting?.georeferenceProtocol}"/></td>
                 </tr>
                 <tr>
+                    <td><label for="locality">Matched locality:</label></td>
+                    <td><textarea id="locality" name="locality" class="disabled" disabled="disabled" rows="3" value="${sighting?.locality}">${sighting?.locality}</textarea></td>
+                </tr>
+                <tr>
                     <td><label for="locationRemark">Location description:</label></td>
-                    <td><textarea id="locationRemark" name="locationRemark" class="" rows="4" value="${sighting?.decimalLatitude}">${sighting?.locationRemark}</textarea></td>
+                    <td><textarea id="locationRemark" name="locationRemark" class="" rows="3" value="${sighting?.decimalLatitude}">${sighting?.locationRemark}</textarea></td>
                 </tr>
                 <tr>
                     <td><label for="locationRemark">Bookmarked locations:</label></td>
@@ -688,18 +720,6 @@
                         <button id="bookmarkLocation" class="btn btn-small disabled" disabled="disabled">Add Bookmark</button></div></td>
                 </tr>
             </table>
-        </div>
-        <div class="span6" id="mapWidget">
-            <div class="form-horizontal">
-                <button class="btn" id="useMyLocation"><i class="icon-map-marker" style="margin-left:-5px;"></i> Use my location</button>
-                &nbsp;<span class="badge badge-infoX"> OR </span>&nbsp;
-                <div class="input-append">
-                    <input class="input-large" id="geocodeinput" type="text" placeholder="Enter an address, location or lat/lng">
-                    <button id="geocodebutton" class="btn">Lookup</button>
-                </div>
-            </div>
-            <div id="map" style="width: 100%; height: 280px"></div>
-            <div class="" id="mapTips">Hint: drag the marker to fine-tune your location</div>
         </div>
     </div>
 </div>
@@ -711,11 +731,13 @@
             <table class="formInputTable">
                 <tr class="${hasErrors(bean:sighting,field:'eventDateNoTime','validationErrors')}">
                     <td><label for="eventDateNoTime">Date:</label></td>
-                    <td><input type="text" name="eventDateNoTime" id="eventDateNoTime" class="input-auto" placeholder="DD-MM-YYYY" value="${sighting?.eventDateNoTime}"/><i class="icon-asterisk" style="vertical-align: super;"></i></td>
+                    <td><input type="text" name="eventDateNoTime" id="eventDateNoTime" class="input-auto" placeholder="DD-MM-YYYY" value="${sighting?.eventDateNoTime}"/></td>
+                    <td><span class="helphint">* required</span></td>
                 </tr>
                 <tr class="${hasErrors(bean:sighting,field:'eventTime','validationErrors')}">
                     <td><label for="eventTime">Time:</label></td>
                     <td><input type="text" name="eventTime" id="eventTime" class="input-auto" placeholder="HH:MM[:SS]" value="${sighting?.eventTime}"/></td>
+                    <td><span class="helphint">24 hour format</span></td>
                 </tr>
             </table>
             <input type="hidden" name="eventDateTime" id="eventDateTime" value=""/>

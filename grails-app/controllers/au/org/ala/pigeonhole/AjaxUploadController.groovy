@@ -70,6 +70,7 @@ class AjaxUploadController {
         String uuid = UUID.randomUUID().toString() // unique temp image file name
         //String mimeType = request.contentType
         CommonsMultipartFile file = request.getFile("files[]")
+        log.debug "request is a ${request.getClass().name}"
         log.debug "file type = ${file.contentType} || file class = ${file.getClass().name}"
 
         //String ext = MIMETypeUtil.fileExtensionForMIMEType(mimeType)

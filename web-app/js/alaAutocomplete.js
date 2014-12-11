@@ -12,7 +12,8 @@
  * implied. See the License for the specific language governing
  * rights and limitations under the License.
  */
-
+// jQuery style plugin for ALA autocomplete on BIE names
+//
 // Requires Bootstrap 2.3.2 and TypeAhead (http://twitter.github.io/typeahead.js)
 
 (function($){
@@ -26,8 +27,11 @@
                 // These are the defaults.
                 guidSelector: "#guid",
                 nameSelector: "#scientificName",
-                maxHits: 10
+                maxHits: 10,
+                url: 'http://bie.ala.org.au/ws/search/auto.jsonp'
             }, options );
+
+            console.log('alaAutocomplete',settings, $this.attr('type'));
 
             var bieJson = new Bloodhound({
                 datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
@@ -35,7 +39,7 @@
                 limit: settings.maxHits,
                 //prefetch: '../data/films/post_1960.json',
                 remote: {
-                    url: 'http://bie.ala.org.au/search/auto.jsonp?limit=' + settings.maxHits + '&q=%QUERY',
+                    url: settings.url + '?limit=' + settings.maxHits + '&q=%QUERY',
                     filter: function (resp) {
                         var results = [];
                         $.each(resp.autoCompleteList, function (i, el) {
@@ -72,7 +76,7 @@
 
             // add a reset method to clear the autocomplete input
             $.fn.alaAutocomplete.reset = function() {
-                console.log('reset typeahead');
+                //console.log('reset typeahead');
                 ta.typeahead('val', '');
                 //$($this).trigger('blur');
                 //$('.tt-input').val('');
@@ -80,8 +84,5 @@
 
             return $this; // for chaining;
         };
-
-
-
     }
 })(jQuery);

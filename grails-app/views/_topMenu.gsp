@@ -29,7 +29,7 @@
         <a href="${g.createLink(uri:'/sightings')}" class="showMySightings">Recent sightings</a>
     </g:else>
     &nbsp;&nbsp;
-    <a href="${g.createLink(uri:'/')}" class="btn btn-small">Submit a sighting</a>
+    <a href="${g.createLink(uri:'/')}" class="btn btn-small" style="font-size: 13px;">Submit a sighting</a>
 
     %{--<a href="http://biocache.ala.org.au/occurrences/search?q=*:*&fq=data_resource_uid:dr364">Occurrence explorer</a>--}%
 </span>

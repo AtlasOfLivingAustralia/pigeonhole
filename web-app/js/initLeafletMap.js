@@ -27,7 +27,18 @@ $(document).ready(function() {
         attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
             '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
             'Imagery © <a href="http://mapbox.com">Mapbox</a>',
-        id: 'examples.map-i875mjb7'
+        id: 'nickdos.kf2g7gpb'  // TODO: we should get an ALA account for mapbox.com
+    });
+
+    // in case mapbox images start failing... fall back to plain OSM
+    var osm1 = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+        attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a>'
+    });
+    // OR
+    var OpenMapSurfer_Roads = L.tileLayer('http://openmapsurfer.uni-hd.de/tiles/roads/x={x}&y={y}&z={z}', {
+        minZoom: 0,
+        maxZoom: 20,
+        attribution: 'Imagery from <a href="http://giscience.uni-hd.de/">GIScience Research Group @ University of Heidelberg</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     });
 
     var Esri_WorldImagery = L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
@@ -37,7 +48,8 @@ $(document).ready(function() {
 
     map = L.map('map', {
         center: [-28, 134],
-        zoom: 3//,
+        zoom: 3,
+        scrollWheelZoom: false
         //layers: [osm, MapQuestOpen_Aerial]
         });
 
@@ -61,13 +73,14 @@ $(document).ready(function() {
 
     L.Icon.Default.imagePath = GSP_VARS.leafletImagesDir; //"${g.createLink(uri:'/js/leaflet-0.7.3/images')}";
 
-    map.on('locationfound', onLocationFound);
-
-    function onLocationFound(e) {
+    map.on('locationfound', function(e) {
         // create a marker at the users "latlng" and add it to the map
         marker.setLatLng(e.latlng).addTo(map);
         updateLocation(e.latlng);
-    }
+    }).on('locationerror', function(e){
+        //console.log(e);
+        alert("Location could not be determined. Try entering an address instead.");
+    }); // triggered from map.locate()
 
     $('#geocodeinput').on('keydown', function(e) {
         if (e.keyCode == 13 ) {
@@ -92,7 +105,8 @@ $(document).ready(function() {
         var lng = $('#decimalLongitude').val();
 
         if (lat && lng) {
-            updateMapWithLocation(lat, lng);
+            //updateMapWithLocation(lat, lng);
+            updateLocation(new L.LatLng(lat, lng));
         }
     });
 
@@ -126,8 +140,8 @@ function geocodeAddress() {
             var res = data.results[0];
             var latlng = new L.LatLng(res.geometry.lat, res.geometry.lng);
             var bounds = new L.LatLngBounds([res.bounds.southwest.lat, res.bounds.southwest.lng], [res.bounds.northeast.lat, res.bounds.northeast.lng]);
-            map.fitBounds(bounds);
             updateLocation(latlng);
+            map.fitBounds(bounds);
             marker.setPopupContent(res.formatted + " - " + latlng.toString());
             //marker = L.marker(latlng, {draggable: true}).addTo(map);
             //marker.setLatLng(latlng).addTo(map);
@@ -142,6 +156,7 @@ function geocodeAddress() {
 }
 
 function geolocate() {
+    // this triggers a 'locationfound' event, which is registered further up in code.
     map.locate({setView: true, maxZoom: 16});
 }
 
@@ -153,13 +168,29 @@ function updateLocation(latlng) {
         $('#decimalLongitude').val(latlng.lng);
         marker.setLatLng(latlng).bindPopup('your location', { maxWidth:250 }).addTo(map);
         circle.setLatLng(latlng).setRadius($('#coordinateUncertaintyInMeters').val()).addTo(map);
+        map.setView(latlng, 16);
         $('#georeferenceProtocol').val('Google maps');
         $('#bookmarkLocation').removeClass('disabled').removeAttr('disabled'); // activate button
+        reverseGeocode(latlng.lat, latlng.lng);
     }
 }
 
-function updateMapWithLocation(lat, lng) {
-    var latlng = new L.LatLng(lat, lng);
-    marker.setLatLng(latlng).addTo(map);
-    map.setView(latlng, 14);
+function reverseGeocode(lat, lng) {
+    // http://nominatim.openstreetmap.org/reverse?format=json&lat=-30.1484782&lon=153.1961178&zoom=18&addressdetails=1&accept-language=en&json_callback=foo123
+    //console.log("lat lng", lat, lng);
+    if (lat && lng) {
+        $('#locality').val('');
+        var url = "http://nominatim.openstreetmap.org/reverse?format=json&lat="+lat+
+            "&lon="+lng+"&zoom=18&addressdetails=1&accept-language=en&json_callback=?";
+        $.getJSON(url).done(function(data){
+            if (data && !data.error) {
+                $('#locality').val(data.display_name);
+            }
+        }).fail(function( jqXHR, textStatus, errorThrown ) {
+            alert("Error: " + textStatus + " - " + errorThrown);
+        }).always(function() {  //
+            // $('.spinner').hide();
+        });
+    }
+
 }

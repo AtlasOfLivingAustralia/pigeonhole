@@ -30,9 +30,9 @@ modules = {
     }
 
     alaAutocomplete {
-        dependsOn 'jqueryMigrate'
-        resource url:'js/typeahead.bundle.js'
+        dependsOn 'jqueryMigrate, bootstrap'
         resource url:'css/alaAutocomplete.css'
+        resource url:'js/typeahead.bundle.js'
         //resource url:'http://twitter.github.io/typeahead.js/css/examples.css'
         resource url:'js/alaAutocomplete.js'
     }
@@ -56,6 +56,13 @@ modules = {
     moment {
         resource url:'js/moment.min.js'
         resource url:'js/moment-duration-format.js'
+    }
+
+    datepicker {
+        // http://www.eyecon.ro/bootstrap-datepicker/
+        dependsOn 'jqueryMigrate'
+        resource url:'js/datepicker/css/datepicker.css'
+        resource url:'js/datepicker/js/bootstrap-datepicker.js'
     }
 
     exif {
