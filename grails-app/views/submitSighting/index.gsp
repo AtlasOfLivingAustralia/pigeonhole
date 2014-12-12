@@ -59,8 +59,8 @@
         margin-bottom: 2px;
     }
 
-    .validationErrors input {
-        border: 1px solid red;
+    .validationErrors:not(.tt-hint)  {
+        border: 1px solid red !important;
         /*color: red;*/
     }
 
@@ -242,7 +242,7 @@
                     file = data.files[index],
                     hasMetaData = false,
                     node = $(data.context[index]); // grab the current image node (created via a template)
-                console.log("node index", node.data('imageIndex'));
+                console.log("node index", node.data('imageIndex'), file);
                 if (file.preview) {
                     // add preview image
                     node.find('.preview').append(file.preview);
@@ -324,7 +324,7 @@
                 var node = $(data.context[0]);
                 //var index = node.attr('id').replace("image_", "");
                 var index = node.data('index');
-                var result = data.result;
+                var result = data.result; // ajax results
                 if (result.success) {
                     var link = $('<a>')
                         .attr('target', '_blank')
@@ -337,6 +337,9 @@
                     node.find('.format').val(result.mimeType).attr('name', 'multimedia['+ index + '].format');
                     node.find('.creator').val("${user?.userDisplayName?:'ALA User'}").attr('name', 'multimedia['+ index + '].creator');
                     node.find('.license').val($('#imageLicense').val()).attr('name', 'multimedia['+ index + '].license');
+                    if (result.exif && result.exif.date) {
+                        node.find('.created').val(result.exif.date).attr('name', 'multimedia['+ index + '].created');
+                    }
                     insertImageMetadata(node);
                 } else if (data.error) {
                 // in case an error still returns a 200 OK... (our service shouldn't)
@@ -469,8 +472,13 @@
                 $('#decimalLongitude').change();
             }
 
-            // date picker
+            // init date picker
             $('#eventDateNoTime').datepicker({format: 'dd-mm-yyyy'});
+
+            // clear validation errors red border on input blur
+            $('.validationErrors').on('blur', function(e) {
+                $(this).removeClass('validationErrors');
+            });
 
         });
 
@@ -490,6 +498,10 @@
                 $('#decimalLongitude').val(lng).change();
                 $('#georeferenceProtocol').val('camera/phone');
             }
+        }
+
+        function writeImageBlock(ajaxResult) {
+
         }
 
         function isoToAusDate(isoDate) {
@@ -606,14 +618,14 @@
             <div id="noTaxa">Type a scientific or common name into the box below and choose from the auto-complete list.</div>
             <div id="matchedTaxa" style="display: none;">Not the right species? To change identification, type a scientific
             or common name into the box below and choose from the auto-complete list.</div>
-            <input class="input-xlarge typeahead" id="speciesLookup" type="text">
+            <input class="input-xlarge typeahead ${hasErrors(bean:sighting,field:'scientificName','validationErrors')}" id="speciesLookup" type="text">
             <table class="formInputTable">
                 <tr>
                     <td colspan="2">Not sure about the identity of the species? Narrow down to a species group and sub-group:</td>
                 </tr>
                 <tr>
                     <td colspan="2">Tags:
-                        <g:select name="tag" from="${speciesGroupsMap.keySet()}" id="speciesGroups" class="slim" noSelection="['':'-- Species group --']"/>
+                        <g:select name="tag" from="${speciesGroupsMap.keySet()}" id="speciesGroups" class="slim ${hasErrors(bean:sighting,field:'scientificName','validationErrors')}" noSelection="['':'-- Species group --']"/>
                         <g:select name="tag" from="${[]}" id="speciesSubgroups" class="slim" noSelection="['':'-- Subgroup (select a group first) --']"/>
                     </td>
                 </tr>
@@ -727,23 +739,23 @@
 <!-- Notes -->
 <div class="boxed-heading" id="details" data-content="Details">
     <div class="row-fluid">
-        <div class="span4">
+        <div class="span5">
             <table class="formInputTable">
-                <tr class="${hasErrors(bean:sighting,field:'eventDateNoTime','validationErrors')}">
+                <tr >
                     <td><label for="eventDateNoTime">Date:</label></td>
-                    <td><input type="text" name="eventDateNoTime" id="eventDateNoTime" class="input-auto" placeholder="DD-MM-YYYY" value="${sighting?.eventDateNoTime}"/></td>
+                    <td><input type="text" name="eventDateNoTime" id="eventDateNoTime" class="input-auto ${hasErrors(bean:sighting,field:'eventDateNoTime','validationErrors')}" placeholder="DD-MM-YYYY" value="${sighting?.eventDateNoTime}"/></td>
                     <td><span class="helphint">* required</span></td>
                 </tr>
-                <tr class="${hasErrors(bean:sighting,field:'eventTime','validationErrors')}">
+                <tr >
                     <td><label for="eventTime">Time:</label></td>
-                    <td><input type="text" name="eventTime" id="eventTime" class="input-auto" placeholder="HH:MM[:SS]" value="${sighting?.eventTime}"/></td>
+                    <td><input type="text" name="eventTime" id="eventTime" class="input-auto ${hasErrors(bean:sighting,field:'eventTime','validationErrors')}" placeholder="HH:MM[:SS]" value="${sighting?.eventTime}"/></td>
                     <td><span class="helphint">24 hour format</span></td>
                 </tr>
             </table>
             <input type="hidden" name="eventDateTime" id="eventDateTime" value=""/>
             <input type="hidden" name="timeZoneOffset" id="timeZoneOffset" value="${sighting?.timeZoneOffset}"/>
         </div>
-        <div class="span8">
+        <div class="span7">
             <section class="sightings-block ui-corner-all" style="vertical-align: top;">
                 <label for="occurrenceRemarks" style="vertical-align: top;margin-top: 8px;margin-right: 5px;">Notes: </label>
                 <textarea name="occurrenceRemarks" rows="4" cols="90" id="occurrenceRemarks">${sighting?.occurrenceRemarks}</textarea>
@@ -768,6 +780,7 @@
             <input type="hidden" class="format" value=""/>
             <input type="hidden" class="identifier" value=""/>
             <input type="hidden" class="license" value=""/>
+            <input type="hidden" class="created" value=""/>
             <input type="hidden" class="creator" value=""/>
         </div>
         <div class="metadata">

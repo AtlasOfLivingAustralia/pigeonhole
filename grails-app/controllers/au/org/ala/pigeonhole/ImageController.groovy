@@ -15,12 +15,15 @@
 
 package au.org.ala.pigeonhole
 
+import grails.converters.JSON
+
 import javax.activation.MimetypesFileTypeMap
 
 /**
  * Serve images saved in cache directory so they can be harvested by down-line systems
  */
 class ImageController {
+    def imageService
 
     def index(String file) {
         log.debug "file = ${file} || params.file = ${params.file}"
@@ -29,11 +32,30 @@ class ImageController {
 
         if (imageFile.exists()) {
             MimetypesFileTypeMap mimeTypesMap = new MimetypesFileTypeMap()
+            response.setStatus(200)
             response.contentType = mimeTypesMap.getContentType(imageFile)
-            response.outputStream << imageFile.bytes
-            response.outputStream.flush()
+            response.flushBuffer() // send the headers
+
+            try {
+                response.outputStream << imageFile.bytes
+                response.outputStream.flush()
+                response.outputStream.close()
+            } catch (Exception e) {
+                log.error e.message, e
+            }
+            return
         } else {
             render (status: 404, text: "No file found: ${fileName}")
         }
+    }
+
+    def exif() {
+        def exif = [:]
+
+        if (params.url) {
+            exif = imageService.getExifForUrl(params.url)
+        }
+
+        render exif as JSON
     }
 }

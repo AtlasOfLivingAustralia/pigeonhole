@@ -59,6 +59,8 @@ grails.project.dependency.resolution = {
     dependencies {
         // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes e.g.
         compile 'org.apache.tika:tika-core:1.6'
+        compile "com.drewnoakes:metadata-extractor:2.6.2"
+        compile "org.imgscalr:imgscalr-lib:4.2"
         test "org.grails:grails-datastore-test-support:1.0-grails-2.3"
     }
 
