@@ -12,7 +12,7 @@
  * implied. See the License for the specific language governing
  * rights and limitations under the License.
  */
-package au.org.ala.pigeonhole
+package au.org.ala.pigeonhole.command
 
 import grails.web.JSONBuilder
 import grails.util.Holders
@@ -20,7 +20,6 @@ import groovy.util.logging.Log4j
 import org.apache.commons.lang.time.DateUtils;
 
 import java.text.DateFormat
-import java.text.ParseException
 import java.text.SimpleDateFormat
 
 /**
@@ -30,14 +29,14 @@ import java.text.SimpleDateFormat
  */
 @Log4j
 @grails.validation.Validateable
-class SightingCommand {
+class Sighting {
     String userId
     String guid
     String scientificName
     List<String> tags = [].withDefault { new String() } // taxonomic tags
     String identificationVerificationStatus // identification confidence
     Integer individualCount
-    List<MediaDto> multimedia = [].withDefault { new MediaDto() }
+    List<Media> multimedia = [].withDefault { new Media() }
     String eventDate // can be date or ISO date with time
     String eventDateNoTime // date only
     String eventDateTime // ISO date + time
@@ -153,7 +152,7 @@ class SightingCommand {
         def wantedProps = [:]
         log.debug "excludes = ${excludes}"
         //this.properties.each { propName, propValue ->
-        SightingCommand.declaredFields.findAll { !it.synthetic && !excludes.contains(it.name) }.each {
+        Sighting.declaredFields.findAll { !it.synthetic && !excludes.contains(it.name) }.each {
             log.debug "it: ${it.name} = $it || m - ${it.modifiers} || t - ${it.type}"
             def propName = it.name
             def propValue = this.getProperty(propName)

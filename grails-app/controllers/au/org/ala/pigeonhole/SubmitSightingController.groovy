@@ -15,6 +15,7 @@
 
 package au.org.ala.pigeonhole
 
+import au.org.ala.pigeonhole.command.Sighting
 import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.JSONObject
 
@@ -31,11 +32,11 @@ class SubmitSightingController {
     }
 
     def edit(String id) {
-        SightingCommand sighting = ecodataService.getSighting(id)
+        Sighting sighting = ecodataService.getSighting(id)
         render view: "index", mode: [taxon: getTaxon(sighting.guid), sighting: sighting, coordinateSources: grailsApplication.config.coordinates.sources, user:authService.userDetails()]
     }
 
-    def upload(SightingCommand sighting) {
+    def upload(Sighting sighting) {
         //log.debug "upload sighting: ${sighting as JSON}"
         def userId = authService.userId ?: 99999
         def debug = grailsApplication.config.submit.debug;
@@ -52,7 +53,9 @@ class SubmitSightingController {
             // chain action: "index", id: "${sighting.guid}", model: [sighting: sighting, taxon: getTaxon(sighting.guid), coordinateSources: grailsApplication.config.coordinates.sources, user:authService.userDetails()]
             chain action: "index", id: "${sighting.guid?:''}", model: [sighting: sighting]
         } else if (debug) {
-            render sighting.asJSON()
+            // render sighting.asJSON()
+            // respond sighting, [formats:['json', 'xml']]
+            render sighting as JSON
         } else {
             result = ecodataService.submitSighting(sighting)
             render(status: result.status, text: result as JSON, contentType: "application/json")

@@ -13,6 +13,14 @@
  * rights and limitations under the License.
  */
 
+import au.org.ala.pigeonhole.marshaller.*
+
 // Place your Spring DSL code here
 beans = {
+    customObjectMarshallers( CustomObjectMarshallers ) {
+        marshallers = [
+                new SightingMarshaller(),
+                new MediaMarshaller()
+        ]
+    }
 }

@@ -15,6 +15,7 @@
 
 package au.org.ala.pigeonhole
 
+import au.org.ala.pigeonhole.command.Sighting
 import grails.converters.JSON
 import groovyx.net.http.ContentType
 import groovyx.net.http.HTTPBuilder
@@ -24,16 +25,16 @@ import org.codehaus.groovy.grails.web.json.JSONObject
 class EcodataService {
     def grailsApplication, httpWebService
 
-    SightingCommand getSighting(String id) {
-        SightingCommand sc = new SightingCommand()
+    Sighting getSighting(String id) {
+        Sighting sc = new Sighting()
         // TODO implement webservice GET, etc
         sc
     }
 
-    Map submitSighting(SightingCommand sightingCommand) {
+    Map submitSighting(Sighting sightingCommand) {
         // TODO implement webservice POST
         def url = grailsApplication.config.ecodata.baseUrl + "/record"
-        def json = sightingCommand.asJSON()
+        def json = sightingCommand as JSON
         def result = doJsonPost(url, json)
         log.debug "ecodata result = ${result}"
         // if error return Map below

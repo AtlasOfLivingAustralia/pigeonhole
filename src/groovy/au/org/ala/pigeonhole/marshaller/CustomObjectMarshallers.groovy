@@ -12,23 +12,17 @@
  * implied. See the License for the specific language governing
  * rights and limitations under the License.
  */
-package au.org.ala.pigeonhole
+package au.org.ala.pigeonhole.marshaller
 
 /**
- * DTO for multimedia data (not used yet - backend not supported)
- *
- * see http://tools.gbif.org/dwca-validator/extension.do?id=http://rs.gbif.org/terms/1.0/Multimedia
+ * Custom marshaller register
  *
  * @author "Nick dos Remedios <Nick.dosRemedios@csiro.au>"
  */
-class MediaDto {
-    String type // one of: StillImage, Sound or MovingImage
-    String format // mimetype
-    String identifier // url
-    String title
-    String description
-    String created // ISO date/time format
-    String creator // person who produced the media file
-    String license
-    String rightsHolder
+class CustomObjectMarshallers {
+    List marshallers = []
+
+    def register() {
+        marshallers.each{ it.register() }
+    }
 }

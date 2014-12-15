@@ -1,3 +1,5 @@
+import org.codehaus.groovy.grails.commons.ApplicationAttributes
+
 /*
  * Copyright (C) 2014 Atlas of Living Australia
  * All Rights Reserved.
@@ -16,6 +18,8 @@
 class BootStrap {
 
     def init = { servletContext ->
+        def ctx = servletContext.getAttribute(ApplicationAttributes.APPLICATION_CONTEXT)
+        ctx.getBean( "customObjectMarshallers" ).register()
     }
     def destroy = {
     }

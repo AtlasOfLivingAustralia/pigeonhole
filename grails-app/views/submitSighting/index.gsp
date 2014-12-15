@@ -720,10 +720,10 @@
                 </tr>
                 <tr>
                     <td><label for="locality">Matched locality:</label></td>
-                    <td><textarea id="locality" name="locality" class="disabled" disabled="disabled" rows="3" value="${sighting?.locality}">${sighting?.locality}</textarea></td>
+                    <td><textarea id="locality" name="locality" class="disabled" rows="3">${sighting?.locality}</textarea></td>
                 </tr>
                 <tr>
-                    <td><label for="locationRemark">Location description:</label></td>
+                    <td><label for="locationRemark">Location notes:</label></td>
                     <td><textarea id="locationRemark" name="locationRemark" class="" rows="3" value="${sighting?.decimalLatitude}">${sighting?.locationRemark}</textarea></td>
                 </tr>
                 <tr>
