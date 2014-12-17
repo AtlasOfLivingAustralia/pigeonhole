@@ -205,7 +205,7 @@
             biocacheBaseUrl: "${(grailsApplication.config.biocache.baseUrl)}",
             bieBaseUrl: "${(grailsApplication.config.bie.baseUrl)}",
             uploadUrl: "${createLink(uri:"/ajaxUpload/upload")}",
-            guid: "${taxon.guid}",
+            guid: "${taxon?.guid}",
             leafletImagesDir: "${g.createLink(uri:'/js/leaflet-0.7.3/images')}"
         };
 
@@ -476,14 +476,24 @@
                 }
 
             });
+
+            // update map in edit mode
             if ("${sighting?.decimalLongitude}") {
                 // trigger map to refresh
                 $('#decimalLongitude').change();
             }
 
+            // show tags in edit mode
             var tags = ${(sighting?.tags).encodeAsJson()?:'[]'};
             $.each(tags, function(i, t) {
                 addTagLabel(t);
+            });
+
+            // show images in edit mode
+            var media = ${(sighting?.multimedia).encodeAsJson()?:'[]'};
+            $.each(media, function(i, m) {
+                console.log("image", m);
+                addServerImage(m, i);
             });
 
             // init date picker
@@ -520,7 +530,7 @@
                 $('#confident').trigger( "click" );
             }
 
-
+            // init qtip (tooltip)
             $('.tooltips').qtip({
                 style: {
                     classes: 'ui-tooltip-rounded ui-tooltip-shadow'
@@ -644,6 +654,31 @@
                 bits.push(('0' + parseInt(it)).slice(-2)); // zero pad
             });
             return bits.join(':');
+        }
+
+        function addServerImage(image, index) {
+            var node = $('#uploadActionsTmpl').clone(true).removeAttr('id').removeClass('hide'); //.appendTo('#files');
+            node.find('.filename').append(image.title); // add filesize -  humanFileSize(file.size)
+
+            var link = $('<a>')
+                .attr('target', '_blank')
+                .prop('href', image.identifier);
+            node.find('.preview').wrap(link);
+            node.find('.preview').append($('<img/>').attr('src',image.identifier)).attr('style','height:100px;width:100px');
+            // populate hidden input fields
+            //node.find('.media').val(result.url).attr('name', 'associatedMedia['+ index + ']');
+            node.find('.identifier').val(image.identifier).attr('name', 'multimedia['+ index + '].identifier');
+            node.find('.title').val(image.title).attr('name', 'multimedia['+ index + '].title');
+            node.find('.format').val(image.mimeType).attr('name', 'multimedia['+ index + '].format');
+            node.find('.creator').val(image.creator).attr('name', 'multimedia['+ index + '].creator');
+            node.find('.license').val(image.creator).attr('name', 'multimedia['+ index + '].license');
+
+            if (false) {
+            //if (result.exif && result.exif.date) {
+                node.find('.created').val(result.exif.date).attr('name', 'multimedia['+ index + '].created');
+            }
+
+            node.appendTo('#files');
         }
 
     </r:script>
