@@ -42,7 +42,7 @@ class EcodataService {
         [status:result.status?:200, text: result.error?:result]
     }
 
-    def JSONArray getSightingsForUserId(String userId) {
+    def getSightingsForUserId(String userId) {
         JSONObject res = httpWebService.getJson("${grailsApplication.config.ecodata.baseUrl}/record/user/${userId}")
         JSONArray sightings
 
@@ -53,7 +53,7 @@ class EcodataService {
         sightings
     }
 
-    def JSONArray getRecentSightings() {
+    def getRecentSightings() {
         //log.debug "records = " + httpWebService.getJson("${grailsApplication.config.ecodata.baseUrl}/record")
         httpWebService.getJson("${grailsApplication.config.ecodata.baseUrl}/record")
     }

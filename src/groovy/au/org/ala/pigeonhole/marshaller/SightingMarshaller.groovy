@@ -32,6 +32,7 @@ class SightingMarshaller {
                     "scientificName" : sighting.scientificName,
                     "tags": sighting.tags,
                     "identificationVerificationStatus": sighting.identificationVerificationStatus,
+                    "requireIdentification": sighting.requireIdentification,
                     "individualCount": sighting.individualCount,
                     "multimedia": sighting.multimedia,
                     "eventDate": sighting.eventDate,

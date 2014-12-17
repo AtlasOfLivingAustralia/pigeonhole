@@ -138,8 +138,12 @@ class ImageService {
         def exif = [:]
 
         if (file.canRead()) {
-            Metadata metadata = ImageMetadataReader.readMetadata(file)
-            exif = readMetadata(metadata)
+            try {
+                Metadata metadata = ImageMetadataReader.readMetadata(file)
+                exif = readMetadata(metadata)
+            } catch (Exception e) {
+                log.warn("Error reading EXIF data. " + e.getMessage(),e)
+            }
         }
 
         exif
@@ -153,7 +157,7 @@ class ImageService {
             exif = readMetadata(metadata)
         } catch (Exception e){
             //this will be thrown if its a PNG....
-            log.debug("Error reading EXIF data. " + e.getMessage(),e)
+            log.warn("Error reading EXIF data. " + e.getMessage(),e)
         }
 
         exif

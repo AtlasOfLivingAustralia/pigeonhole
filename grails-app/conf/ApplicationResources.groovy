@@ -53,6 +53,12 @@ modules = {
         resource url:'js/imageBrowser.js'
     }
 
+    qtip {
+        dependsOn 'jquery'
+        resource url:[dir:'css', file:'jquery.qtip.min.css']
+        resource url:[dir:'js', file:'jquery.qtip.min.js']
+    }
+
     moment {
         resource url:'js/moment.min.js'
         resource url:'js/moment-duration-format.js'

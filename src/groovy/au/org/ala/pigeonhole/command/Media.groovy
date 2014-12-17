@@ -12,6 +12,7 @@
  * implied. See the License for the specific language governing
  * rights and limitations under the License.
  */
+
 package au.org.ala.pigeonhole.command
 
 /**
@@ -21,6 +22,7 @@ package au.org.ala.pigeonhole.command
  *
  * @author "Nick dos Remedios <Nick.dosRemedios@csiro.au>"
  */
+@grails.validation.Validateable
 class Media {
     String type = "StillImage" // one of: StillImage, Sound or MovingImage
     String format // mimetype
@@ -31,4 +33,17 @@ class Media {
     String creator // person who produced the media file
     String license
     String rightsHolder
+
+    static constraints = {
+        type (inList:['StillImage', 'Sound', 'MovingImage'])
+        identifier url: true
+    }
+
+    def getRightsHolder() {
+        String it = rightsHolder
+        if (!rightsHolder && creator) {
+            it = creator
+        }
+        it
+    }
 }

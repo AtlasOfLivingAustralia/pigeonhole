@@ -37,6 +37,7 @@ class SubmitSightingController {
     }
 
     def upload(Sighting sighting) {
+        log.debug "upload params: ${params as JSON}"
         //log.debug "upload sighting: ${sighting as JSON}"
         def userId = authService.userId ?: 99999
         def debug = grailsApplication.config.submit.debug;

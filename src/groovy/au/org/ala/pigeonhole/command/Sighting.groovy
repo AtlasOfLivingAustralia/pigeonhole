@@ -35,6 +35,7 @@ class Sighting {
     String scientificName
     List<String> tags = [].withDefault { new String() } // taxonomic tags
     String identificationVerificationStatus // identification confidence
+    Boolean requireIdentification
     Integer individualCount
     List<Media> multimedia = [].withDefault { new Media() }
     String eventDate // can be date or ISO date with time
@@ -145,9 +146,11 @@ class Sighting {
      * Custom JSON method that allows fields to be excluded.
      * Code from: http://stackoverflow.com/a/5937793/249327
      *
+     * @deprecated replaced by the {@link au.org.ala.pigeonhole.marshaller.SightingMarshaller)
      * @param excludes
      * @return JSON (String)
      */
+    @Deprecated
     public String asJSON(List excludes = Holders.config.sighting.fields.excludes) {
         def wantedProps = [:]
         log.debug "excludes = ${excludes}"

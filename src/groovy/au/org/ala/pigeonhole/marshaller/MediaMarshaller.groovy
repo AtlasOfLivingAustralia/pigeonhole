@@ -31,7 +31,7 @@ class MediaMarshaller {
                     "format" : media.format,
                     "identifier" : media.identifier,
                     "title": media.title,
-                    "description": media.description,
+                    //"description": media.description,
                     "created": media.created,
                     "creator": media.creator,
                     "license": media.license,

@@ -26,7 +26,7 @@
 <head>
     <meta name="layout" content="main"/>
     <title>Submit a sighting</title>
-    <r:require modules="fileuploads, exif, moment, alaAutocomplete, sightingMap, datepicker"/>
+    <r:require modules="fileuploads, exif, moment, alaAutocomplete, sightingMap, datepicker, qtip"/>
     <style type="text/css">
 
     .fileinput-button {
@@ -125,7 +125,7 @@
 
     #species .row-fluid .span6 {
         display: table-cell;
-        vertical-align: bottom;
+        /*vertical-align: bottom;*/
         float: none;
     }
 
@@ -150,6 +150,14 @@
     }
     #taxonDetails table td {
         padding: 5px 9px 0px 4px;
+    }
+
+    #identificationChoice {
+        margin-bottom: 15px;
+    }
+
+    #speciesMisc {
+        margin-top: 10px;
     }
 
     .sciName {
@@ -272,7 +280,7 @@
                     var gpsDate = (data.exif.getText('GPSDateStamp') != 'undefined') ? data.exif.getText('GPSDateStamp') : null;
                     var gpsTime = (data.exif.getText('GPSTimeStamp') != 'undefined') ? data.exif.getText('GPSTimeStamp') : null;
 
-                    if (gpsTime) {
+                    if (gpsTime && dateTime) {
                         // determine local time offset from UTC
                         // by working out difference between DateTimeOriginal and GPSTimeStamp to get timezone (offset)
                         // gpsDate is not always set - if absent assume same date as 'DateTimeOriginal'
@@ -294,6 +302,13 @@
                         // add date & time
                         hasMetaData = true;
                         var isoDateStr = parseExifDateTime(dateTime, true) || dateTime;
+                        node.find('.imgDate').html(isoDateStr);
+                        if (! node.find('.imgDate').data('datetime')) {
+                            node.find('.imgDate').data('datetime', isoDateStr);
+                        }
+                    } else if (gpsDate) {
+                        hasMetaData = true;
+                        var isoDateStr = gpsDate.replace(/:/g,'-');
                         node.find('.imgDate').html(isoDateStr);
                         if (! node.find('.imgDate').data('datetime')) {
                             node.find('.imgDate').data('datetime', isoDateStr);
@@ -461,12 +476,6 @@
                 }
 
             });
-
-            // load species info if id is in the URL
-            if (GSP_VARS.id) {
-                $('#guid').val(GSP_VARS.id).change();
-            }
-
             if ("${sighting?.decimalLongitude}") {
                 // trigger map to refresh
                 $('#decimalLongitude').change();
@@ -478,6 +487,41 @@
             // clear validation errors red border on input blur
             $('.validationErrors').on('blur', function(e) {
                 $(this).removeClass('validationErrors');
+            });
+
+            // click event on confidence button group
+            $('#confident, #uncertain').click(function(e) {
+                e.preventDefault();
+                var $this = this;
+                var highlightClass = 'btn-primary';
+                $('#confident, #uncertain').removeClass(highlightClass);
+                $('#showConfident, #showUncertain').addClass('hide');
+                $($this).addClass(highlightClass);
+                $('#speciesMisc').removeClass('hide')
+                if ($($this).attr('id') == 'confident') {
+                    $('#showConfident').removeClass('hide');
+                    $('#identificationVerificationStatus').val('Confident');
+                } else {
+                    $('#showUncertain').removeClass('hide');
+                    $('#identificationVerificationStatus').val('Uncertain');
+                }
+            });
+
+            // load species info if id is in the URL
+            if (GSP_VARS.id) {
+                $('#guid').val(GSP_VARS.id).change();
+                $('#confident').trigger( "click" );
+            }
+
+
+            $('.tooltips').qtip({
+                style: {
+                    classes: 'ui-tooltip-rounded ui-tooltip-shadow'
+                },
+                position: {
+                    target: 'mouse',
+                    adjust: { x: 6, y: 14 }
+                }
             });
 
         });
@@ -610,35 +654,19 @@
         </div>
     </div>
 </g:hasErrors>
-<form action="${g.createLink(controller:'submitSighting', action:'upload')}" method="POST">
+<form id="sightingForm" action="${g.createLink(controller:'submitSighting', action:'upload')}" method="POST">
+
 <!-- Species -->
 <div class="boxed-heading" id="species" data-content="Species">
     <div class="row-fluid">
         <div class="span6">
-            <div id="noTaxa">Type a scientific or common name into the box below and choose from the auto-complete list.</div>
-            <div id="matchedTaxa" style="display: none;">Not the right species? To change identification, type a scientific
-            or common name into the box below and choose from the auto-complete list.</div>
-            <input class="input-xlarge typeahead ${hasErrors(bean:sighting,field:'scientificName','validationErrors')}" id="speciesLookup" type="text">
-            <table class="formInputTable">
-                <tr>
-                    <td colspan="2">Not sure about the identity of the species? Narrow down to a species group and sub-group:</td>
-                </tr>
-                <tr>
-                    <td colspan="2">Tags:
-                        <g:select name="tag" from="${speciesGroupsMap.keySet()}" id="speciesGroups" class="slim ${hasErrors(bean:sighting,field:'scientificName','validationErrors')}" noSelection="['':'-- Species group --']"/>
-                        <g:select name="tag" from="${[]}" id="speciesSubgroups" class="slim" noSelection="['':'-- Subgroup (select a group first) --']"/>
-                    </td>
-                </tr>
-                <tr>
-                    <td><label for="individualCount">Number seen:</label>
-                    %{--<td><input type="text" name="individualCount" class="input-small input-auto smartspinner" value="1" size="2" data-validation-engine="validate[custom[integer], min[1]]" id="individualCount"></td>--}%
-                    <g:select from="${1..99}" name="individualCount" class="slim input-auto smartspinner" value="${sighting?.individualCount}" data-validation-engine="validate[custom[integer], min[1]]" id="individualCount"/></td>
-                    <td><label for="identificationVerificationStatus">Confidence in identification:</label>
-                    <g:select from="${['Confident','Uncertain']}" name="identificationVerificationStatus" class="slim" id="identificationVerificationStatus" value="${sighting?.identificationVerificationStatus}"/></td>
-                </tr>
-            </table>
-        </div>
-        <div class="span6">
+            <div id="identificationChoice">
+                <div>How sure are you with the species identification?</div>
+                <div class="btn-group">
+                    <button class="btn tooltips" id="confident" title="I know the common name or scientific name"><b>Confident</b></button>
+                    <button class="btn tooltips" id="uncertain" title="I'm not sure of the name"><b>Uncertain</b></button>
+                </div>
+            </div>
             <div id="taxonDetails" class="well well-small" style="display: none;">
                 <table>
                     <tr>
@@ -653,9 +681,30 @@
                 </table>
                 <input type="hidden" name="guid" id="guid" value="${taxon?.guid}"/>
                 <input type="hidden" name="scientificName" id="scientificName" value="${taxon?.scientificName}"/>
+                <input type="hidden" name="identificationVerificationStatus" id="identificationVerificationStatus" value="${taxon?.identificationVerificationStatus}"/>
                 <a href="#" class="remove" title="remove this item"><i class="remove icon-remove">&nbsp;</i></a>
             </div>
             <div id="tagsBlock"></div>
+
+        </div>
+        <div class="span6">
+            <div id="showConfident" class="hide">
+                <div id="noTaxa" style="display: inherit;">Type a scientific or common name into the box below and choose from the auto-complete list.</div>
+                <div id="matchedTaxa" style="display: none;">Not the right species? To change identification, type a scientific
+                or common name into the box below and choose from the auto-complete list.</div>
+                <input class="input-xlarge typeahead ${hasErrors(bean:sighting,field:'scientificName','validationErrors')}" id="speciesLookup" type="text">
+            </div>
+            <div id="showUncertain" class="hide">
+                <div>Narrow identification down to a species group and sub-group:</div>
+                <g:select name="tag" from="${speciesGroupsMap.keySet()}" id="speciesGroups" class="slim ${hasErrors(bean:sighting,field:'scientificName','validationErrors')}" noSelection="['':'-- Species group --']"/>
+                <g:select name="tag" from="${[]}" id="speciesSubgroups" class="slim" noSelection="['':'-- Subgroup (select a group first) --']"/>
+            </div>
+            <div id="speciesMisc" class="hide">
+                <label for="requireIdentification" class="checkbox">
+                    <g:checkBox id="requireIdentification" name="requireIdentification" value="${(sighting?.requireIdentification)}"/>
+                    Ask the Taxon-Overflow community to assist with or confirm the identification (requires a photo of the sighting)
+                </label>
+            </div>
         </div>
     </div>
 </div>
@@ -736,7 +785,7 @@
     </div>
 </div>
 
-<!-- Notes -->
+<!-- Details -->
 <div class="boxed-heading" id="details" data-content="Details">
     <div class="row-fluid">
         <div class="span5">
@@ -750,6 +799,11 @@
                     <td><label for="eventTime">Time:</label></td>
                     <td><input type="text" name="eventTime" id="eventTime" class="input-auto ${hasErrors(bean:sighting,field:'eventTime','validationErrors')}" placeholder="HH:MM[:SS]" value="${sighting?.eventTime}"/></td>
                     <td><span class="helphint">24 hour format</span></td>
+                </tr>
+                <tr>
+                    <td><label for="individualCount">Individuals:</label></td>
+                    <td><g:select from="${1..99}" name="individualCount" class="slim input-auto smartspinner" value="${sighting?.individualCount}" data-validation-engine="validate[custom[integer], min[1]]" id="individualCount"/></td>
+                    <td><span class="helphint">How many did you see?</span></td>
                 </tr>
             </table>
             <input type="hidden" name="eventDateTime" id="eventDateTime" value=""/>
