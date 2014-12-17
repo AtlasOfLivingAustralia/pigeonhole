@@ -52,6 +52,10 @@ class Sighting {
     String locationRemark
     String occurrenceRemarks
     String submissionMethod = "website"
+    // Properties needed to un-marshall from ecodata
+    String occurrenceID
+    String dateCreated
+    String lastUpdated
 
     static constraints = {
         scientificName(nullable: true, validator: { val, obj->
@@ -97,6 +101,7 @@ class Sighting {
 
         dt
     }
+
     /**
      * Parse and check input date (Australian format DD-MM-YYYY) to
      * iso format (YYYY-MM-DD). If invalid, will return null

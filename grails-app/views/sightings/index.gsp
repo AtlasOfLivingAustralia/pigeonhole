@@ -34,9 +34,12 @@
 <h2>Recent Sightings</h2>
 <div class="row-fluid">
     <div class="span12">
-        <g:if test="${sightings}">
-            <g:render template="records" />
+        <g:if test="${sightings && !sightings.hasProperty('error')}">
+            <g:render template="records"/>
         </g:if>
+        <g:elseif test="${sightings.error}">
+            Error: ${sightings}
+        </g:elseif>
         <g:else>
             No sightings found
         </g:else>

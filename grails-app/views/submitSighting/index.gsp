@@ -205,7 +205,7 @@
             biocacheBaseUrl: "${(grailsApplication.config.biocache.baseUrl)}",
             bieBaseUrl: "${(grailsApplication.config.bie.baseUrl)}",
             uploadUrl: "${createLink(uri:"/ajaxUpload/upload")}",
-            id: "${params.id}",
+            guid: "${taxon.guid}",
             leafletImagesDir: "${g.createLink(uri:'/js/leaflet-0.7.3/images')}"
         };
 
@@ -410,7 +410,7 @@
             });
 
             // species group drop-down
-            var speciesGroupsObj = ${(speciesGroupsMap).encodeAsJson()};
+            var speciesGroupsObj = ${(speciesGroupsMap).encodeAsJson()?:'{}'};
             $('#speciesGroups').change(function(e) {
                 var group = $(this).val();
                 var noSelectOpt = '-- Choose a sub group --'; //$('#speciesSubgroups option:first-child').text();
@@ -501,15 +501,17 @@
                 if ($($this).attr('id') == 'confident') {
                     $('#showConfident').removeClass('hide');
                     $('#identificationVerificationStatus').val('Confident');
+                    $('#requireIdentification').prop('checked', false);
                 } else {
                     $('#showUncertain').removeClass('hide');
                     $('#identificationVerificationStatus').val('Uncertain');
+                    $('#requireIdentification').prop('checked', true);
                 }
             });
 
             // load species info if id is in the URL
-            if (GSP_VARS.id) {
-                $('#guid').val(GSP_VARS.id).change();
+            if (GSP_VARS.guid) {
+                $('#guid').val(GSP_VARS.guid).change();
                 $('#confident').trigger( "click" );
             }
 
@@ -673,7 +675,7 @@
                         <td><img src="" class="speciesThumbnail" alt="thumbnail image of species" style="width:75px; height:75px;"/></td>
                         <td>
                             <div class="sciName">
-                                <a href="" title="view species page" target="BIE">species name</a>
+                                <a href="" class="tooltips" title="view species page" target="BIE">species name</a>
                             </div>
                             <div class="commonName">common name</div>
                         </td>
@@ -696,7 +698,7 @@
             </div>
             <div id="showUncertain" class="hide">
                 <div>Narrow identification down to a species group and sub-group:</div>
-                <g:select name="tag" from="${speciesGroupsMap.keySet()}" id="speciesGroups" class="slim ${hasErrors(bean:sighting,field:'scientificName','validationErrors')}" noSelection="['':'-- Species group --']"/>
+                <g:select name="tag" from="${speciesGroupsMap?.keySet()}" id="speciesGroups" class="slim ${hasErrors(bean:sighting,field:'scientificName','validationErrors')}" noSelection="['':'-- Species group --']"/>
                 <g:select name="tag" from="${[]}" id="speciesSubgroups" class="slim" noSelection="['':'-- Subgroup (select a group first) --']"/>
             </div>
             <div id="speciesMisc" class="hide">
@@ -788,7 +790,7 @@
 <!-- Details -->
 <div class="boxed-heading" id="details" data-content="Details">
     <div class="row-fluid">
-        <div class="span5">
+        <div class="span6">
             <table class="formInputTable">
                 <tr >
                     <td><label for="eventDateNoTime">Date:</label></td>
@@ -809,7 +811,7 @@
             <input type="hidden" name="eventDateTime" id="eventDateTime" value=""/>
             <input type="hidden" name="timeZoneOffset" id="timeZoneOffset" value="${sighting?.timeZoneOffset}"/>
         </div>
-        <div class="span7">
+        <div class="span6">
             <section class="sightings-block ui-corner-all" style="vertical-align: top;">
                 <label for="occurrenceRemarks" style="vertical-align: top;margin-top: 8px;margin-right: 5px;">Notes: </label>
                 <textarea name="occurrenceRemarks" rows="4" cols="90" id="occurrenceRemarks">${sighting?.occurrenceRemarks}</textarea>

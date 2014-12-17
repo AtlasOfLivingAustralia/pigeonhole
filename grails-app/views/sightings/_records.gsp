@@ -1,4 +1,3 @@
-
 %{--
 - Copyright (C) 2014 Atlas of Living Australia
 - All Rights Reserved.
@@ -13,7 +12,6 @@
 - implied. See the License for the specific language governing
 - rights and limitations under the License.
 --}%
-
 <table class="table table-bordered table-condensed table-striped">
     <thead>
     <tr>
@@ -31,7 +29,12 @@
             <td>${s.occurrenceID}</td>
             <td>${s.scientificName}<br>${s.tags?.join(', ')}</td>
             <td>${s.eventDate?.substring(0,10)}</td>
-            <td>${s.userId}</td>
+            <td>
+                ${s.userId}
+                <g:if test="${user?.userId == s.userId}">
+                    <br><a href="${g.createLink(controller: 'submitSighting', action:'edit', id: s.occurrenceID)}" class="btn btn-small editBtn" data-recordid="occurrenceID">edit sighting</a>
+                </g:if>
+            </td>
             <td>${s.locality} (${s.decimalLatitude}, ${s.decimalLongitude})</td>
             <td>
                 <g:each in="${s.multimedia}" var="i">
@@ -40,5 +43,10 @@
             </td>
         </tr>
     </g:each>
+    <r:script>
+        $(function () {
+           //
+        });
+    </r:script>
     </tbody>
 </table>

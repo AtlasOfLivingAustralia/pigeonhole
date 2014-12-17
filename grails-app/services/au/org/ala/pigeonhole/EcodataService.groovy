@@ -21,13 +21,21 @@ import groovyx.net.http.ContentType
 import groovyx.net.http.HTTPBuilder
 import org.codehaus.groovy.grails.web.json.JSONArray
 import org.codehaus.groovy.grails.web.json.JSONObject
+import org.codehaus.groovy.runtime.typehandling.GroovyCastException
 
 class EcodataService {
     def grailsApplication, httpWebService
 
     Sighting getSighting(String id) {
-        Sighting sc = new Sighting()
-        // TODO implement webservice GET, etc
+        Sighting sc
+
+        try {
+            sc = new Sighting(httpWebService.getJson("${grailsApplication.config.ecodata.baseUrl}/record/${id}"))
+        } catch (GroovyCastException gce) {
+            log.error gce, gce
+            sc.errors[0] = gce.message
+        }
+
         sc
     }
 
