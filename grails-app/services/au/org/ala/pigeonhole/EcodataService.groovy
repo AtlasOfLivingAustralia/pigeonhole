@@ -27,13 +27,13 @@ class EcodataService {
     def grailsApplication, httpWebService
 
     Sighting getSighting(String id) {
-        Sighting sc
+        Sighting sc = new Sighting()
 
         try {
             sc = new Sighting(httpWebService.getJson("${grailsApplication.config.ecodata.baseUrl}/record/${id}"))
-        } catch (GroovyCastException gce) {
+        } catch (Exception gce) {
             log.error gce, gce
-            sc.errors[0] = gce.message
+            sc.metaClass.errors[0] = gce.message
         }
 
         sc

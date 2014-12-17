@@ -115,6 +115,18 @@ class Sighting {
         dt
     }
 
+    public String getEventTime() {
+        String tm
+
+        if (eventTime) {
+            tm = eventTime
+        } else if (eventDate) {
+            tm = eventDate.substring(11,19)
+        }
+
+        tm
+    }
+
     /**
      * Parse and check input date (Australian format DD-MM-YYYY) to
      * iso format (YYYY-MM-DD). If invalid, will return null
