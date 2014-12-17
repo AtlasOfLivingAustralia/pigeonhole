@@ -102,6 +102,19 @@ class Sighting {
         dt
     }
 
+    public String getEventDateNoTime() {
+        String dt
+
+        if (eventDateNoTime) {
+            dt = eventDateNoTime
+        } else if (eventDate) {
+            def isoDate = eventDate.substring(0,10)
+            dt = isoDate.split('-').reverse().join('-')
+        }
+
+        dt
+    }
+
     /**
      * Parse and check input date (Australian format DD-MM-YYYY) to
      * iso format (YYYY-MM-DD). If invalid, will return null

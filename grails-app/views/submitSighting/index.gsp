@@ -481,6 +481,11 @@
                 $('#decimalLongitude').change();
             }
 
+            var tags = ${(sighting?.tags).encodeAsJson()?:'[]'};
+            $.each(tags, function(i, t) {
+                addTagLabel(t);
+            });
+
             // init date picker
             $('#eventDateNoTime').datepicker({format: 'dd-mm-yyyy'});
 
