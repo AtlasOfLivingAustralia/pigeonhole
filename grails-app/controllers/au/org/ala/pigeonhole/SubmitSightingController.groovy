@@ -62,10 +62,23 @@ class SubmitSightingController {
         } else if (debug) {
             // render sighting.asJSON()
             // respond sighting, [formats:['json', 'xml']]
-            render sighting as JSON
+            //render sighting as JSON
+            String sj = (sighting as JSON).toString(true)
+            flash.message = "You sighting was successfully submitted." +
+                    "<br><code>${sj}</code>"
+            redirect(uri:'/sightings/user')
         } else {
             result = ecodataService.submitSighting(sighting)
-            render(status: result.status, text: result as JSON, contentType: "application/json")
+            //render(status: result.status, text: result as JSON, contentType: "application/json")
+            if (result.error) {
+                // ecodata returned an error
+                flash.message = "There was a problem submitting your sighting, please try again. If this problem persists, please send an email to support@ala.org.au.<br>"
+                        + result.error
+                chain action: "index", id: "${sighting.guid?:''}", model: [sighting: sighting]
+            } else {
+                flash.message = "You sighting was successfully submitted."
+                redirect(uri:'/sightings/user')
+            }
         }
     }
 

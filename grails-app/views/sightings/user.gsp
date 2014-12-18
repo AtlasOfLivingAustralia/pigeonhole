@@ -28,10 +28,27 @@
     <meta name="layout" content="main"/>
     <title>Your sightings</title>
     <r:require modules="jqueryMigrate"/>
+    <style type="text/css">
+        code {
+            white-space: pre;
+            word-break: normal;
+            word-wrap: normal;
+            background-color: transparent;
+            border: none;
+        }
+    </style>
 </head>
 <body class="nav-species">
 <g:render template="/topMenu" />
 <h2>Your Sightings</h2>
+<g:if test="${flash.message}">
+    <div class="container-fluid">
+        <div class="alert alert-info">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            ${raw(flash.message)}
+        </div>
+    </div>
+</g:if>
 <div class="row-fluid">
     <div class="span12">
         <g:if test="${sightings}">
