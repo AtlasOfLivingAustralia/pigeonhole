@@ -33,6 +33,7 @@ class Sighting {
     String userId
     String guid
     String scientificName
+    String commonName
     List<String> tags = [].withDefault { new String() } // taxonomic tags
     String identificationVerificationStatus // identification confidence
     Boolean requireIdentification

@@ -30,6 +30,7 @@ class SightingMarshaller {
                     "userId" : sighting.userId,
                     "guid" : sighting.guid,
                     "scientificName" : sighting.scientificName,
+                    "commonName" : sighting.commonName,
                     "tags": sighting.tags,
                     "identificationVerificationStatus": sighting.identificationVerificationStatus,
                     "requireIdentification": sighting.requireIdentification,

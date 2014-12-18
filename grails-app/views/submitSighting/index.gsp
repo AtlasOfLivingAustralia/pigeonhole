@@ -445,7 +445,7 @@
             // autocomplete on species lookup
             $('#speciesLookup').alaAutocomplete({maxHits: 15}); // will trigger a change event on #guid when item is selected
 
-            // detect change on #guid input (autocomplete selection) and load spceies details
+            // detect change on #guid input (autocomplete selection) and load species details
             $('#guid').change(function(e) {
                 $('#speciesLookup').alaAutocomplete.reset();
                 var guid = $(this).val();
@@ -460,6 +460,7 @@
                             $('.speciesThumbnail').attr('src', '${grailsApplication.config.bie.baseUrl}/ws/species/image/thumbnail/' + guid);
                             if (data.commonName) {
                                 $('.commonName').text(data.commonName);
+                                $('#commonName').val(data.commonName);
                             } else {
                                 //$('.commonName').hide();
                             }
@@ -580,7 +581,7 @@
             $('#taxonDetails .commonName').html('');
             $('#taxonDetails img').attr('src','');
             $('#taxonDetails a').attr('href','').html('');
-            $('#guid, #scientificName').val('');
+            $('#guid, #scientificName, #commonName').val('');
         }
 
         /**
@@ -723,6 +724,7 @@
                 </table>
                 <input type="hidden" name="guid" id="guid" value="${taxon?.guid}"/>
                 <input type="hidden" name="scientificName" id="scientificName" value="${taxon?.scientificName}"/>
+                <input type="hidden" name="commonName" id="commonName" value="${taxon?.commonName}"/>
                 <input type="hidden" name="identificationVerificationStatus" id="identificationVerificationStatus" value="${taxon?.identificationVerificationStatus}"/>
                 <a href="#" class="remove" title="remove this item"><i class="remove icon-remove">&nbsp;</i></a>
             </div>
