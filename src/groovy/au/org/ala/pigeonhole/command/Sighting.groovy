@@ -89,7 +89,7 @@ class Sighting {
 
             if (date && time) {
                 log.debug "iso check: ${date}T${time}${timeZoneOffset?:'Z'}"
-                Date isoDate = DateUtils.parseDate("${date}T${time}${timeZoneOffset?:'Z'}", [ "yyyy-MM-dd'T'HH:mm:ssZZ" ] as String[])
+                Date isoDate = DateUtils.parseDate("${date}T${time}${timeZoneOffset?:'+00:00'}", [ "yyyy-MM-dd'T'HH:mm:ssZZ" ] as String[])
                 DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZZ");
                 dt = df.format(isoDate)
             }

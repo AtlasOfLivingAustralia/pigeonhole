@@ -43,7 +43,7 @@ class EcodataService {
         // TODO implement webservice POST
         def url = grailsApplication.config.ecodata.baseUrl + "/record"
         def json = sightingCommand as JSON
-        def result = doJsonPost(url, json)
+        def result = doJsonPost(url, json.toString())
         log.debug "ecodata result = ${result}"
         // if error return Map below
         // else return Map key/values as JSON
