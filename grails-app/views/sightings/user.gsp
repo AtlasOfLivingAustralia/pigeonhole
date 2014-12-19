@@ -54,6 +54,9 @@
         <g:if test="${sightings}">
             <g:render template="records" />
         </g:if>
+        <g:elseif test="${sightings.error}">
+            An error occurred: ${sighting.error}
+        </g:elseif>
         <g:else>
             No sightings found
         </g:else>

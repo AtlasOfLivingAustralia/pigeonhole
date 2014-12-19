@@ -33,13 +33,22 @@ class SubmitSightingController {
 
     def edit(String id) {
         Sighting sighting = ecodataService.getSighting(id)
-        render view: "index", model: [
-                sighting: sighting,
-                taxon: getTaxon(sighting.guid),
-                coordinateSources: grailsApplication.config.coordinates.sources,
-                speciesGroupsMap: bieService.getSpeciesGroupsMap(),
-                user:authService.userDetails()
-        ]
+
+        if (sighting.hasProperty('error')) {
+            flash.message = sighting.error
+            render view: "index", model: [
+                    sighting: sighting,
+                    user:authService.userDetails()
+            ]
+        } else {
+            render view: "index", model: [
+                    sighting: sighting,
+                    taxon: getTaxon(sighting.guid),
+                    coordinateSources: grailsApplication.config.coordinates.sources,
+                    speciesGroupsMap: bieService.getSpeciesGroupsMap(),
+                    user:authService.userDetails()
+            ]
+        }
     }
 
     def upload(Sighting sighting) {

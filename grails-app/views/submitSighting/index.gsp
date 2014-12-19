@@ -57,6 +57,13 @@
         </div>
     </div>
 </g:hasErrors>
+<g:if test="${flash.message}">
+    <div class="container-fluid">
+        <div class="alert alert-error">
+            ${flash.message}
+        </div>
+    </div>
+</g:if>
 <form id="sightingForm" action="${g.createLink(controller:'submitSighting', action:'upload')}" method="POST">
 
 <!-- Species -->

@@ -32,8 +32,8 @@ class EcodataService {
         try {
             sc = new Sighting(httpWebService.getJson("${grailsApplication.config.ecodata.baseUrl}/record/${id}"))
         } catch (Exception gce) {
-            log.error gce, gce
-            sc.metaClass.errors[0] = gce.message
+            log.error "getSighting - " + gce, gce
+            sc.metaClass.error = gce.message
         }
 
         sc
