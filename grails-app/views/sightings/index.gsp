@@ -32,6 +32,14 @@
 <body class="nav-species">
 <g:render template="/topMenu" />
 <h2>Recent Sightings</h2>
+<g:if test="${flash.message}">
+    <div class="container-fluid">
+        <div class="alert alert-info">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            ${raw(flash.message)}
+        </div>
+    </div>
+</g:if>
 <div class="row-fluid">
     <div class="span12">
         <g:if test="${sightings && !sightings.hasProperty('error')}">

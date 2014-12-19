@@ -31,7 +31,7 @@
                 url: 'http://bie.ala.org.au/ws/search/auto.jsonp'
             }, options );
 
-            console.log('alaAutocomplete',settings, $this.attr('type'));
+            //console.log('alaAutocomplete',settings, $this.attr('type'));
 
             var bieJson = new Bloodhound({
                 datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),

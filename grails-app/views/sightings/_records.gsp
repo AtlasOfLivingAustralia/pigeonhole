@@ -27,12 +27,12 @@
     <g:each in="${sightings}" var="s">
         <tr>
             <td>${s.occurrenceID}</td>
-            <td>${s.scientificName}<br>${s.tags?.join(', ')}</td>
+            <td><i>${s.scientificName}</i> ${raw((s.commonName) ? '<br>' + s.commonName: '')} ${raw((s.tags) ? '<br>' + s.tags.join(', ') : '')}</td>
             <td>${s.eventDate?.substring(0,10)}</td>
             <td>
                 ${s.userId}
                 <g:if test="${user?.userId == s.userId}">
-                    <br><a href="${g.createLink(controller: 'submitSighting', action:'edit', id: s.occurrenceID)}" class="btn btn-small editBtn" data-recordid="occurrenceID">edit sighting</a>
+                    <br><a href="${g.createLink(controller: 'submitSighting', action:'edit', id: s.occurrenceID)}" class="btn btn-small editBtn" data-recordid="occurrenceID">edit&nbsp;sighting</a>
                 </g:if>
             </td>
             <td>${s.locality} (${s.decimalLatitude}, ${s.decimalLongitude})</td>

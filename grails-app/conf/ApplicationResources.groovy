@@ -37,6 +37,12 @@ modules = {
         resource url:'js/alaAutocomplete.js'
     }
 
+    submitSighting {
+        dependsOn 'jqueryMigrate'
+        resource url:'/css/submit.css'
+        resource url:'/js/submit.js'
+    }
+
     fileuploads {
         dependsOn 'jqueryMigrate'
         resource url:'js/jquery.fileupload/jquery.ui.widget.js'

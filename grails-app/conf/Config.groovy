@@ -218,7 +218,8 @@ log4j = {
                     'grails.app.taglib.au.org.ala',
                     'grails.app.conf.au.org.ala',
                     'grails.app.filters.au.org.ala',
-                    'au.org.ala.cas.client'
+                    'au.org.ala.cas.client',
+                    'au.org.ala.pigeonhole.command'
             ]
         }
     }

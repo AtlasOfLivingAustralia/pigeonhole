@@ -1,0 +1,183 @@
+/*
+ * Copyright (C) 2014 Atlas of Living Australia
+ * All Rights Reserved.
+ *
+ * The contents of this file are subject to the Mozilla Public
+ * License Version 1.1 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of
+ * the License at http://www.mozilla.org/MPL/
+ *
+ * Software distributed under the License is distributed on an "AS
+ * IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+ * implied. See the License for the specific language governing
+ * rights and limitations under the License.
+ */
+
+.fileinput-button {
+    position: relative;
+    overflow: hidden;
+    vertical-align: top;
+    margin: 4px 5px 5px 0;
+}
+.fileinput-button input {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 0;
+    opacity: 0;
+    -ms-filter: 'alpha(opacity=0)';
+    font-size: 200px;
+    direction: ltr;
+    cursor: pointer;
+}
+
+.form-horizontal {
+    line-height: 3;
+}
+
+.input-auto {
+    width: auto !important;
+    height: 24px;
+    font-size: 12px;
+    line-height: 20px;
+    margin-bottom: 2px;
+}
+
+.validationErrors:not(.tt-hint)  {
+    border: 1px solid red !important;
+    /*color: red;*/
+}
+
+label {
+    display: inline-block;
+}
+
+select.slim {
+    height: 26px;
+    width: auto;
+    font-size: 13px;
+    line-height: 18px;
+    margin-bottom: 4px;
+}
+select.slim2 {
+    height: 26px;
+    width: auto;
+    font-size: 13px;
+    line-height: 18px;
+}
+
+select.narrow {
+    width: auto;
+    margin-bottom: 0px;
+}
+
+input#speciesLookup {
+    /*margin-top: 5px;*/
+}
+
+#species .label {
+    font-size: 12px;
+    font-weight: normal;
+    padding: 9px 10px 7px;
+    margin-right: 5px;
+}
+
+a.remove {
+    display: inline-block;
+    vertical-align: top;
+    margin-left: 5px;
+    margin-top: -2px;
+}
+
+#tagsBlock {
+    margin: 10px 0;
+}
+
+.helphint {
+    display: inline-block;
+    margin-bottom: 5px;
+    color: grey;
+}
+
+/*#species input[type='text'] {*/
+/*height: 20px;*/
+/* width: auto; */
+/*font-size: 11px;*/
+/*line-height: 18px;*/
+/*margin-bottom: 4px;*/
+/*}*/
+
+#species .row-fluid .span6 {
+    display: table-cell;
+    /*vertical-align: bottom;*/
+    float: none;
+}
+
+#mapWidget {
+    /*margin-top: -20px;*/
+}
+
+#mapWidget > .input-append, #mapWidget > .btn, #mapWidget > .label {
+    display: inline-block;
+    margin-bottom: 0;
+    margin-top: 5px;
+}
+#mapWidget #map {
+    margin: 10px 0;
+}
+#taxonDetails {
+    margin-bottom: 5px;
+    display: inline-block;
+}
+#taxonDetails table {
+    display: inline-block;
+}
+#taxonDetails table td {
+    padding: 5px 9px 0px 4px;
+}
+
+#identificationChoice {
+    margin-bottom: 15px;
+}
+
+#speciesMisc {
+    margin-top: 10px;
+}
+
+.sciName {
+    display: block;
+    font-size: 14px;
+    font-weight: bold;
+    font-style: italic;
+    margin-bottom: 10px;
+}
+
+.sciName a {
+    /*color: white;*/
+}
+
+.commonName {
+    display: block;
+    font-size: 13px;
+}
+
+table.formInputTable {
+    margin: 5px 0 5px 0;
+}
+
+table.formInputTable td {
+    padding: 1px 8px 1px 0;
+}
+
+#occurrenceRemarks {
+    width: 80%;
+}
+
+/* Fixes for IE < 8 */
+@media screen\9 {
+    .fileinput-button input {
+        filter: alpha(opacity=0);
+        font-size: 100%;
+        height: 100%;
+    }
+}

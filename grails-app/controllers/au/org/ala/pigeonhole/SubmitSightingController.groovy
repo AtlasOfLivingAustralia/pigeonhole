@@ -64,7 +64,7 @@ class SubmitSightingController {
             // respond sighting, [formats:['json', 'xml']]
             //render sighting as JSON
             String sj = (sighting as JSON).toString(true)
-            flash.message = "You sighting was successfully submitted." +
+            flash.message = "You sighting was successfully (dummy) submitted." +
                     "<br><code>${sj}</code>"
             redirect(uri:'/sightings/user')
         } else {

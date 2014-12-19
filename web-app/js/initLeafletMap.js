@@ -18,7 +18,7 @@
 var map, geocoding, marker, circle, radius, initalBounds;
 
 $(document).ready(function() {
-    if (!GSP_VARS) {
+    if (typeof GSP_VARS == 'undefined') {
         alert('GSP_VARS not set in page - required for map widget JS');
     }
 
