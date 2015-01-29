@@ -15,11 +15,13 @@
 
 package au.org.ala.pigeonhole
 
+import au.org.ala.pigeonhole.command.Bookmark
 import au.org.ala.pigeonhole.command.Sighting
 import grails.converters.JSON
 import groovyx.net.http.ContentType
 import groovyx.net.http.HTTPBuilder
 import org.codehaus.groovy.grails.web.json.JSONArray
+import org.codehaus.groovy.grails.web.json.JSONElement
 import org.codehaus.groovy.grails.web.json.JSONObject
 import org.codehaus.groovy.runtime.typehandling.GroovyCastException
 
@@ -64,6 +66,30 @@ class EcodataService {
     def getRecentSightings() {
         //log.debug "records = " + httpWebService.getJson("${grailsApplication.config.ecodata.baseUrl}/record")
         httpWebService.getJson("${grailsApplication.config.ecodata.baseUrl}/record")
+    }
+
+    def getBookmarkLocationsForUser(String userId) {
+        def bookmarks = []
+        JSONElement results = httpWebService.getJson("${grailsApplication.config.ecodata.baseUrl}/location/user/$userId?pageSize=20")
+
+        if (results.hasProperty('error')) {
+            return [error: results.error]
+        } else {
+            results.each {
+                bookmarks.add(new Bookmark(it))
+            }
+        }
+
+        bookmarks
+    }
+
+    def addBookmarkLocation(JSONObject bookmarkLocation) {
+        def url = grailsApplication.config.ecodata.baseUrl + "/location/"
+        def result = doJsonPost(url, bookmarkLocation.toString())
+        log.debug "ecodata post bookmark result = ${result}"
+        // if error return Map below
+        // else return Map key/values as JSON
+        [status:result.status?:200, message: (result.error?:result)]
     }
 
     def doJsonPost(String url, String postBody) {

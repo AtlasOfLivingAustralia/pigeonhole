@@ -15,7 +15,7 @@
 
 /*  Global var GSP_VARS required to be set in calling page */
 
-var map, geocoding, marker, circle, radius, initalBounds;
+var map, geocoding, marker, circle, radius, initalBounds, bookmarks;
 
 $(document).ready(function() {
     if (typeof GSP_VARS == 'undefined') {
@@ -85,13 +85,13 @@ $(document).ready(function() {
     $('#geocodeinput').on('keydown', function(e) {
         if (e.keyCode == 13 ) {
             e.preventDefault();
-            geocodeAddress();
+            geocodeAddress($(this).val());
         }
     });
 
     $('#geocodebutton').click(function(e) {
         e.preventDefault();
-        geocodeAddress();
+        geocodeAddress($('#geocodeinput').val());
     });
 
     $('#useMyLocation').click(function(e) {
@@ -112,17 +112,87 @@ $(document).ready(function() {
 
     $('#coordinateUncertaintyInMeters').change(function() {
         updateLocation(marker.getLatLng());
-    });
+    })
 
+    loadBookmarks();
+
+    // Save current location
     $('#bookmarkLocation').click(function(e) {
         e.preventDefault();
-        alert('Not implemented yet');
+        var bookmark = {
+            locality: $('#locality').val(),
+            userId: GSP_VARS.user.userId,
+            decimalLatitude: Number($('#decimalLatitude').val()),
+            decimalLongitude: Number($('#decimalLongitude').val())
+        };
+
+        $.ajax({
+            url: GSP_VARS.saveBookmarksUrl,
+            dataType: 'json',
+            type: 'POST',
+            data:  JSON.stringify(bookmark),
+            contentType: 'application/json; charset=utf-8'
+        }).done(function (data) {
+            if (data.error) {
+                alert("Location could not be saved - " + data.error, 'Error');
+            } else {
+                // reload bookmarks
+                alert("Location was saved");
+                loadBookmarks();
+                //$('#bookmarkedLocations option').eq(0).after('<option value="' + bookmark.decimalLatitude + ',' + bookmark.decimalLongitude + '">' + bookmark.locality + '</option>');
+            }
+        }).fail(function( jqXHR, textStatus, errorThrown ) {
+            alert("Error: " + textStatus + " - " + errorThrown);
+        });
+    });
+
+    $('#bookmarkedLocations').change(function(e) {
+        e.preventDefault();
+        var location;
+        var id = $(this).find("option:selected").val();
+
+        if (id) {
+            $.each(bookmarks, function(i, el) {
+                if (id == el.locationId) {
+                    location = el;
+                }
+            });
+
+            if (location) {
+                var latlng =  new L.LatLng(location.decimalLatitude, location.decimalLongitude);
+                updateLocation(latlng);
+                //geocodeAddress(location.locality);
+            } else {
+                alert("Error: bookmark could not be loaded.");
+            }
+        }
     });
 
 }); // end document load function
 
-function geocodeAddress() {
-    var query = $('#geocodeinput').val();
+function loadBookmarks() {
+    $.ajax({
+        url: GSP_VARS.bookmarksUrl,
+        dataType: 'json',
+    }).done(function (data) {
+        if (data.error) {
+            Dialogs.message("Bookmark could not be loaded - " + data.error, 'Error');
+        } else {
+            // reload bookmarks
+            bookmarks = data; // cache json
+            // inject values into select widget
+            $('#bookmarkedLocations option[value != ""]').remove(); // clear list if already loaded
+            $.each(data, function(i, el) {
+                $('#bookmarkedLocations').append('<option value="' + el.locationId + '">' + el.locality + '</option>');
+            });
+        }
+    }).fail(function( jqXHR, textStatus, errorThrown ) {
+        //alert("Error: " + textStatus + " - " + errorThrown);
+        $('#bookmarkedLocations').append('<option value="">Error: bookmarks could not be loaded at this time</option>');
+    });
+}
+
+function geocodeAddress(query) {
     $.ajax({
         // https://api.opencagedata.com/geocode/v1/json?q=Canberra,+ACT&key=577ca677f86a3a4589b17814ec399112
         url : 'https://api.opencagedata.com/geocode/v1/json',

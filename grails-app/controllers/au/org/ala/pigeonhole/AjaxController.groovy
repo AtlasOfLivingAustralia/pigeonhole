@@ -16,13 +16,14 @@
 package au.org.ala.pigeonhole
 
 import grails.converters.JSON
+import org.codehaus.groovy.grails.web.json.JSONObject
 
 /**
  * Server side code for the jQuery fileupload plugin, which performs an AJAX
  * file upload in the background
  */
-class AjaxUploadController {
-    def imageService
+class AjaxController {
+    def imageService, ecodataService, authService
 
     def upload = {
         try {
@@ -47,6 +48,34 @@ class AjaxUploadController {
             log.error("Failed to upload file.", e)
             return render(status: 302, text: [success:false, error: e.message] as JSON)
         }
+    }
+
+    def getBookmarkLocations() {
+        def userId = authService.userId
+        def result = ecodataService.getBookmarkLocationsForUser(userId)
+
+        if (result.hasProperty("error")) {
+            render(status: result.status?:500, text: result.message)
+        } else {
+            render(result as JSON)
+        }
+    }
+
+    def saveBookmarkLocation() {
+        JSONObject bookmark = request.JSON
+        log.debug "post json = ${request.JSON}"
+        if (bookmark) {
+            def result = ecodataService.addBookmarkLocation(bookmark)
+            //render(status: result.status, text: result as JSON, contentType: "application/json")
+            if (result.status != 200) {
+                response.status = result.status?:500
+            }
+
+            return render(result as JSON)
+        } else {
+            return render(status: 400, text: "No bookmark provided")
+        }
+
     }
 
 }

@@ -8,7 +8,7 @@ class SightingsController {
     }
 
     def user() {
-         def user = authService.userDetails()
+        def user = authService.userDetails()
         [user: user, sightings: ecodataService.getSightingsForUserId(user.userId)]
     }
 }

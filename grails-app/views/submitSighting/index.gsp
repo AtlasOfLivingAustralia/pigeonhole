@@ -35,9 +35,12 @@
         GSP_VARS = {
             biocacheBaseUrl: "${(grailsApplication.config.biocache.baseUrl)}",
             bieBaseUrl: "${(grailsApplication.config.bie.baseUrl)}",
-            uploadUrl: "${createLink(uri:"/ajaxUpload/upload")}",
+            uploadUrl: "${createLink(uri:"/ajax/upload")}",
+            bookmarksUrl: "${createLink(controller:"ajax", action:"getBookmarkLocations")}",
+            saveBookmarksUrl: "${createLink(controller:"ajax", action:"saveBookmarkLocation")}",
+            //bookmarks: ${(bookmarks).encodeAsJson()?:'{}'},
             guid: "${taxon?.guid}",
-            speciesGroups: ${(speciesGroupsMap).encodeAsJson()?:'{}'},
+            speciesGroups: ${(speciesGroupsMap).encodeAsJson()?:'{}'}, // TODO move this to an ajax call (?)
             leafletImagesDir: "${g.createLink(uri:'/js/leaflet-0.7.3/images')}",
             user: ${(user).encodeAsJson()?:'{}'},
             sightingBean: ${(sighting).encodeAsJson()?:'{}'}
@@ -70,13 +73,6 @@
 <div class="boxed-heading" id="species" data-content="Species">
     <div class="row-fluid">
         <div class="span6">
-            <div id="identificationChoice">
-                <div>How sure are you with the species identification?</div>
-                <div class="btn-group">
-                    <button class="btn tooltips" id="confident" title="I know the common name or scientific name"><b>Confident</b></button>
-                    <button class="btn tooltips" id="uncertain" title="I'm not sure of the name"><b>Uncertain</b></button>
-                </div>
-            </div>
             <div id="taxonDetails" class="well well-small" style="display: none;">
                 <table>
                     <tr>
@@ -95,6 +91,13 @@
                 <input type="hidden" name="identificationVerificationStatus" id="identificationVerificationStatus" value="${taxon?.identificationVerificationStatus}"/>
                 <a href="#" class="remove" title="remove this item"><i class="remove icon-remove">&nbsp;</i></a>
             </div>
+            <div id="identificationChoice">
+                <div>How confident are you with the species identification?</div>
+                <div class="btn-group">
+                    <button class="btn tooltips" id="confident" title="I know the common name or scientific name"><b>Confident</b></button>
+                    <button class="btn tooltips" id="uncertain" title="I'm not sure of the name"><b>Uncertain</b></button>
+                </div>
+            </div>
             <div id="tagsBlock"></div>
 
         </div>
@@ -110,12 +113,15 @@
                 <g:select name="tag" from="${speciesGroupsMap?.keySet()}" id="speciesGroups" class="slim ${hasErrors(bean:sighting,field:'scientificName','validationErrors')}" noSelection="['':'-- Species group --']"/>
                 <g:select name="tag" from="${[]}" id="speciesSubgroups" class="slim" noSelection="['':'-- Subgroup (select a group first) --']"/>
             </div>
-            <div id="speciesMisc" class="hide">
-                <label for="requireIdentification" class="checkbox">
-                    <g:checkBox id="requireIdentification" name="requireIdentification" value="${(sighting?.requireIdentification)}"/>
-                    Ask the Taxon-Overflow community to assist with or confirm the identification (requires a photo of the sighting)
-                </label>
-            </div>
+            <g:if test="${grailsApplication.config.include.taxonoverflow}">
+                <div id="speciesMisc" class="hide">
+                    <label for="requireIdentification" class="checkbox">
+                        <g:checkBox id="requireIdentification" name="requireIdentification"
+                                    value="${(sighting?.requireIdentification)}"/>
+                        Ask the Taxon-Overflow community to assist with or confirm the identification (requires a photo of the sighting)
+                    </label>
+                </div>
+            </g:if>
         </div>
     </div>
 </div>
@@ -188,8 +194,8 @@
                 </tr>
                 <tr>
                     <td><label for="locationRemark">Bookmarked locations:</label></td>
-                    <td><div class="form-horizontal"><g:select name="bookmarkedLocations" id="bookmarkedLocations" class="slim2" from="${bookmarkedLocations}" noSelection="['':'-- saved locations --']"/>
-                        <button id="bookmarkLocation" class="btn btn-small disabled" disabled="disabled">Add Bookmark</button></div></td>
+                    <td><div class="form-horizontal"><g:select name="bookmarkedLocations" id="bookmarkedLocations" class="" from="${[]}" optionKey="" optionValue="" noSelection="['':'-- saved locations --']"/>
+                        <button id="bookmarkLocation" class="btn  disabled" disabled="disabled">Save this location</button></div></td>
                 </tr>
             </table>
         </div>

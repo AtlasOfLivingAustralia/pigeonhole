@@ -327,6 +327,23 @@ $(document).ready(function() {
         }
     });
 
+    // save location as bookmark button click event
+    $('#bookmarkLocation').click(function(e) {
+        e.preventDefault();
+        //$.getJSON(GSP_VARS.bookmarksUrl)
+        //.done(function(data) {
+        //    if (data.scientificName) {
+        //        // populate drop-down
+        //    }
+        //})
+        //.fail(function( jqXHR, textStatus, errorThrown ) {
+        //    alert("Error: " + textStatus + " - " + errorThrown);
+        //})
+        //.always(function() {
+        //    // clean-up & spinner deactivations, etc
+        //});
+    });
+
 }); // end of $(document).ready(function()
 
 function insertImageMetadata(imageRow) {

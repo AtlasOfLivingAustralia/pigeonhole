@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Atlas of Living Australia
+ * Copyright (C) 2015 Atlas of Living Australia
  * All Rights Reserved.
  *
  * The contents of this file are subject to the Mozilla Public
@@ -13,23 +13,26 @@
  * rights and limitations under the License.
  */
 
-package au.org.ala.pigeonhole
-
-import grails.test.mixin.TestFor
-import spock.lang.Specification
+package au.org.ala.pigeonhole.command
 
 /**
- * See the API for {@link grails.test.mixin.web.ControllerUnitTestMixin} for usage instructions
+ * Bean for bookmark locations data (coming from ecodata)
+ *
+ * @author "Nick dos Remedios <Nick.dosRemedios@csiro.au>"
  */
-@TestFor(AjaxUploadController)
-class AjaxUploadControllerSpec extends Specification {
+@grails.validation.Validateable
+class Bookmark {
+    String userId
+    String locality
+    String locationId
+    Double decimalLatitude
+    Double decimalLongitude
+    String geodeticDatum
+    String georeferenceProtocol
+    String dateCreated
 
-    def setup() {
+    static constraints = {
+
     }
 
-    def cleanup() {
-    }
-
-    void "test something"() {
-    }
 }

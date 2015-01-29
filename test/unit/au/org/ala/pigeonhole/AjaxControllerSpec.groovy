@@ -13,22 +13,23 @@
  * rights and limitations under the License.
  */
 
-class UrlMappings {
+package au.org.ala.pigeonhole
 
-	static mappings = {
-        "/identify"(view:"/identify")
-        "/identify-ng"(view:"/identify-ng")
-        "/uploads/$file**"(controller:"image", action:"index")
-        "/"(controller: "submitSighting", action:"index")
-        "/$id**"(controller: "submitSighting", action:"index")
+import grails.test.mixin.TestFor
+import spock.lang.Specification
 
-        "/$controller/$action?/$id?(.$format)?"{
-            constraints {
-                // apply constraints here
-            }
-        }
+/**
+ * See the API for {@link grails.test.mixin.web.ControllerUnitTestMixin} for usage instructions
+ */
+@TestFor(AjaxController)
+class AjaxControllerSpec extends Specification {
 
-        // "/"(view:"/index")
-        "500"(view:'/error')
-	}
+    def setup() {
+    }
+
+    def cleanup() {
+    }
+
+    void "test something"() {
+    }
 }

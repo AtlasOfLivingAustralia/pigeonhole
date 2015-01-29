@@ -27,7 +27,8 @@ class SubmitSightingController {
                 taxon: getTaxon(id),
                 coordinateSources: grailsApplication.config.coordinates.sources,
                 speciesGroupsMap: bieService.getSpeciesGroupsMap(),
-                user:authService.userDetails()
+                user:authService.userDetails(),
+                //bookmarks: ecodataService.getBookmarkLocationsForUser(authService.userId) // Map
         ]
     }
 

@@ -47,7 +47,7 @@ runWithNoExternalConfig = true
 security.cas.casServerName = 'https://auth.ala.org.au'
 security.cas.uriFilterPattern = '/,/.*'
 security.cas.authenticateOnlyIfLoggedInPattern = "/records"
-security.cas.uriExclusionFilterPattern = '/images.*,/css.*,/js.*,/ajaxUpload/upload,/uploads/.*'
+security.cas.uriExclusionFilterPattern = '/images.*,/css.*,/js.*,/ajax/upload,/uploads/.*'
 security.cas.loginUrl = 'https://auth.ala.org.au/cas/login'
 security.cas.logoutUrl = 'https://auth.ala.org.au/cas/logout'
 security.cas.casServerUrlPrefix = 'https://auth.ala.org.au/cas'
@@ -56,6 +56,7 @@ security.cas.bypass  // set to true for non-ALA deployment
 bie.baseUrl = "http://bie.ala.org.au"
 biocache.baseUrl = "http://biocache.ala.org.au/ws";
 ecodata.baseUrl = "http://144.6.225.49:8080/ecodata"
+locationBookmark.baseUrl = "http://fielddata.ala.org.au/location/"
 
 media.uploadDir = '/data/cache/imageUploads/' // Path to where files will be uploaded
 coordinates.sources = ["Google maps", "Google earth", "GPS device", "camera/phone", "physical maps", "other"]
@@ -92,6 +93,7 @@ grails.resources.adhoc.includes = ['/images/**', '/css/**', '/js/**', '/plugins/
 // Legacy setting for codec used to encode data with ${}
 grails.views.default.codec = "html"
 grails.mime.file.extensions = true
+//grails.mime.use.accept.header = false
 
 // The default scope for controllers. May be prototype, session or singleton.
 // If unspecified, controllers are prototype scoped.
@@ -165,88 +167,39 @@ environments {
         security.cas.contextPath = ""
     }
 }
-theAppname = appName
+
+def loggingDir = (System.getProperty('catalina.base') ? System.getProperty('catalina.base') + '/logs' : './logs')
+def appName = grails.util.Metadata.current.'app.name'
 // log4j configuration
-if (!logging.dir) {
-    logging.dir = (System.getProperty('catalina.base') ? System.getProperty('catalina.base') + '/logs'  : '/var/log/tomcat7')
-}
 log4j = {
+// Example of changing the log pattern for the default console
+// appender:
     appenders {
-        environments{
+        environments {
+            production {
+                rollingFile name: "tomcatLog", maxFileSize: '1MB', file: "${loggingDir}/${appName}.log", threshold: Level.ERROR, layout: pattern(conversionPattern: "%d %-5p [%c{1}] %m%n")
+            }
             development {
-                console name: "stdout",
-                        layout: pattern(conversionPattern: "%d %-5p [%c{1}]  %m%n"),
-                        threshold: org.apache.log4j.Level.DEBUG
-                rollingFile name: "${config.theAppname}Log",
-                        maxFileSize: 104857600,
-                        file: config.logging.dir+"/${config.theAppname}.log",
-                        threshold: org.apache.log4j.Level.INFO,
-                        layout: pattern(conversionPattern: "%d %-5p [%c{1}]  %m%n")
-                rollingFile name: "stacktrace",
-                        maxFileSize: 104857600,
-                        file: config.logging.dir+"/${config.theAppname}-stacktrace.log"
+                console name: "stdout", layout: pattern(conversionPattern: "%d %-5p [%c{1}] %m%n"), threshold: Level.DEBUG
             }
             test {
-                rollingFile name: "${config.theAppname}Log",
-                        maxFileSize: 104857600,
-                        file: config.logging.dir+"/${config.theAppname}.log",
-                        threshold: org.apache.log4j.Level.INFO,
-                        layout: pattern(conversionPattern: "%d %-5p [%c{1}]  %m%n")
-                rollingFile name: "stacktrace",
-                        maxFileSize: 104857600,
-                        file: config.logging.dir+"${config.theAppname}-stacktrace.log"
-            }
-            production {
-                rollingFile name: "${config.theAppname}Log",
-                        maxFileSize: 104857600,
-                        file: config.logging.dir+"${config.theAppname}.log",
-                        threshold: org.apache.log4j.Level.INFO,
-                        layout: pattern(conversionPattern: "%d %-5p [%c{1}]  %m%n")
-                rollingFile name: "stacktrace",
-                        maxFileSize: 104857600,
-                        file: config.logging.dir+"/${config.theAppname}-stacktrace.log"
+                rollingFile name: "tomcatLog", maxFileSize: '1MB', file: "/tmp/${appName}", threshold: Level.DEBUG, layout: pattern(conversionPattern: "%d %-5p [%c{1}] %m%n")
             }
         }
     }
-
-    environments {
-        development {
-            all additivity: false, stdout: [
-                    'grails.app.controllers.au.org.ala',
-                    'grails.app.domain.au.org.ala',
-                    'grails.app.services.au.org.ala',
-                    'grails.app.taglib.au.org.ala',
-                    'grails.app.conf.au.org.ala',
-                    'grails.app.filters.au.org.ala',
-                    'au.org.ala.cas.client',
-                    'au.org.ala.pigeonhole.command'
-            ]
-        }
+    root {
+    // change the root logger to my tomcatLog file
+        error 'tomcatLog'
+        warn 'tomcatLog'
+        additivity = true
     }
 
-    all additivity: false, "${config.appName}Log": [
-            'grails.app.controllers.au.org.ala',
-            'grails.app.domain.au.org.ala',
-            'grails.app.services.au.org.ala',
-            'grails.app.taglib.au.org.ala',
-            'grails.app.conf.au.org.ala',
-            'grails.app.filters.au.org.ala'
-    ]
+    debug 'grails.app',
+            'grails.app.domain',
+            'grails.app.controller',
+            'grails.app.service',
+            'grails.app.tagLib',
+            'au.org.ala.pigeonhole',
+            'grails.app.jobs'
 
-//    debug 'grails.app.controllers.au.org.ala',
-//            //'ala',
-//            'au.org.ala.web'//,
-//            //'au.org.ala.cas.client'
-
-    error  'org.codehaus.groovy.grails.web.servlet',        // controllers
-            'org.codehaus.groovy.grails.web.pages',          // GSP
-            'org.codehaus.groovy.grails.web.sitemesh',       // layouts
-            'org.codehaus.groovy.grails.web.mapping.filter', // URL mapping
-            'org.codehaus.groovy.grails.web.mapping',        // URL mapping
-            'org.codehaus.groovy.grails.commons',            // core / classloading
-            'org.codehaus.groovy.grails.plugins',            // plugins
-            'org.codehaus.groovy.grails.orm.hibernate',      // hibernate integration
-            'org.springframework',
-            'org.hibernate',
-            'net.sf.ehcache.hibernate'
 }
