@@ -151,7 +151,7 @@ $(document).ready(function() {
         var location;
         var id = $(this).find("option:selected").val();
 
-        if (id) {
+        if (id && id != 'error') {
             $.each(bookmarks, function(i, el) {
                 if (id == el.locationId) {
                     location = el;
@@ -165,6 +165,8 @@ $(document).ready(function() {
             } else {
                 alert("Error: bookmark could not be loaded.");
             }
+        } else if (id == 'error') {
+            loadBookmarks();
         }
     });
 
@@ -176,7 +178,7 @@ function loadBookmarks() {
         dataType: 'json',
     }).done(function (data) {
         if (data.error) {
-            Dialogs.message("Bookmark could not be loaded - " + data.error, 'Error');
+            alert("Bookmark could not be loaded - " + data.error, 'Error');
         } else {
             // reload bookmarks
             bookmarks = data; // cache json
@@ -188,7 +190,7 @@ function loadBookmarks() {
         }
     }).fail(function( jqXHR, textStatus, errorThrown ) {
         //alert("Error: " + textStatus + " - " + errorThrown);
-        $('#bookmarkedLocations').append('<option value="">Error: bookmarks could not be loaded at this time</option>');
+        $('#bookmarkedLocations').append('<option value="error">Error: bookmarks could not be loaded at this time. Select to retry.</option>');
     });
 }
 

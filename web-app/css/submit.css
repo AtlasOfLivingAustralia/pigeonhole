@@ -75,11 +75,17 @@ input#speciesLookup {
     /*margin-top: 5px;*/
 }
 
+#tagsBlock {
+    margin: 10px 0;
+}
+
 #species .label {
+    display: inline-block;
     font-size: 12px;
     font-weight: normal;
-    padding: 9px 10px 7px;
-    margin-right: 5px;
+    padding: 6px 9px 6px;
+    margin-right: 4px;
+    margin-bottom: 4px;
 }
 
 a.remove {
@@ -87,10 +93,6 @@ a.remove {
     vertical-align: top;
     margin-left: 5px;
     margin-top: -2px;
-}
-
-#tagsBlock {
-    margin: 10px 0;
 }
 
 .helphint {
@@ -108,9 +110,14 @@ a.remove {
 /*}*/
 
 #species .row-fluid .span6 {
-    display: table-cell;
+    /*display: table-cell;*/
     /*vertical-align: bottom;*/
-    float: none;
+    /*float: none;*/
+}
+
+#sightingForm input[type=radio] {
+    vertical-align: top;
+    margin-left: 5px;
 }
 
 #mapWidget {
@@ -136,8 +143,8 @@ a.remove {
     padding: 5px 9px 0px 4px;
 }
 
-#identificationChoice {
-    margin-bottom: 15px;
+#identificationChoice, #showConfident {
+    margin-bottom: 10px;
 }
 
 #speciesMisc {

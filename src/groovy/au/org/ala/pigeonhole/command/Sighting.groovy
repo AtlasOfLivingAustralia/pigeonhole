@@ -57,6 +57,7 @@ class Sighting {
     String occurrenceID
     String dateCreated
     String lastUpdated
+    String error // fromm webservice failures
 
     static constraints = {
         scientificName(nullable: true, validator: { val, obj->

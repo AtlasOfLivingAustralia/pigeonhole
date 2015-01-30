@@ -251,6 +251,7 @@ $(document).ready(function() {
                         }
                         $('#noTaxa').hide();
                         $('#matchedTaxa').show();
+                        $('#identificationChoice').show();
                     }
                 })
                 .fail(function( jqXHR, textStatus, errorThrown ) {
@@ -291,20 +292,20 @@ $(document).ready(function() {
     });
 
     // click event on confidence button group
-    $('#confident, #uncertain').click(function(e) {
+    $('#confidentZ#uncertain').click(function(e) {
         e.preventDefault();
         var $this = this;
-        var highlightClass = 'btn-primary';
+        var highlightClass = 'btn-inverse';
         $('#confident, #uncertain').removeClass(highlightClass);
-        $('#showConfident, #showUncertain').addClass('hide');
+        //$('#showConfident, #showUncertain').addClass('hide');
         $($this).addClass(highlightClass);
-        $('#speciesMisc').removeClass('hide')
+        //$('#speciesMisc').removeClass('hide')
         if ($($this).attr('id') == 'confident') {
-            $('#showConfident').removeClass('hide');
+            //$('#showConfident').removeClass('hide');
             $('#identificationVerificationStatus').val('Confident');
             $('#requireIdentification').prop('checked', false);
         } else {
-            $('#showUncertain').removeClass('hide');
+            //$('#showUncertain').removeClass('hide');
             $('#identificationVerificationStatus').val('Uncertain');
             $('#requireIdentification').prop('checked', true);
         }

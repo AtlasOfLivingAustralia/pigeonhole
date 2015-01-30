@@ -72,7 +72,7 @@
 <!-- Species -->
 <div class="boxed-heading" id="species" data-content="Species">
     <div class="row-fluid">
-        <div class="span6">
+        <div class="span4">
             <div id="taxonDetails" class="well well-small" style="display: none;">
                 <table>
                     <tr>
@@ -88,28 +88,32 @@
                 <input type="hidden" name="guid" id="guid" value="${taxon?.guid}"/>
                 <input type="hidden" name="scientificName" id="scientificName" value="${taxon?.scientificName}"/>
                 <input type="hidden" name="commonName" id="commonName" value="${taxon?.commonName}"/>
-                <input type="hidden" name="identificationVerificationStatus" id="identificationVerificationStatus" value="${taxon?.identificationVerificationStatus}"/>
-                <a href="#" class="remove" title="remove this item"><i class="remove icon-remove">&nbsp;</i></a>
-            </div>
-            <div id="identificationChoice">
-                <div>How confident are you with the species identification?</div>
-                <div class="btn-group">
-                    <button class="btn tooltips" id="confident" title="I know the common name or scientific name"><b>Confident</b></button>
-                    <button class="btn tooltips" id="uncertain" title="I'm not sure of the name"><b>Uncertain</b></button>
-                </div>
+                %{--<input type="hidden" name="identificationVerificationStatus" id="identificationVerificationStatus" value="${taxon?.identificationVerificationStatus}"/>--}%
+                %{--<a href="#" class="remove" title="remove this item"><i class="remove icon-remove">&nbsp;</i></a>--}%
             </div>
             <div id="tagsBlock"></div>
 
         </div>
-        <div class="span6">
-            <div id="showConfident" class="hide">
+        <div class="span8">
+            <div id="showConfident" class="">
                 <div id="noTaxa" style="display: inherit;">Type a scientific or common name into the box below and choose from the auto-complete list.</div>
                 <div id="matchedTaxa" style="display: none;">Not the right species? To change identification, type a scientific
                 or common name into the box below and choose from the auto-complete list.</div>
                 <input class="input-xlarge typeahead ${hasErrors(bean:sighting,field:'scientificName','validationErrors')}" id="speciesLookup" type="text">
             </div>
+            <div id="identificationChoice" class="hide">
+                <div>How confident are you with the species identification?
+                    <div class="btn-group hide">
+                        <button class="btn btn-small tooltips" id="confidentZ" title="I know the common name or scientific name"><b>Confident</b></button>
+                        <button class="btn btn-small tooltips" id="uncertainZ" title="I'm not sure of the name"><b>Uncertain</b></button>
+                    </div>
+                    <g:radioGroup name="identificationVerificationStatus" labels="['Confident','Uncertain']" values="['confident','uncertain']" value="${sighting?.identificationVerificationStatus?.toLowerCase()?:'confident'}" >
+                        ${it.radio} ${it.label}
+                    </g:radioGroup>
+                </div>
+            </div>
             <div id="showUncertain" class="hide">
-                <div>Narrow identification down to a species group and sub-group:</div>
+                <div>(Optional) Tag this sighting with species group and/or sub-group:</div>
                 <g:select name="tag" from="${speciesGroupsMap?.keySet()}" id="speciesGroups" class="slim ${hasErrors(bean:sighting,field:'scientificName','validationErrors')}" noSelection="['':'-- Species group --']"/>
                 <g:select name="tag" from="${[]}" id="speciesSubgroups" class="slim" noSelection="['':'-- Subgroup (select a group first) --']"/>
             </div>
