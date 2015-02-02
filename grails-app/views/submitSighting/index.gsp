@@ -72,7 +72,7 @@
 <!-- Species -->
 <div class="boxed-heading" id="species" data-content="Species">
     <div class="row-fluid">
-        <div class="span4">
+        <div id="speciesOne">
             <div id="taxonDetails" class="well well-small" style="display: none;">
                 <table>
                     <tr>
@@ -92,9 +92,8 @@
                 %{--<a href="#" class="remove" title="remove this item"><i class="remove icon-remove">&nbsp;</i></a>--}%
             </div>
             <div id="tagsBlock"></div>
-
         </div>
-        <div class="span8">
+        <div id="speciesTwo">
             <div id="showConfident" class="">
                 <div id="noTaxa" style="display: inherit;">Type a scientific or common name into the box below and choose from the auto-complete list.</div>
                 <div id="matchedTaxa" style="display: none;">Not the right species? To change identification, type a scientific
@@ -103,10 +102,6 @@
             </div>
             <div id="identificationChoice" class="hide">
                 <div>How confident are you with the species identification?
-                    <div class="btn-group hide">
-                        <button class="btn btn-small tooltips" id="confidentZ" title="I know the common name or scientific name"><b>Confident</b></button>
-                        <button class="btn btn-small tooltips" id="uncertainZ" title="I'm not sure of the name"><b>Uncertain</b></button>
-                    </div>
                     <g:radioGroup name="identificationVerificationStatus" labels="['Confident','Uncertain']" values="['confident','uncertain']" value="${sighting?.identificationVerificationStatus?.toLowerCase()?:'confident'}" >
                         ${it.radio} ${it.label}
                     </g:radioGroup>
@@ -127,6 +122,7 @@
                 </div>
             </g:if>
         </div>
+        <a href="#identifyHelpModal" role="button" class="btn btn-primary" data-toggle="modal">Help me identify my sighting</a>
     </div>
 </div>
 
@@ -287,6 +283,25 @@
         %{--<button class="btn btn-primary">Save changes</button>--}%
     </div>
 </div><!-- /#speciesBrowserModal -->
+<!-- Modal -->
+<div id="identifyHelpModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="identifyHelpModalLabel" aria-hidden="true">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="identifyHelpModalLabel">Help with species identification</h3>
+    </div>
+    <div class="modal-body">
+        The following page will guide you through the process of identiying a species of interest by allowing you to browse
+        images of species from common "groups". The suggested species are selected from a list of species known to be found in the area
+        you specify (via a simple map tool). Once you choose a candidate species you will be brought back to this page with the chosen
+        species selected for you (note you will lose any data on this page so do this step first).
+    </div>
+    <div class="modal-footer">
+        <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+        <g:set var="thisUrl" value="${g.createLink(controller: params.controller, action: params.action, absolute: true)}"/>
+        <a href="${g.createLink(uri:'/identify?returnUrl=' + thisUrl )}" class="btn btn-primary">Proceed to Identification Help page</a>
+    </div>
+</div><!-- /#identifyHelpModal -->
+
 </form>
 </body>
 </html>

@@ -79,6 +79,12 @@ input#speciesLookup {
     margin: 10px 0;
 }
 
+#speciesOne, #speciesTwo {
+    float: left;
+    max-width: 47%;
+    margin-right: 10px;
+}
+
 #species .label {
     display: inline-block;
     font-size: 12px;
