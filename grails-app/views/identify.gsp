@@ -18,7 +18,7 @@
   - rights and limitations under the License.
   --}%
 
-<r:require modules="jquery, jqueryUIEffects, leaflet, inview"/>
+<r:require modules="jquery, jqueryUIEffects, leaflet, inview, purl"/>
         <style type="text/css">
             #locationLatLng {
                 color: #DDD;
@@ -319,7 +319,14 @@
                 });
 
                 $('#selectedSpeciesBtn').click(function() {
-                    alert("your species is (LSID): " + $('#imgModal').data('lsid'));
+                    var returnUrl = $.url().param("returnUrl");
+                    var lsid = $('#imgModal').data('lsid');
+
+                    if (returnUrl) {
+                        window.location = returnUrl + "/" + lsid;
+                    } else {
+                        alert("your species is (LSID): " + lsid);
+                    }
                 });
 
 
@@ -579,10 +586,10 @@
 	</head>
 	<body class="nav-species">
         <h2>Help with species identification</h2>
-        <div class="boxed-heading" id="location" data-content="Location">
+        <div class="boxed-heading" id="location" data-content="1. Specify a location">
             <div class="row">
                 <div class="span5">
-                    <p>Specify a location for the sighting:</p>
+                    <p>Where did you see the species of interest?</p>
                     <button class="btn" onClick="geolocate()"><i class="icon-map-marker" style="margin-left:-5px;"></i> Use my location</button>
                     <div style="margin: 10px 0;"><span class="label label-info">OR</span></div>
                     <div class="hide">Enter an address, location or coordinates</div>
@@ -602,8 +609,8 @@
             </div>
         </div>
 
-        <div class="boxed-heading" id="species_group" data-content="Species group">
-            <p>Narrow down the identification by first choosing a species group.</p>
+        <div class="boxed-heading" id="species_group" data-content="2. Narrow to a species group">
+            <p>Select the group that best fits the species (try different groups if unsuccessful)</p>
             <div id="speciesGroup"><span>[Specify a location first]</span></div>
             <r:img uri="/images/spinner.gif" class="spinner1 hide"/>
             <p class="hide">Select a species sub-group (optional)</p>
@@ -611,10 +618,10 @@
             <div class="clearfix"></div>
         </div>
 
-        <div class="boxed-heading" id="browse_species_images" data-content="Browse species images">
+        <div class="boxed-heading" id="browse_species_images" data-content="3. Browse species images">
             <p>
-                Narrow down the identification by browsing species images &mdash;
-                <g:checkBox name="toggleNoImages" id="toggleNoImages" class="" value="${true}"/> hide species without images
+                Look for images that match the species you are trying to identify. Click the image for more example images of that species.
+                <br><g:checkBox name="toggleNoImages" id="toggleNoImages" class="" value="${true}"/> hide species without images
             </p>
             <div id="speciesImages">
                 <span>[Specify a location first]</span>

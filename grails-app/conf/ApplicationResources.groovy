@@ -65,6 +65,11 @@ modules = {
         resource url:[dir:'js', file:'jquery.qtip.min.js']
     }
 
+    purl {
+        dependsOn 'jquery' // not strictly needed but syntax is nicer with jQuery
+        resource url:[dir:'js', file:'purl.js']
+    }
+
     moment {
         resource url:'js/moment.min.js'
         resource url:'js/moment-duration-format.js'
