@@ -54,3 +54,16 @@
 #sightingLinks {
     float: right;
 }
+
+.speciesName {
+    font-weight: bold;
+    font-style: italic;
+}
+
+.actionButtons {
+    margin-bottom: 5px;
+}
+
+.actionButtons .btn-small {
+    font-size: 12px;
+}

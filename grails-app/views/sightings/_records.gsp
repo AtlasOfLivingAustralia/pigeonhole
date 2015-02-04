@@ -1,3 +1,4 @@
+<%@ page import="org.codehaus.groovy.grails.web.json.JSONObject" %>
 %{--
 - Copyright (C) 2014 Atlas of Living Australia
 - All Rights Reserved.
@@ -15,27 +16,47 @@
 <table class="table table-bordered table-condensed table-striped">
     <thead>
     <tr>
-        <th>Record ID</th>
-        <th>Identification</th>
+        <th style="width:20%;">Identification</th>
         <th>Date</th>
-        <th>User</th>
-        <th>Location</th>
+        <th style="width:30%;">Location</th>
+        <th>Action</th>
         <th>Images</th>
     </tr>
     </thead>
     <tbody>
-    <g:each in="${sightings}" var="s">
+    <g:each in="${sightings.records}" var="s">
         <tr>
-            <td>${s.occurrenceID}</td>
-            <td><i>${s.scientificName}</i> ${raw((s.commonName) ? '<br>' + s.commonName: '')} ${raw((s.tags) ? '<br>' + s.tags.join(', ') : '')}</td>
-            <td>${s.eventDate?.substring(0,10)}</td>
             <td>
-                ${s.userId}
-                <g:if test="${user?.userId == s.userId}">
-                    <br><a href="${g.createLink(controller: 'submitSighting', action:'edit', id: s.occurrenceID)}" class="btn btn-small editBtn" data-recordid="occurrenceID">edit&nbsp;sighting</a>
+                <span class="speciesName">${s.scientificName}</span> ${raw((s.commonName) ? '<br>' + s.commonName: '')} ${raw((s.tags) ? '<br>' + s.tags.join(', ') : '')}
+            </td>
+            <td>
+                <span style="white-space:nowrap;">
+                    <g:if test="${!org.codehaus.groovy.grails.web.json.JSONObject.NULL.equals(s.get("eventDate"))}">
+                        ${(s.eventDate.size() >= 10) ? s.eventDate?.substring(0,10) : s.eventDate}
+                    </g:if>
+                </span>
+            </td>
+            <td>
+                ${s.locality}
+                <g:if test="${s.decimalLatitude && s.decimalLatitude != 'null' && s.decimalLongitude && s.decimalLongitude != 'null' }">
+                    <div>
+                        Lat: ${s.decimalLatitude}<br>
+                        Lng: ${s.decimalLongitude}
+                    </div>
                 </g:if>
             </td>
-            <td>${s.locality} (${s.decimalLatitude}, ${s.decimalLongitude})</td>
+            <td>
+                <g:if test="${s.occurrenceID}">
+                    <a href="http://biocache.ala.org.au/occurrence/${s.occurrenceID}">View public record</a>
+                </g:if>
+                <g:if test="${user?.userId == s.userId || auth.ifAnyGranted(roles:'ROLE_ADMIN', "1")}">
+                    <div class="actionButtons">
+                        <a href="${g.createLink(controller: 'submitSighting', action:'edit', id: s.occurrenceID)}" class="btn btn-small editBtn" data-recordid="occurrenceID">Edit</a>
+                        <button class="btn btn-small deleteRecordBtn" data-recordid="${s.occurrenceID}">Delete</button>
+                    </div>
+                </g:if>
+                <g:if test="${user?.userId == s.userId}"></g:if>
+            </td>
             <td>
                 <g:each in="${s.multimedia}" var="i">
                     <g:if test="${i.identifier}"><img src="${i.identifier}" alt="species thumbnail" style="max-height: 100px;  max-width: 100px;"/></g:if>
@@ -46,7 +67,17 @@
     <r:script>
         $(function () {
            //
+            $('.deleteRecordBtn').click(function(e) {
+                e.preventDefault();
+                var id = $(this).data('recordid');
+                if (confirm("Are you sure you want to delete this record?")) {
+                    window.location = "${g.createLink(controller: 'sightings', action:'delete')}/" + id;
+                }
+            });
         });
     </r:script>
     </tbody>
 </table>
+<div class="pagination">
+    <g:paginate total="${sightings.totalRecords?:0}" max="${params.pageSize?:10}" offset="${params.start?:0}"/>
+</div>

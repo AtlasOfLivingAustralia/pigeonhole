@@ -23,7 +23,7 @@ import groovyx.net.http.HTTPBuilder
 import org.codehaus.groovy.grails.web.json.JSONArray
 import org.codehaus.groovy.grails.web.json.JSONElement
 import org.codehaus.groovy.grails.web.json.JSONObject
-import org.codehaus.groovy.runtime.typehandling.GroovyCastException
+import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 
 class EcodataService {
     def grailsApplication, httpWebService
@@ -31,16 +31,42 @@ class EcodataService {
     Sighting getSighting(String id) {
         Sighting sc = new Sighting()
 
-        try {
-            def json = httpWebService.getJson("${grailsApplication.config.ecodata.baseUrl}/record/${id}")
-            log.debug "json = ${json}"
-            sc = new Sighting(json)
-        } catch (Exception gce) {
-            log.error "getSighting - " + gce, gce
-            sc.metaClass.errors = gce.message
+        def json = httpWebService.getJson("${grailsApplication.config.ecodata.baseUrl}/record/${id}")
+
+        if (json instanceof JSONObject && json.has("error")) {
+            // WS failed
+            sc.error = json.error
+        } else if (json instanceof JSONObject) {
+            try {
+                sc = new Sighting(json)
+            } catch (Exception e) {
+                log.error "Couldn't unmarshall JSON - " + e.message
+                sc.error = "Error: sighting could not be loaded - ${e.message}"
+            }
+        } else {
+            log.error "Unexpected error: ${json}"
+            sc.error = "Unexpected error: ${json}"
         }
 
         sc
+    }
+
+    /**
+     * Non JSON marshalling method for getting userId for a record id
+     * Needed for older records which can't be marshalled into the Sighting Obj
+     *
+     * @param id
+     * @return
+     */
+    String getUserIdForSightingId(String id) {
+        def json = httpWebService.getJson("${grailsApplication.config.ecodata.baseUrl}/record/${id}")
+        String userId = ""
+
+        if (json instanceof JSONObject && json.has("userId")) {
+            userId = json.userId
+        }
+
+        userId
     }
 
     Map submitSighting(Sighting sightingCommand) {
@@ -54,20 +80,43 @@ class EcodataService {
         [status:result.status?:200, text: result.error?:result]
     }
 
-    def getSightingsForUserId(String userId) {
-        JSONObject res = httpWebService.getJson("${grailsApplication.config.ecodata.baseUrl}/record/user/${userId}")
-        JSONArray sightings
+    private String getQueryStringForParams(GrailsParameterMap params, Boolean convertKeys) {
+        params.remove("controller")
+        params.remove("action")
+        params.remove("format")
+        String queryString = params.toQueryString()
 
-        if (res?.records) {
-            sightings = res.records
+        if (convertKeys) {
+            // convert Grails pagination params to SOLR params
+            queryString = queryString.replaceAll("max", "pageSize")
+            queryString = queryString.replaceAll("offset", "start")
+        }
+
+        log.debug "params string = ${queryString}"
+
+        queryString
+    }
+
+    def deleteSighting(String id) {
+        doDelete("${grailsApplication.config.ecodata.baseUrl}/record/${id}") // returns statusCode 200|500
+    }
+
+    def getSightingsForUserId(String userId, GrailsParameterMap params) {
+        httpWebService.getJson("${grailsApplication.config.ecodata.baseUrl}/record/user/${userId}" + getQueryStringForParams(params, true))
+    }
+
+    def getRecentSightings(GrailsParameterMap params) {
+        //log.debug "records = " + httpWebService.getJson("${grailsApplication.config.ecodata.baseUrl}/record")
+        JSONObject sightings = new JSONObject()
+        def result = httpWebService.getJson("${grailsApplication.config.ecodata.baseUrl}/record" + getQueryStringForParams(params, true))
+
+        if (result instanceof JSONArray) {
+            sightings.put("records", result)
+        } else if (result instanceof JSONObject) {
+            sightings = result
         }
 
         sightings
-    }
-
-    def getRecentSightings() {
-        //log.debug "records = " + httpWebService.getJson("${grailsApplication.config.ecodata.baseUrl}/record")
-        httpWebService.getJson("${grailsApplication.config.ecodata.baseUrl}/record")
     }
 
     def getBookmarkLocationsForUser(String userId) {
@@ -114,6 +163,22 @@ class EcodataService {
                 def error = [error: "Unexpected error: ${resp.statusLine.statusCode} : ${resp.statusLine.reasonPhrase}", status: resp.statusLine.statusCode]
                 log.error "Oops: " + error.error
                 return error
+            }
+        }
+    }
+
+    def doDelete(String url) {
+        log.debug "DELETE url = ${url}"
+        def conn = new URL(url).openConnection()
+        try {
+            conn.setRequestMethod("DELETE")
+            return conn.getResponseCode()
+        } catch(Exception e){
+            log.error e.message
+            return 500
+        } finally {
+            if (conn != null){
+                conn.disconnect()
             }
         }
     }

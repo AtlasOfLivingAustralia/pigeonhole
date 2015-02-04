@@ -26,12 +26,12 @@
 <html>
 <head>
     <meta name="layout" content="main"/>
-    <title>Recent sightings</title>
+    <title>${pageHeading}</title>
     <r:require modules="jqueryMigrate"/>
 </head>
 <body class="nav-species">
 <g:render template="/topMenu" />
-<h2>Recent Sightings</h2>
+<h2>${pageHeading}</h2>
 <g:if test="${flash.message}">
     <div class="container-fluid">
         <div class="alert alert-info">
@@ -40,13 +40,18 @@
         </div>
     </div>
 </g:if>
-<div class="row-fluid">
+%{--${sightings} ${sightings.getClass()?.name}--}%
+<div class="row-fluid" id="content">
     <div class="span12">
-        <g:if test="${sightings && !sightings.hasProperty('error')}">
+        <g:if test="${sightings && sightings.records}">
             <g:render template="records"/>
         </g:if>
-        <g:elseif test="${sightings.error}">
-            Error: ${sightings}
+        <g:elseif test="${sightings && sightings instanceof org.codehaus.groovy.grails.web.json.JSONObject && sightings.has('error')}">
+            <div class="container-fluid">
+                <div class="alert alert-error">
+                    <b>Error:</b> ${sightings.error} (${sightings.exception})
+                </div>
+            </div>
         </g:elseif>
         <g:else>
             No sightings found

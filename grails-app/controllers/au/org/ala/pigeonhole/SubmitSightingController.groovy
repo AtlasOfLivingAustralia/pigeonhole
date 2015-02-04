@@ -23,6 +23,7 @@ class SubmitSightingController {
     def httpWebService, authService, ecodataService, bieService
 
     def index(String id) {
+        log.debug "ID = ${id} || ${params}"
         [
                 taxon: getTaxon(id),
                 coordinateSources: grailsApplication.config.coordinates.sources,
@@ -33,15 +34,17 @@ class SubmitSightingController {
     }
 
     def edit(String id) {
+        log.debug "id = ${id} || ${params}"
         Sighting sighting = ecodataService.getSighting(id)
 
-        if (sighting.hasProperty('error')) {
-            flash.message = sighting.error
+        if (sighting.error) {
+            //flash.message = sighting.error
             render view: "index", model: [
                     sighting: sighting,
                     user:authService.userDetails()
             ]
         } else {
+            log.debug "EDIT - guid = ${sighting.guid} || getTaxon(sighting.guid)"
             render view: "index", model: [
                     sighting: sighting,
                     taxon: getTaxon(sighting.guid),
