@@ -27,6 +27,7 @@ class SightingMarshaller {
     void register() {
         JSON.registerObjectMarshaller(Sighting) { Sighting sighting ->
             return [
+                    "occurrenceID" : sighting.occurrenceID,
                     "userId" : sighting.userId,
                     "guid" : sighting.guid,
                     "scientificName" : sighting.scientificName,

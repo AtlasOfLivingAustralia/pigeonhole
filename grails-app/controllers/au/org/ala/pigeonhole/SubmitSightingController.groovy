@@ -33,8 +33,8 @@ class SubmitSightingController {
         ]
     }
 
-    def edit(String id) {
-        log.debug "id = ${id} || ${params}"
+    def edit(String id, String guid) {
+        log.debug "id = ${id} || guid = ${guid} || params = ${params}"
         Sighting sighting = ecodataService.getSighting(id)
 
         if (sighting.error) {
@@ -47,7 +47,7 @@ class SubmitSightingController {
             log.debug "EDIT - guid = ${sighting.guid} || getTaxon(sighting.guid)"
             render view: "index", model: [
                     sighting: sighting,
-                    taxon: getTaxon(sighting.guid),
+                    taxon: getTaxon(guid?:sighting.guid),
                     coordinateSources: grailsApplication.config.coordinates.sources,
                     speciesGroupsMap: bieService.getSpeciesGroupsMap(),
                     user:authService.userDetails()

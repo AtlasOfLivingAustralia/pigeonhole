@@ -21,6 +21,8 @@ class UrlMappings {
         "/uploads/$file**"(controller:"image", action:"index")
         "/"(controller: "submitSighting", action:"index")
         "/$id**"(controller: "submitSighting", action:"index")
+        "/edit/$id**"(controller: "submitSighting", action:"edit")
+        "/edit/$id/$guid"(controller: "submitSighting", action:"edit")
 
         "/$controller/$action?/$id?(.$format)?"{
             constraints {

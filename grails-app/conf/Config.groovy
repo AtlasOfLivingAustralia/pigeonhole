@@ -45,8 +45,8 @@ reloadable.cfgs = ["file:/data/${appName}/config/${appName}-config.properties"]
 runWithNoExternalConfig = true
 //security.cas.bypass = true
 security.cas.casServerName = 'https://auth.ala.org.au'
-security.cas.uriFilterPattern = '/,/.*'
-security.cas.authenticateOnlyIfLoggedInPattern = "/records"
+security.cas.uriFilterPattern = '/(?!sightings$).*'
+security.cas.authenticateOnlyIfLoggedInPattern = "/sightings"
 security.cas.uriExclusionFilterPattern = '/images.*,/css.*,/js.*,/ajax/upload,/uploads/.*'
 security.cas.loginUrl = 'https://auth.ala.org.au/cas/login'
 security.cas.logoutUrl = 'https://auth.ala.org.au/cas/logout'
@@ -55,8 +55,8 @@ security.cas.bypass  // set to true for non-ALA deployment
 
 bie.baseUrl = "http://bie.ala.org.au"
 biocache.baseUrl = "http://biocache.ala.org.au/ws";
-ecodata.baseUrl = "http://144.6.225.49:8080/ecodata"
-locationBookmark.baseUrl = "http://fielddata.ala.org.au/location/"
+ecodata.baseUrl = "http://localhost:8080/ecodata"
+locationBookmark.baseUrl = "http://localhost:8080/ecodata/location/"
 
 media.uploadDir = '/data/cache/imageUploads/' // Path to where files will be uploaded
 coordinates.sources = ["Google maps", "Google earth", "GPS device", "camera/phone", "physical maps", "other"]
@@ -150,7 +150,7 @@ environments {
         grails.serverURL = "http://${grails.hostname}:8090/${appName}"
         security.cas.appServerName = "http://${grails.hostname}:8090"
         security.cas.contextPath = "/${appName}"
-        submit.debug = true
+        //submit.debug = true
     }
     test {
         grails.hostname = "144.6.225.49"
@@ -194,11 +194,13 @@ log4j = {
         additivity = true
     }
 
-    debug 'grails.app',
-            'grails.app.domain',
-            'grails.app.controller',
-            'grails.app.service',
-            'grails.app.tagLib',
-            'grails.app.jobs',
-            'au.org.ala.pigeonhole'
+    error   'au.org.ala.cas.client',
+            'grails.spring.BeanBuilder',
+            'grails.plugin.webxml',
+            'grails.plugin.cache.web.filter',
+            'grails.app.services.org.grails.plugin.resource',
+            'grails.app.taglib.org.grails.plugin.resource',
+            'grails.app.resourceMappers.org.grails.plugin.resource'
+
+    debug   'grails.app'
 }

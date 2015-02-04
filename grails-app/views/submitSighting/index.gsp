@@ -69,8 +69,8 @@
 </g:if>
 <g:if test="${sighting && !sighting?.error || !sighting}">
 <form id="sightingForm" action="${g.createLink(controller:'submitSighting', action:'upload')}" method="POST">
-
-<!-- Species -->
+    <input type="hidden" name="occurrenceID" id="occurrenceID" value="${sighting?.occurrenceID}"/>
+    <!-- Species -->
     <div class="boxed-heading" id="species" data-content="Species">
         <div class="row-fluid">
             <div id="speciesOne">
