@@ -13,11 +13,19 @@
 - implied. See the License for the specific language governing
 - rights and limitations under the License.
 --}%
+<g:if test="${sightings?.totalRecords > 0}">
+    <div id="recordsPaginateSummary">
+        <g:set var="total" value="${sightings.totalRecords}"/>
+        <g:set var="fromIndex" value="${(params.offset) ? (params.offset.toInteger() + 1) : 1}"/>
+        <g:set var="toIndex" value="${((params.offset?:0).toInteger() + (params.max?:10).toInteger())}"/>
+        Displaying records ${fromIndex} to ${(toIndex < total) ? toIndex : total} of ${total}
+    </div>
+</g:if>
 <table class="table table-bordered table-condensed table-striped">
     <thead>
     <tr>
         <th style="width:20%;">Identification</th>
-        <th>Date</th>
+        <th>Date submitted</th>
         <th style="width:30%;">Location</th>
         <th>Action</th>
         <th>Images</th>
@@ -66,7 +74,7 @@
     </g:each>
     <r:script>
         $(function () {
-           //
+            //
             $('.deleteRecordBtn').click(function(e) {
                 e.preventDefault();
                 var id = $(this).data('recordid');

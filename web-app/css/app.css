@@ -67,3 +67,7 @@
 .actionButtons .btn-small {
     font-size: 12px;
 }
+
+#recordsPaginateSummary {
+    margin: 0 0 5px 2px;
+}
