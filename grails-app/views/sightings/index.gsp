@@ -27,7 +27,7 @@
 <head>
     <meta name="layout" content="main"/>
     <title>${pageHeading}</title>
-    <r:require modules="jqueryMigrate"/>
+    <r:require modules="jqueryMigrate, moment"/>
 </head>
 <body class="nav-species">
 <g:render template="/topMenu" />

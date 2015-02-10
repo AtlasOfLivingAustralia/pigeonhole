@@ -228,9 +228,9 @@ $(document).ready(function() {
     });
 
     // autocomplete on species lookup
-    $('#speciesLookup').alaAutocomplete({maxHits: 15}); // will trigger a change event on #guid when item is selected
+    $('#speciesLookup').alaAutocomplete({maxHits: 15}); // will trigger a change event on #taxonConceptID when item is selected
 
-    // detect change on #guid input (autocomplete selection) and load species details
+    // detect change on #taxonConceptID input (autocomplete selection) and load species details
     $('#guid').change(function(e) {
         $('#speciesLookup').alaAutocomplete.reset();
         var guid = $(this).val();
@@ -380,7 +380,7 @@ function clearTaxonDetails() {
     $('#taxonDetails .commonName').html('');
     $('#taxonDetails img').attr('src','');
     $('#taxonDetails a').attr('href','').html('');
-    $('#guid, #scientificName, #commonName').val('');
+    $('#taxonConceptID, #scientificName, #commonName').val('');
 }
 
 /**

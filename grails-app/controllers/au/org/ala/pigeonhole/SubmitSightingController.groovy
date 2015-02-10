@@ -17,6 +17,7 @@ package au.org.ala.pigeonhole
 
 import au.org.ala.pigeonhole.command.Sighting
 import grails.converters.JSON
+import org.codehaus.groovy.grails.web.json.JSONArray
 import org.codehaus.groovy.grails.web.json.JSONObject
 
 class SubmitSightingController {
@@ -24,8 +25,9 @@ class SubmitSightingController {
 
     def index(String id) {
         log.debug "ID = ${id} || ${params}"
+        log.debug "getTaxonForGuid = ${getTaxonForGuid(id)}"
         [
-                taxon: getTaxon(id),
+                taxon: getTaxonForGuid(id),
                 coordinateSources: grailsApplication.config.coordinates.sources,
                 speciesGroupsMap: bieService.getSpeciesGroupsMap(),
                 user:authService.userDetails(),
@@ -44,10 +46,16 @@ class SubmitSightingController {
                     user:authService.userDetails()
             ]
         } else {
-            log.debug "EDIT - guid = ${sighting.guid} || getTaxon(sighting.guid)"
+            log.debug "EDIT - taxonConceptID = ${sighting.taxonConceptID} || getTaxonForGuid(sighting.taxonConceptID)"
+
+            // guid not provided in URL so lookup guid first
+            if (!guid) {
+                guid = getGuidForName(sighting.scientificName)
+            }
+
             render view: "index", model: [
                     sighting: sighting,
-                    taxon: getTaxon(guid?:sighting.guid),
+                    taxon: getTaxonForGuid(guid),
                     coordinateSources: grailsApplication.config.coordinates.sources,
                     speciesGroupsMap: bieService.getSpeciesGroupsMap(),
                     user:authService.userDetails()
@@ -70,8 +78,8 @@ class SubmitSightingController {
             }
             log.debug "chaining - sighting = ${sighting}"
             flash.message = "There was a problem with one or more fields, please fix these errors (in red)"
-            // chain action: "index", id: "${sighting.guid}", model: [sighting: sighting, taxon: getTaxon(sighting.guid), coordinateSources: grailsApplication.config.coordinates.sources, user:authService.userDetails()]
-            chain action: "index", id: "${sighting.guid?:''}", model: [sighting: sighting]
+            // chain action: "index", id: "${sighting.taxonConceptID}", model: [sighting: sighting, taxon: getTaxonForGuid(sighting.taxonConceptID), coordinateSources: grailsApplication.config.coordinates.sources, user:authService.userDetails()]
+            chain action: "index", id: "${sighting.taxonConceptID?:''}", model: [sighting: sighting]
         } else if (debug) {
             // render sighting.asJSON()
             // respond sighting, [formats:['json', 'xml']]
@@ -87,7 +95,7 @@ class SubmitSightingController {
                 // ecodata returned an error
                 flash.message = "There was a problem submitting your sighting, please try again. If this problem persists, please send an email to support@ala.org.au.<br>"
                         + result.error
-                chain action: "index", id: "${sighting.guid?:''}", model: [sighting: sighting]
+                chain action: "index", id: "${sighting.taxonConceptID?:''}", model: [sighting: sighting]
             } else {
                 flash.message = "You sighting was successfully submitted."
                 redirect(uri:'/sightings/user')
@@ -95,7 +103,7 @@ class SubmitSightingController {
         }
     }
 
-    private JSONObject getTaxon(guid) {
+    private JSONObject getTaxonForGuid(String guid) {
         JSONObject taxon
 
         if (guid) {
@@ -106,5 +114,20 @@ class SubmitSightingController {
         }
 
         taxon
+    }
+
+    private String getGuidForName(String scientificName) {
+        JSONObject taxon
+        def guid
+
+        if (scientificName) {
+            taxon = httpWebService.getJson("${grailsApplication.config.bie.baseUrl}/ws/guid/${scientificName.encodeAsURL()}.json")
+
+            if (taxon.has('acceptedIdentifier') || taxon.has('identifier')) {
+                guid = taxon.acceptedIdentifier?:taxon.identifier
+            }
+        }
+
+        guid
     }
 }

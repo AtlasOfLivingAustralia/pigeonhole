@@ -17,7 +17,9 @@ package au.org.ala.pigeonhole.command
 import grails.web.JSONBuilder
 import grails.util.Holders
 import groovy.util.logging.Log4j
-import org.apache.commons.lang.time.DateUtils;
+import org.apache.commons.lang.time.DateUtils
+import org.grails.databinding.BindUsing
+import org.grails.databinding.BindingFormat;
 
 import java.text.DateFormat
 import java.text.SimpleDateFormat
@@ -31,24 +33,27 @@ import java.text.SimpleDateFormat
 @grails.validation.Validateable
 class Sighting {
     String userId
-    String guid
+    String taxonConceptID
     String scientificName
+    String family
+    String kingdom
     String commonName
     List<String> tags = [].withDefault { new String() } // taxonomic tags
     String identificationVerificationStatus // identification confidence
     Boolean requireIdentification
     Integer individualCount
     List<Media> multimedia = [].withDefault { new Media() }
-    String eventDate // can be date or ISO date with time
-    String eventDateNoTime // date only
-    String eventDateTime // ISO date + time
-    String eventTime // time only
+    String eventDate // output - ISO date with time
+    String eventDateNoTime // input - date only AUS format
+    String eventDateTime // input - ISO date + time
+    String eventTime // input - time only (24 hour HH:MM)
     String timeZoneOffset = (((TimeZone.getDefault().getRawOffset() / 1000) / 60) / 60)
     BigDecimal decimalLatitude
     BigDecimal decimalLongitude
     String geodeticDatum = "WGS84"
     Integer coordinateUncertaintyInMeters
     String georeferenceProtocol
+    String usingReverseGeocodedLocality
     String locality
     String locationRemark
     String occurrenceRemarks
@@ -93,6 +98,7 @@ class Sighting {
                 log.debug "iso check: ${date}T${time}${timeZoneOffset?:'Z'}"
                 Date isoDate = DateUtils.parseDate("${date}T${time}${timeZoneOffset?:'+00:00'}", [ "yyyy-MM-dd'T'HH:mm:ssZZ" ] as String[])
                 DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZZ");
+                df.setTimeZone(TimeZone.getTimeZone("UTC")) // ecodata prefers all date/time in UTC
                 dt = df.format(isoDate)
             }
         } else if (eventDateNoTime) {

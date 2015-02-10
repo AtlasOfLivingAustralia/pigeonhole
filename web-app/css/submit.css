@@ -75,6 +75,16 @@ input#speciesLookup {
     /*margin-top: 5px;*/
 }
 
+.input-xlarge {
+    width: 350px;
+}
+
+@media (max-width: 767px) {
+    .input-xlarge {
+        width: 100%;
+    }
+}
+
 #tagsBlock {
     margin: 10px 0;
 }
@@ -83,6 +93,10 @@ input#speciesLookup {
     float: left;
     max-width: 47%;
     margin-right: 10px;
+}
+
+td label {
+    margin: 4px 0;
 }
 
 #species .label {

@@ -37,10 +37,11 @@ class EcodataService {
             // WS failed
             sc.error = json.error
         } else if (json instanceof JSONObject) {
+            json = fixJsonNullValues(json)
             try {
                 sc = new Sighting(json)
             } catch (Exception e) {
-                log.error "Couldn't unmarshall JSON - " + e.message
+                log.error "Couldn't unmarshall JSON - " + e.message, e
                 sc.error = "Error: sighting could not be loaded - ${e.message}"
             }
         } else {
@@ -187,5 +188,22 @@ class EcodataService {
                 conn.disconnect()
             }
         }
+    }
+
+    /**
+     * Remove pesky JSONObject.NULL values from JSON, which cause GroovyCastException errors
+     * during Object binding.
+     *
+     * @param json
+     * @return
+     */
+    private fixJsonNullValues(JSONObject json) {
+        JSONObject jsonCopy = new JSONObject(json)
+        json.each {
+            if (it.value == JSONObject.NULL) {
+                jsonCopy.remove(it.key)
+            }
+        }
+        jsonCopy
     }
 }

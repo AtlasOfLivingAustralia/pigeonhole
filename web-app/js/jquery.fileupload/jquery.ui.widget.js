@@ -440,7 +440,7 @@ $.Widget.prototype = {
 					.apply( instance, arguments );
 			}
 
-			// copy the guid so direct unbinding works
+			// copy the taxonConceptID so direct unbinding works
 			if ( typeof handler !== "string" ) {
 				handlerProxy.guid = handler.guid =
 					handler.guid || handlerProxy.guid || $.guid++;

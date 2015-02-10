@@ -50,7 +50,9 @@
 <body class="nav-species">
 <g:render template="/topMenu" />
 <h2>Submit a Sighting</h2>
+<g:set var="errorsShown" value="${false}"/>
 <g:hasErrors bean="${sighting}">
+    <g:set var="errorsShown" value="${true}"/>
     <div class="container-fluid">
         <div class="alert alert-error">
             ${flash.message}
@@ -60,7 +62,7 @@
         </div>
     </div>
 </g:hasErrors>
-<g:if test="${flash.message || sighting?.error}">
+<g:if test="${!errorsShown && (flash.message || sighting?.error)}">
     <div class="container-fluid">
         <div class="alert alert-error">
             ${flash.message?:sighting?.error}
@@ -86,9 +88,11 @@
                             </td>
                         </tr>
                     </table>
-                    <input type="hidden" name="guid" id="guid" value="${taxon?.guid}"/>
+                    <input type="hidden" name="taxonConceptID" id="guid" value="${taxon?.taxonConceptID}"/>
                     <input type="hidden" name="scientificName" id="scientificName" value="${taxon?.scientificName}"/>
                     <input type="hidden" name="commonName" id="commonName" value="${taxon?.commonName}"/>
+                    <input type="hidden" name="kingdom" id="kingdom" value="${taxon?.kingdom}"/>
+                    <input type="hidden" name="family" id="family" value="${taxon?.family}"/>
                     %{--<input type="hidden" name="identificationVerificationStatus" id="identificationVerificationStatus" value="${taxon?.identificationVerificationStatus}"/>--}%
                     %{--<a href="#" class="remove" title="remove this item"><i class="remove icon-remove">&nbsp;</i></a>--}%
                 </div>
@@ -104,7 +108,7 @@
                 <div id="identificationChoice" class="hide">
                     <div>How confident are you with the species identification?
                     <g:radioGroup name="identificationVerificationStatus" labels="['Confident','Uncertain']" values="['confident','uncertain']" value="${sighting?.identificationVerificationStatus?.toLowerCase()?:'confident'}" >
-                        ${it.radio} ${it.label}
+                        <span style="white-space:nowrap;">${it.radio}&nbsp;${it.label}</span>
                     </g:radioGroup>
                     </div>
                 </div>
@@ -194,7 +198,7 @@
                         <td><textarea id="locationRemark" name="locationRemark" class="" rows="3" value="${sighting?.decimalLatitude}">${sighting?.locationRemark}</textarea></td>
                     </tr>
                     <tr>
-                        <td><label for="locationRemark">Bookmarked locations:</label></td>
+                        <td><label for="locationRemark">Saved locations:</label></td>
                         <td><div class="form-horizontal"><g:select name="bookmarkedLocations" id="bookmarkedLocations" class="" from="${[]}" optionKey="" optionValue="" noSelection="['':'-- saved locations --']"/>
                             <button id="bookmarkLocation" class="btn  disabled" disabled="disabled">Save this location</button></div></td>
                     </tr>
@@ -237,7 +241,7 @@
     </div>
 
     <div style="text-align: center;">
-        <input type="submit" id="formSubmit" class="btn btn-large"  value="Submit Record"/>
+        <input type="submit" id="formSubmit" class="btn btn-large"  value="${actionName == 'edit' ? 'Update' : 'Submit'} Record"/>
     </div>
 
 <%-- Template HTML used by JS code via .clone() --%>

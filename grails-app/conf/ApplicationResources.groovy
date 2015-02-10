@@ -40,7 +40,7 @@ modules = {
     submitSighting {
         dependsOn 'jqueryMigrate'
         resource url:'/css/submit.css'
-        resource url:'/js/submit.js'
+        resource url:'/js/submitSighting.js'
     }
 
     fileuploads {

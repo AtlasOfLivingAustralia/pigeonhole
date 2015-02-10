@@ -18,14 +18,14 @@
         <g:set var="total" value="${sightings.totalRecords}"/>
         <g:set var="fromIndex" value="${(params.offset) ? (params.offset.toInteger() + 1) : 1}"/>
         <g:set var="toIndex" value="${((params.offset?:0).toInteger() + (params.max?:10).toInteger())}"/>
-        Displaying records ${fromIndex} to ${(toIndex < total) ? toIndex : total} of ${total}
+        Displaying records ${fromIndex} to ${(toIndex < total) ? toIndex : total} of ${g.formatNumber(number: total, format: "###,##0")}
     </div>
 </g:if>
 <table class="table table-bordered table-condensed table-striped">
     <thead>
     <tr>
         <th style="width:20%;">Identification</th>
-        <th>Date submitted</th>
+        <th>Date</th>
         <th style="width:30%;">Location</th>
         <th>Action</th>
         <th>Images</th>
@@ -35,12 +35,15 @@
     <g:each in="${sightings.records}" var="s">
         <tr>
             <td>
-                <span class="speciesName">${s.scientificName}</span> ${raw((s.commonName) ? '<br>' + s.commonName: '')} ${raw((s.tags) ? '<br>' + s.tags.join(', ') : '')}
+                <span class="speciesName">${s.scientificName}</span>
+                <div>${s.commonName}</div>
+                <div>${raw((s.tags) ? 'Tags: ' + s.tags.join(', ') : '')}</div>
             </td>
             <td>
                 <span style="white-space:nowrap;">
                     <g:if test="${!org.codehaus.groovy.grails.web.json.JSONObject.NULL.equals(s.get("eventDate"))}">
-                        ${(s.eventDate.size() >= 10) ? s.eventDate?.substring(0,10) : s.eventDate}
+                        %{--${(s.eventDate.size() >= 10) ? s.eventDate?.substring(0,10) : s.eventDate}--}%
+                        <span class="eventDateFormatted" data-isodate="${s.eventDate}">${(s.eventDate.size() >= 10) ? s.eventDate?.substring(0,10) : s.eventDate}</span>
                     </g:if>
                 </span>
             </td>
@@ -74,13 +77,23 @@
     </g:each>
     <r:script>
         $(function () {
-            //
+            // delete record button confirmation
             $('.deleteRecordBtn').click(function(e) {
                 e.preventDefault();
                 var id = $(this).data('recordid');
                 if (confirm("Are you sure you want to delete this record?")) {
                     window.location = "${g.createLink(controller: 'sightings', action:'delete')}/" + id;
                 }
+            });
+
+            // Use Moment.js to output time in correct timezone
+            // ISO date stores time in UTC but this gets outputted in local time for user
+            // not perfect but fixes issues where users complain their sighting date/time is wrong
+            // due to UTC timezone storage
+            $.each($('.eventDateFormatted'), function(i, el) {
+                var isoDate = $(this).data('isodate');
+                var outputDate = moment(isoDate).format("DD-MM-YYYY, HH:mm");
+                $(this).text(outputDate);
             });
         });
     </r:script>
