@@ -220,7 +220,7 @@
                     <tr >
                         <td><label for="eventTime">Time:</label></td>
                         <td><input type="text" name="eventTime" id="eventTime" class="input-auto ${hasErrors(bean:sighting,field:'eventTime','validationErrors')}" placeholder="HH:MM[:SS]" value="${sighting?.eventTime}"/></td>
-                        <td><span class="helphint">24 hour format</span></td>
+                        <td><span class="helphint">24 hour format (HH:MM[:SS])</span></td>
                     </tr>
                     <tr>
                         <td><label for="individualCount">Individuals:</label></td>
