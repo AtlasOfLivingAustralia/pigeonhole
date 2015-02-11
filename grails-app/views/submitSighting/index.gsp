@@ -175,15 +175,15 @@
                 <table class="formInputTable">
                     <tr>
                         <td><label for="decimalLatitude">Latitude (decimal):</label></td>
-                        <td><input type="text" name="decimalLatitude" id="decimalLatitude" class="input-auto" value="${sighting?.decimalLatitude}"/></td>
+                        <td><input type="text" name="decimalLatitude" id="decimalLatitude" class="input-auto ${hasErrors(bean:sighting,field:'decimalLatitude','validationErrors')}" value="${sighting?.decimalLatitude}"/></td>
                     </tr>
                     <tr>
                         <td><label for="decimalLongitude">Longitude (decimal):</label></td>
-                        <td><input type="text" name="decimalLongitude" id="decimalLongitude" class="input-auto" value="${sighting?.decimalLongitude}"/></td>
+                        <td><input type="text" name="decimalLongitude" id="decimalLongitude" class="input-auto ${hasErrors(bean:sighting,field:'decimalLongitude','validationErrors')}" value="${sighting?.decimalLongitude}"/></td>
                     </tr>
                     <tr>
                         <td><label for="coordinateUncertaintyInMeters">Accuracy (metres):</label></td>
-                        <td><input type="text" name="coordinateUncertaintyInMeters" id="coordinateUncertaintyInMeters" class="input-auto" value="${sighting?.coordinateUncertaintyInMeters?:50}"/></td>
+                        <td><input type="text" name="coordinateUncertaintyInMeters" id="coordinateUncertaintyInMeters" class="input-auto ${hasErrors(bean:sighting,field:'coordinateUncertaintyInMeters','validationErrors')}" value="${sighting?.coordinateUncertaintyInMeters?:50}"/></td>
                     </tr>
                     <tr>
                         <td><label for="georeferenceProtocol">Source of coordinates:</label></td>
