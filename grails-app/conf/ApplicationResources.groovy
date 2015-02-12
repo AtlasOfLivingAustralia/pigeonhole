@@ -38,7 +38,7 @@ modules = {
     }
 
     submitSighting {
-        dependsOn 'jqueryMigrate'
+        dependsOn 'jqueryMigrate, moment'
         resource url:'/css/submit.css'
         resource url:'/js/submitSighting.js'
     }

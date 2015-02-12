@@ -26,7 +26,7 @@
 <head>
     <meta name="layout" content="main"/>
     <title>Submit a sighting</title>
-    <r:require modules="submitSighting, fileuploads, exif, moment, alaAutocomplete, sightingMap, datepicker, qtip"/>
+    <r:require modules="fileuploads, exif, moment, alaAutocomplete, sightingMap, datepicker, qtip, submitSighting"/>
     <style type="text/css">
 
     </style>
@@ -213,14 +213,18 @@
             <div class="span6">
                 <table class="formInputTable">
                     <tr >
-                        <td><label for="eventDateNoTime">Date:</label></td>
-                        <td><input type="text" name="eventDateNoTime" id="eventDateNoTime" class="input-auto ${hasErrors(bean:sighting,field:'eventDateNoTime','validationErrors')}" placeholder="DD-MM-YYYY" value="${sighting?.eventDateNoTime}"/></td>
+                        <td><label for="eventDate">Date:</label></td>
+                        <td id="eventDatePicker" class="${hasErrors(bean:sighting,field:'eventDate','validationErrors')}"><g:datePicker name="eventDate" id="eventDate" noSelection="['':'--']" precision="day" placeholder="DD-MM-YYYY" value="${sighting?.eventDate}"/></td>
                         <td><span class="helphint">* required</span></td>
                     </tr>
                     <tr >
-                        <td><label for="eventTime">Time:</label></td>
-                        <td><input type="text" name="eventTime" id="eventTime" class="input-auto ${hasErrors(bean:sighting,field:'eventTime','validationErrors')}" placeholder="HH:MM[:SS]" value="${sighting?.eventTime}"/></td>
-                        <td><span class="helphint">24 hour format (HH:MM[:SS])</span></td>
+                        <td><label for="eventDate_hour">Time:</label></td>
+                        <td>
+                            <g:select name="eventDate_hour" id="eventDate_hour" noSelection="['':'--']" class="input-auto ${hasErrors(bean:sighting,field:'eventDate','validationErrors')}"  from="${(0..23).collect{it.toString().padLeft(2,'0')}}" value="${si.getTimeValue(date: sighting?.eventDate, part: Calendar.HOUR)}"/>
+                            :
+                            <g:select name="eventDate_minute" id="eventDate_minute" noSelection="['':'--']" class="input-auto ${hasErrors(bean:sighting,field:'eventDate','validationErrors')}"  from="${(0..59).collect{it.toString().padLeft(2,'0')}}" value="${si.getTimeValue(date: sighting?.eventDate, part: Calendar.MINUTE)}"/>
+                        </td>
+                        <td><span class="helphint">24 hour format (HH:MM)</span></td>
                     </tr>
                     <tr>
                         <td><label for="individualCount">Individuals:</label></td>
@@ -228,7 +232,6 @@
                         <td><span class="helphint">How many did you see?</span></td>
                     </tr>
                 </table>
-                <input type="hidden" name="eventDateTime" id="eventDateTime" value=""/>
                 <input type="hidden" name="timeZoneOffset" id="timeZoneOffset" value="${sighting?.timeZoneOffset}"/>
             </div>
             <div class="span6">

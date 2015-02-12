@@ -20,10 +20,18 @@ import au.org.ala.pigeonhole.command.Sighting
 import grails.converters.JSON
 import groovyx.net.http.ContentType
 import groovyx.net.http.HTTPBuilder
+import org.apache.commons.lang.time.DateUtils
 import org.codehaus.groovy.grails.web.json.JSONArray
 import org.codehaus.groovy.grails.web.json.JSONElement
 import org.codehaus.groovy.grails.web.json.JSONObject
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
+import org.joda.time.DateTime
+import org.joda.time.format.DateTimeFormat
+import org.joda.time.format.DateTimeFormatter
+import org.joda.time.format.ISODateTimeFormat
+
+import java.text.DateFormat
+import java.text.SimpleDateFormat;
 
 class EcodataService {
     def grailsApplication, httpWebService
@@ -37,7 +45,7 @@ class EcodataService {
             // WS failed
             sc.error = json.error
         } else if (json instanceof JSONObject) {
-            json = fixJsonNullValues(json)
+            json = fixJsonValues(json)
             try {
                 sc = new Sighting(json)
             } catch (Exception e) {
@@ -197,13 +205,25 @@ class EcodataService {
      * @param json
      * @return
      */
-    private fixJsonNullValues(JSONObject json) {
+    private fixJsonValues(JSONObject json) {
         JSONObject jsonCopy = new JSONObject(json)
         json.each {
             if (it.value == JSONObject.NULL) {
                 jsonCopy.remove(it.key)
+            } else if (it.key == 'eventDate') {
+                try {
+                    DateTimeFormatter format = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZ");
+                    DateTime dateTime = format.withOffsetParsed().parseDateTime(it.value)
+                    Date date = dateTime.toDate();
+                    jsonCopy.eventDate = date
+                } catch (Exception e) {
+                    log.warn "Error parsing iso date: ${e.message}", e
+                }
             }
         }
+
+        log.debug "jsonCopy = ${jsonCopy.toString(2)}"
+
         jsonCopy
     }
 }

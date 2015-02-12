@@ -47,12 +47,6 @@ grails.project.dependency.resolution = {
 
     repositories {
         inherits true // Whether to inherit repository definitions from plugins
-
-        grailsPlugins()
-        grailsHome()
-        mavenLocal()
-        grailsCentral()
-        mavenCentral()
         mavenRepo "http://nexus.ala.org.au/content/groups/public/"
     }
 
@@ -61,6 +55,7 @@ grails.project.dependency.resolution = {
         compile 'org.apache.tika:tika-core:1.6'
         compile "com.drewnoakes:metadata-extractor:2.6.2"
         compile "org.imgscalr:imgscalr-lib:4.2"
+        compile 'joda-time:joda-time:2.3'
         test "org.grails:grails-datastore-test-support:1.0-grails-2.3"
     }
 
@@ -71,14 +66,16 @@ grails.project.dependency.resolution = {
         // plugins for the compile step
         //compile ":scaffolding:2.0.3"
         compile ':cache:1.1.7'
+        compile ":cache-headers:1.1.7"
         //compile ":ajax-uploader:1.1"
         // plugins needed at runtime but not for compilation
         //runtime ":hibernate:3.6.10.16" // or ":hibernate4:4.3.5.4"
         //runtime ":database-migration:1.4.0"
         runtime ":jquery:1.11.1"
-        runtime ":angularjs-resources:1.3.0"
+        //runtime ":angularjs-resources:1.3.0"
         runtime ":resources:1.2.8"
+        runtime ":cached-resources:1.0"
         // runtime ":lesscss-resources:1.3.3"
-        runtime ":ala-web-theme:0.8.3-SNAPSHOT"
+        runtime ":ala-web-theme:0.8.6-SNAPSHOT"
     }
 }

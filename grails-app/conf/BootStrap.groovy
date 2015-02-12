@@ -20,6 +20,7 @@ class BootStrap {
     def init = { servletContext ->
         def ctx = servletContext.getAttribute(ApplicationAttributes.APPLICATION_CONTEXT)
         ctx.getBean( "customObjectMarshallers" ).register()
+
     }
     def destroy = {
     }

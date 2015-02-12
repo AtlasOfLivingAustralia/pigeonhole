@@ -345,16 +345,30 @@ $(document).ready(function() {
         //});
     });
 
+    console.log("moment check", moment().format("DD-MM-YYYY"));
+    testMoment()
+
 }); // end of $(document).ready(function()
+
+function testMoment() {
+    console.log("moment check", moment().format("DD-MM-YYYY HH:mm"));
+}
 
 function insertImageMetadata(imageRow) {
     // imageRow is a jQuery object
-    var dateTime = imageRow.find('.imgDate').data('datetime');
+    var dateTime = String(imageRow.find('.imgDate').data('datetime'));
     if (dateTime) {
         $('#eventDateTime').val(dateTime);
         $('#eventDateNoTime').val(isoToAusDate(dateTime.substring(0,10)));
         $('#eventTime').val(dateTime.substring(11,19));
         $('#timeZoneOffset').val(dateTime.substring(19));
+        console.log("dateTime 3.1", dateTime, dateTime instanceof String);
+        var mDateTime = moment(dateTime, moment.ISO_8601); // format("DD-MM-YYYY, HH:mm");
+        $('#eventDate_year').val(mDateTime.format("YYYY"));
+        $('#eventDate_month').val(mDateTime.format("M"));
+        $('#eventDate_day').val(mDateTime.format("D"));
+        $('#eventDate_hour').val(mDateTime.format("HH"));
+        $('#eventDate_minute').val(mDateTime.format("mm"));
     }
     var lat = imageRow.find('.imgCoords').data('lat');
     var lng = imageRow.find('.imgCoords').data('lng');
