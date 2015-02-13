@@ -15,7 +15,10 @@
 
 class UrlMappings {
 
-	static mappings = {
+    static mappings = {
+        "/recent"(controller: "sightings")
+        "/mine"(controller: "sightings", action:"user")
+        "/spotter/$id"(controller: "sightings", action:"user")
         "/identify"(view:"/identify")
         "/identify-ng"(view:"/identify-ng")
         "/uploads/$file**"(controller:"image", action:"index")
@@ -23,7 +26,6 @@ class UrlMappings {
         "/$id**"(controller: "submitSighting", action:"index")
         "/edit/$id**"(controller: "submitSighting", action:"edit")
         "/edit/$id/$guid"(controller: "submitSighting", action:"edit")
-
         "/$controller/$action?/$id?(.$format)?"{
             constraints {
                 // apply constraints here
@@ -32,5 +34,5 @@ class UrlMappings {
 
         // "/"(view:"/index")
         "500"(view:'/error')
-	}
+    }
 }

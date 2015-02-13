@@ -13,7 +13,19 @@
 - implied. See the License for the specific language governing
 - rights and limitations under the License.
 --}%
+<div id="sightingsBlurb">
+    This is a simple list of the sightings
+    <g:if test="${actionName == 'user' && params.id}">${user?.displayName?:'[unknown username]'} has submitted.</g:if>
+    <g:elseif test="${actionName == 'user'}">you have submitted.</g:elseif>
+    <g:elseif test="${actionName == 'index'}">submitted recently by users.</g:elseif>
+    You can filter, sort and map sightings using the Atlas'
+    <a href="http://biocache.ala.org.au/occurrences/search?q=*:*&fq=data_resource_uid:dr364${(actionName != 'index' && user?.hasProperty('userId')) ? '&fq=alau_user_id:' + user.userId : ''}">Occurrence explorer</a>.
+</div>
 <g:if test="${sightings?.totalRecords > 0}">
+    <div id="sortWidget">Sort by:
+        <g:select from="${grailsApplication.config.sortFields}" valueMessagePrefix="sort" id="sortBy" name="sortBy" value="${params.sort?:'lastUpdated'}"/>
+        <g:select from="${['asc','desc']}" valueMessagePrefix="order" id="orderBy" name="orderBy" value="${params.order?:'desc'}"/>
+    </div>
     <div id="recordsPaginateSummary">
         <g:set var="total" value="${sightings.totalRecords}"/>
         <g:set var="fromIndex" value="${(params.offset) ? (params.offset.toInteger() + 1) : 1}"/>
@@ -27,7 +39,7 @@
         <th style="width:20%;">Identification</th>
         <th>Date</th>
         <th style="width:30%;">Location</th>
-        <th>Action</th>
+        <g:if test="${user?.hasProperty('userId') && user.userId == s.userId || auth.ifAnyGranted(roles:'ROLE_ADMIN', "1")}"><th>Action</th></g:if>
         <th>Images</th>
     </tr>
     </thead>
@@ -38,6 +50,9 @@
                 <span class="speciesName">${s.scientificName}</span>
                 <div>${s.commonName}</div>
                 <div>${raw((s.tags) ? 'Tags: ' + s.tags.join(', ') : '')}</div>
+                <g:if test="${grailsApplication.config.showBiocacheLinks && s.occurrenceID}">
+                    <a href="http://biocache.ala.org.au/occurrence/${s.occurrenceID}">View public record</a>
+                </g:if>
             </td>
             <td>
                 <span style="white-space:nowrap;">
@@ -56,18 +71,12 @@
                     </div>
                 </g:if>
             </td>
-            <td>
-                <g:if test="${s.occurrenceID}">
-                    <a href="http://biocache.ala.org.au/occurrence/${s.occurrenceID}">View public record</a>
-                </g:if>
-                <g:if test="${user?.userId == s.userId || auth.ifAnyGranted(roles:'ROLE_ADMIN', "1")}">
-                    <div class="actionButtons">
-                        <a href="${g.createLink(controller: 'submitSighting', action:'edit', id: s.occurrenceID)}" class="btn btn-small editBtn" data-recordid="occurrenceID">Edit</a>
-                        <button class="btn btn-small deleteRecordBtn" data-recordid="${s.occurrenceID}">Delete</button>
-                    </div>
-                </g:if>
-                <g:if test="${user?.userId == s.userId}"></g:if>
-            </td>
+            <g:if test="${user?.hasProperty('userId') && user?.userId == s.userId || auth.ifAnyGranted(roles:'ROLE_ADMIN', "1")}"><td>
+                <div class="actionButtons">
+                    <a href="${g.createLink(controller: 'submitSighting', action:'edit', id: s.occurrenceID)}" class="btn btn-small editBtn" data-recordid="occurrenceID">Edit</a>
+                    <button class="btn btn-small deleteRecordBtn" data-recordid="${s.occurrenceID}">Delete</button>
+                </div>
+            </td></g:if>
             <td>
                 <g:each in="${s.multimedia}" var="i">
                     <g:if test="${i.identifier}"><img src="${i.identifier}" alt="species thumbnail" style="max-height: 100px;  max-width: 100px;"/></g:if>
@@ -95,6 +104,18 @@
                 var outputDate = moment(isoDate).format("DD-MM-YYYY, HH:mm");
                 $(this).text(outputDate);
             });
+
+            $('#sortBy').change(function(e) {
+                e.preventDefault()
+                window.location = "?sort=" + $(this).val();
+            });
+
+             $('#orderBy').change(function(e) {
+                e.preventDefault()
+                window.location = "?sort=${params.sort?:'lastUpdated'}&order=" + $(this).val();
+            });
+
+
         });
     </r:script>
     </tbody>

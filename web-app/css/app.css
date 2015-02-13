@@ -69,5 +69,21 @@
 }
 
 #recordsPaginateSummary {
-    margin: 0 0 5px 2px;
+    margin: 0 ;
+}
+
+#sightingsBlurb {
+    margin-bottom: 10px;
+}
+
+#sortWidget {
+    float: right;
+}
+
+#sortWidget select {
+    height: 26px;
+    width: auto;
+    font-size: 13px;
+    line-height: 18px;
+    margin-bottom: 5px;
 }

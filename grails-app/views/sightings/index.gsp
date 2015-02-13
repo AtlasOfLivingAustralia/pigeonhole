@@ -32,11 +32,12 @@
 <body class="nav-species">
 <g:render template="/topMenu" />
 <h2>${pageHeading}</h2>
-<g:if test="${flash.message}">
+<g:if test="${flash.message?:flash.errorMessage}">
     <div class="container-fluid">
-        <div class="alert alert-info">
+        <div class="alert ${(flash.errorMessage) ? 'alert-error' : 'alert-info'}">
             <button type="button" class="close" data-dismiss="alert">&times;</button>
-            ${raw(flash.message)}
+            ${raw(flash.message?:flash.errorMessage)}
+            <!-- ${flash.message = null} ${flash.errorMessage = null} -->
         </div>
     </div>
 </g:if>

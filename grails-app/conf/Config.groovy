@@ -45,8 +45,8 @@ reloadable.cfgs = ["file:/data/${appName}/config/${appName}-config.properties"]
 runWithNoExternalConfig = true
 //security.cas.bypass = true
 security.cas.casServerName = 'https://auth.ala.org.au'
-security.cas.uriFilterPattern = '/(?!sightings$).*'
-security.cas.authenticateOnlyIfLoggedInPattern = "/sightings"
+security.cas.uriFilterPattern = '/(?!recent).*'
+security.cas.authenticateOnlyIfLoggedInPattern = "/recent"
 security.cas.uriExclusionFilterPattern = '/images.*,/css.*,/js.*,/ajax/upload,/uploads/.*'
 security.cas.loginUrl = 'https://auth.ala.org.au/cas/login'
 security.cas.logoutUrl = 'https://auth.ala.org.au/cas/logout'
@@ -62,6 +62,8 @@ media.uploadDir = '/data/cache/imageUploads/' // Path to where files will be upl
 coordinates.sources = ["Google maps", "Google earth", "GPS device", "camera/phone", "physical maps", "other"]
 sighting.fields.excludes = ['errors','timeZoneOffset','eventDateNoTime','eventDateTime','class','log','constraints','$constraints']
 sighting.licenses = ['Creative Commons Attribution','Creative Commons Attribution-Noncommercial','Creative Commons Attribution-Share Alike','Creative Commons Attribution-Noncommercial-Share Alike']
+sortFields=['scientificName','commonName','eventDate','dateCreated','lastUpdated','locality','confidence']
+showBiocacheLinks = false
 
 grails.project.groupId = "au.org.ala.pigeonhole" // change this to alter the default package name and Maven publishing destination
 

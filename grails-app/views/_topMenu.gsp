@@ -14,22 +14,25 @@
   --}%
 
 <span id="sightingLinks" style="padding-right: 20px;">
-    <g:if test="${params.action == 'user' && params.controller == 'sightings'}">
+    <g:if test="${user && params.action == 'user' && params.controller == 'sightings'}">
         <span class="showMySightings">My sightings</span>
     </g:if>
     <g:else>
-        <a href="${g.createLink(uri:'/sightings/user')}" class="showMySightings">My sightings</a>
+        <a href="${g.createLink(uri:'/mine')}" class="showMySightings">My sightings</a>
     </g:else>
     |
-
     <g:if test="${params.action != 'user' && params.controller == 'sightings'}">
         <span class="showMySightings">Recent sightings</span>
     </g:if>
     <g:else>
-        <a href="${g.createLink(uri:'/sightings')}" class="showMySightings">Recent sightings</a>
+        <a href="${g.createLink(uri:'/recent')}" class="showMySightings">Recent sightings</a>
     </g:else>
+    <g:if test="${params.controller != 'submitSighting'}">
+        | <a href="http://biocache.ala.org.au/occurrences/search?q=*:*&fq=data_resource_uid:dr364${(actionName != 'index' && user && user.userId) ? '&fq=alau_user_id:' + user.userId : ''}">Occurrence explorer</a>
+    </g:if>
     &nbsp;&nbsp;
-    <a href="${g.createLink(uri:'/')}" class="btn btn-small" style="font-size: 13px;">Submit a sighting</a>
+    <g:if test="${params.controller != 'submitSighting'}">
+        <a href="${g.createLink(uri:'/')}" class="btn btn-ala btn-small" style="font-size: 13px;" title="Login required" >Report a sighting</a>
+    </g:if>
 
-    %{--<a href="http://biocache.ala.org.au/occurrences/search?q=*:*&fq=data_resource_uid:dr364">Occurrence explorer</a>--}%
 </span>
