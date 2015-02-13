@@ -19,7 +19,7 @@
     <g:elseif test="${actionName == 'user'}">you have submitted.</g:elseif>
     <g:elseif test="${actionName == 'index'}">submitted recently by users.</g:elseif>
     You can filter, sort and map sightings using the Atlas'
-    <a href="http://biocache.ala.org.au/occurrences/search?q=*:*&fq=data_resource_uid:dr364${(actionName != 'index' && user?.hasProperty('userId')) ? '&fq=alau_user_id:' + user.userId : ''}">Occurrence explorer</a>.
+    <a href="http://biocache.ala.org.au/occurrences/search?q=*:*&fq=data_resource_uid:dr364${(actionName != 'index' && user?.containsKey('userId')) ? '&fq=alau_user_id:' + user.userId : ''}">Occurrence explorer</a>.
 </div>
 <g:if test="${sightings?.totalRecords > 0}">
     <div id="sortWidget">Sort by:

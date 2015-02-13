@@ -188,7 +188,7 @@
                     </tr>
                     <tr>
                         <td><label for="coordinateUncertaintyInMeters">Accuracy (metres):</label></td>
-                        <td><input type="text" name="coordinateUncertaintyInMeters" id="coordinateUncertaintyInMeters" class="input-auto ${hasErrors(bean:sighting,field:'coordinateUncertaintyInMeters','validationErrors')}" value="${sighting?.coordinateUncertaintyInMeters?:50}"/></td>
+                        <td><g:select from="${grailsApplication.config.accuracyValues?:[0,10,50,100,500,1000,10000]}" id="coordinateUncertaintyInMeters" class="slim ${hasErrors(bean:sighting,field:'coordinateUncertaintyInMeters','validationErrors')}" name="coordinateUncertaintyInMeters" value="${sighting?.coordinateUncertaintyInMeters?:50}" noSelection="['':'--']"/></td>
                     </tr>
                     <tr>
                         <td><label for="georeferenceProtocol">Source of coordinates:</label></td>

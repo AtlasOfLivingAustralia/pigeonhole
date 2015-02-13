@@ -49,7 +49,8 @@ $(document).ready(function() {
     map = L.map('map', {
         center: [-28, 134],
         zoom: 3,
-        scrollWheelZoom: false
+        scrollWheelZoom: false,
+        worldCopyJump: true
         //layers: [osm, MapQuestOpen_Aerial]
         });
 
@@ -65,7 +66,7 @@ $(document).ready(function() {
     L.control.layers(baseLayers).addTo(map);
 
     marker = L.marker(null, {draggable: true}).on('dragend', function() {
-        updateLocation(this.getLatLng(), true);
+        updateLocation(this.getLatLng().wrap(), true);
         console.log('position', map.latLngToLayerPoint(marker.getLatLng()));
     });
 
@@ -274,6 +275,9 @@ function updateLocation(latlng, keepView) {
         $('#georeferenceProtocol').val('Google maps');
         $('#bookmarkLocation').removeClass('disabled').removeAttr('disabled'); // activate button
         reverseGeocode(latlng.lat, latlng.lng);
+        if (latlng.lat > 0 || latlng.lng < 100) {
+            alert("Coordinates are not in the Australasia region. Are you sure this location is correct?");
+        }
     }
 }
 

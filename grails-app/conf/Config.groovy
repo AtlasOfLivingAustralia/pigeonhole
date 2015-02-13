@@ -62,7 +62,8 @@ media.uploadDir = '/data/cache/imageUploads/' // Path to where files will be upl
 coordinates.sources = ["Google maps", "Google earth", "GPS device", "camera/phone", "physical maps", "other"]
 sighting.fields.excludes = ['errors','timeZoneOffset','eventDateNoTime','eventDateTime','class','log','constraints','$constraints']
 sighting.licenses = ['Creative Commons Attribution','Creative Commons Attribution-Noncommercial','Creative Commons Attribution-Share Alike','Creative Commons Attribution-Noncommercial-Share Alike']
-sortFields=['scientificName','commonName','eventDate','dateCreated','lastUpdated','locality','confidence']
+sortFields=['scientificName','commonName','eventDate','dateCreated','lastUpdated','locality','multimedia']
+accuracyValues=[0,10,50,100,500,1000,5000,10000]
 showBiocacheLinks = false
 
 grails.project.groupId = "au.org.ala.pigeonhole" // change this to alter the default package name and Maven publishing destination
