@@ -25,8 +25,8 @@
 <html>
 <head>
     <meta name="layout" content="main"/>
-    <title>Submit a sighting</title>
-    <r:require modules="fileuploads, exif, moment, alaAutocomplete, sightingMap, datepicker, qtip, submitSighting"/>
+    <title>Report a sighting | Atlas of Living Australia</title>
+    <r:require modules="fileuploads, exif, moment, alaAutocomplete, sightingMap, datepicker, qtip, udraggable, submitSighting"/>
     <style type="text/css">
 
     </style>
@@ -49,7 +49,7 @@
 </head>
 <body class="nav-species">
 <g:render template="/topMenu" />
-<h2>Submit a Sighting</h2>
+<h2>Report a Sighting</h2>
 <g:set var="errorsShown" value="${false}"/>
 <g:hasErrors bean="${sighting}">
     <g:set var="errorsShown" value="${true}"/>
@@ -168,8 +168,13 @@
                         <button id="geocodebutton" class="btn">Lookup</button>
                     </div>
                 </div>
-                <div id="map" style="width: 100%; height: 280px"></div>
-                <div class="" id="mapTips">Hint: drag the marker to fine-tune your location</div>
+                <div style="position:relative;">
+                    <div id="map" style="width: 100%; height: 280px"></div>
+                    <div class="" id="mapTips">Hint: drag the marker to fine-tune your location
+                        <img class="drag" id="markerIcon" src="${g.createLink(uri:'/js/leaflet-0.7.3/images')}/marker-icon.png" alt="marker icon" />
+                    </div>
+                </div>
+
             </div>
             <div class="span6" style="margin-bottom: 0px;">
                 <table class="formInputTable">
@@ -220,11 +225,11 @@
                     <tr >
                         <td><label for="eventDate_hour">Time:</label></td>
                         <td>
-                            <g:select name="eventDate_hour" id="eventDate_hour" noSelection="['':'--']" class="input-auto ${hasErrors(bean:sighting,field:'eventDate','validationErrors')}"  from="${(0..23).collect{it.toString().padLeft(2,'0')}}" value="${si.getTimeValue(date: sighting?.eventDate, part: Calendar.HOUR)}"/>
+                            <g:select name="eventDate_hour" id="eventDate_hour" noSelection="['':'--']" class="input-auto"  from="${(0..23).collect{it.toString().padLeft(2,'0')}}" value="${si.getTimeValue(date: sighting?.eventDate, part: Calendar.HOUR)}"/>
                             :
-                            <g:select name="eventDate_minute" id="eventDate_minute" noSelection="['':'--']" class="input-auto ${hasErrors(bean:sighting,field:'eventDate','validationErrors')}"  from="${(0..59).collect{it.toString().padLeft(2,'0')}}" value="${si.getTimeValue(date: sighting?.eventDate, part: Calendar.MINUTE)}"/>
+                            <g:select name="eventDate_minute" id="eventDate_minute" noSelection="['':'--']" class="input-auto"  from="${(0..59).collect{it.toString().padLeft(2,'0')}}" value="${si.getTimeValue(date: sighting?.eventDate, part: Calendar.MINUTE)}"/>
                         </td>
-                        <td><span class="helphint">24 hour format (HH:MM)</span></td>
+                        <td><span class="helphint">24 hour format</span></td>
                     </tr>
                     <tr>
                         <td><label for="individualCount">Individuals:</label></td>

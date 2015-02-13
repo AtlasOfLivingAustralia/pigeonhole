@@ -65,13 +65,16 @@ $(document).ready(function() {
     L.control.layers(baseLayers).addTo(map);
 
     marker = L.marker(null, {draggable: true}).on('dragend', function() {
-        updateLocation(this.getLatLng());
+        updateLocation(this.getLatLng(), true);
+        console.log('position', map.latLngToLayerPoint(marker.getLatLng()));
     });
 
     radius = $('#coordinateUncertaintyInMeters').val();
     circle = L.circle(null, radius,  {color: '#df4a21'});
 
     L.Icon.Default.imagePath = GSP_VARS.leafletImagesDir; //"${g.createLink(uri:'/js/leaflet-0.7.3/images')}";
+
+    var popup1 = L.popup().setContent('<p>Hello world!<br />This is a nice popup.</p>');
 
     map.on('locationfound', function(e) {
         // create a marker at the users "latlng" and add it to the map
@@ -80,7 +83,11 @@ $(document).ready(function() {
     }).on('locationerror', function(e){
         //console.log(e);
         alert("Location could not be determined. Try entering an address instead.");
-    }); // triggered from map.locate()
+    }).on('contextmenu',function(e){
+        //alert('right click');
+        popup1.openOn(map);
+    });; // triggered from map.locate()
+
 
     $('#geocodeinput').on('keydown', function(e) {
         if (e.keyCode == 13 ) {
@@ -146,6 +153,7 @@ $(document).ready(function() {
         });
     });
 
+    // Trigger loading of bookmark on select change
     $('#bookmarkedLocations').change(function(e) {
         e.preventDefault();
         var location;
@@ -168,6 +176,25 @@ $(document).ready(function() {
         } else if (id == 'error') {
             loadBookmarks();
         }
+    });
+
+    // draggable marker icon handler
+    $(".drag").udraggable({
+        containment: 'parent',
+        stop: function(evt, el) {
+            console.log("transformMarker", el);
+            var x = el.offset.left + 12;
+            var y = el.offset.top + 40;
+            marker.setLatLng(map.containerPointToLatLng([x, y])).addTo(map);
+            updateLocation(marker.getLatLng(), true);
+            $(this).hide();
+        }
+    });
+
+    // handler for zoom in button on Marler popup
+    $('#location').on('click', '#zoomMarker', function(e) {
+        e.preventDefault();
+        map.setView(marker.getLatLng(), 16);
     });
 
 }); // end document load function
@@ -232,15 +259,18 @@ function geolocate() {
     map.locate({setView: true, maxZoom: 16});
 }
 
-function updateLocation(latlng) {
+function updateLocation(latlng, keepView) {
     //console.log("Marker moved to: "+latlng.toString());
     if (latlng) {
         $('.spinner1').removeClass('hide');
+        $('.drag').hide();
         $('#decimalLatitude').val(latlng.lat);
         $('#decimalLongitude').val(latlng.lng);
-        marker.setLatLng(latlng).bindPopup('your location', { maxWidth:250 }).addTo(map);
+        marker.setLatLng(latlng).bindPopup('<div>Sighting location</div><button class="btn btn-small" id="zoomMarker">Zoom in</button>', { maxWidth:250 }).addTo(map);
         circle.setLatLng(latlng).setRadius($('#coordinateUncertaintyInMeters').val()).addTo(map);
-        map.setView(latlng, 16);
+        if (!keepView) {
+            map.setView(latlng, 16);
+        }
         $('#georeferenceProtocol').val('Google maps');
         $('#bookmarkLocation').removeClass('disabled').removeAttr('disabled'); // activate button
         reverseGeocode(latlng.lat, latlng.lng);

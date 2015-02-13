@@ -93,6 +93,12 @@ modules = {
         resource url: [dir: 'js/leaflet-0.7.3', file: 'leaflet.js']
     }
 
+    udraggable {
+        dependsOn 'jquery'
+        resource url:'js/jquery.event.ue.js'
+        resource url:'js/jquery.udraggable.js'
+    }
+
     sightingMap {
         dependsOn 'leaflet'
         resource url: '/js/initLeafletMap.js'
