@@ -75,6 +75,10 @@ modules = {
         resource url:'js/moment-duration-format.js'
     }
 
+    fontawesome {
+        resource url:'css/font-awesome-4.3.0/css/font-awesome.min.css'
+    }
+
     datepicker {
         // http://www.eyecon.ro/bootstrap-datepicker/
         dependsOn 'jqueryMigrate'

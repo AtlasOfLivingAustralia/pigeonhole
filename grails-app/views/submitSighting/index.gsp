@@ -26,10 +26,7 @@
 <head>
     <meta name="layout" content="main"/>
     <title>Report a sighting | Atlas of Living Australia</title>
-    <r:require modules="fileuploads, exif, moment, alaAutocomplete, sightingMap, datepicker, qtip, udraggable, submitSighting"/>
-    <style type="text/css">
-
-    </style>
+    <r:require modules="fileuploads, exif, moment, alaAutocomplete, sightingMap, datepicker, qtip, udraggable, fontawesome, submitSighting"/>
     <r:script>
         // global var to pass in GSP/Grails values into external JS files
         GSP_VARS = {
@@ -134,12 +131,12 @@
     <!-- Media -->
     <div class="boxed-heading" id="media" data-content="Media">
         <!-- The fileinput-button span is used to style the file input field as button -->
-        <span class="btn btn-success fileinput-button tooltips" title="Select one or more photos to upload (you can also simply drag and drop files onto the page).">
+        <button class="btn btn-success fileinput-button tooltips" title="Select one or more photos to upload (you can also simply drag and drop files onto the page).">
             <i class="icon icon-white icon-plus"></i>
             <span>Add files...</span>
             <!-- The file input field used as target for the file upload widget -->
             <input id="fileupload" type="file" name="files[]" multiple>
-        </span>
+        </button>
         <span style="display: inline-block;">Optional. Add one or more images. Image metadata will be used to automatically set date and location fields (where available)
             <br>Hint: you can drag and drop files onto this window</span>
         <br>
@@ -161,7 +158,9 @@
         <div class="row-fluid">
             <div class="span6" id="mapWidget">
                 <div class="form-horizontal">
-                    <button class="btn" id="useMyLocation"><i class="icon-map-marker" style="margin-left:-5px;"></i> Use my location</button>
+                    <button class="btn" id="useMyLocation">
+                        <i class="fa fa-location-arrow fa-lg" style="margin-left:-2px;margin-right:3px;"></i> Use my location <r:img uri="/images/spinner.gif" class="spinner0 hide" style="height: 18px;"/>
+                    </button>
                     &nbsp;<span class="badge badge-infoX"> OR </span>&nbsp;
                     <div class="input-append">
                         <input class="input-large" id="geocodeinput" type="text" placeholder="Enter an address, location or lat/lng">

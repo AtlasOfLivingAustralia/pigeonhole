@@ -18,7 +18,7 @@
   - rights and limitations under the License.
   --}%
 
-<r:require modules="jquery, jqueryUIEffects, leaflet, inview, purl"/>
+<r:require modules="jquery, jqueryUIEffects, leaflet, inview, purl, fontawesome"/>
         <style type="text/css">
             #locationLatLng {
                 color: #DDD;
@@ -207,6 +207,11 @@
                     updateLocation(e.latlng);
                 }
 
+                $('#useMyLocation').click(function(e) {
+                    e.preventDefault();
+                    geolocate();
+                });
+
                 $('#geocodeinput').on('keydown', function(e) {
                     if (e.keyCode == 13 ) {
                         e.preventDefault();
@@ -344,7 +349,14 @@
             }
 
             function geolocate() {
-                map.locate({setView: true, maxZoom: 16});
+                $('.spinner0').show();
+
+                map.locate({setView: true, maxZoom: 16}).on('locationfound', function(e){
+                    $('.spinner0').hide();
+                }).on('locationerror', function(e){
+                    $('.spinner0').hide();
+                    alert("Location failed: " + e.message);
+                });
             }
 
             function geocode() {
@@ -590,7 +602,8 @@
             <div class="row">
                 <div class="span5">
                     <p>Where did you see the species of interest?</p>
-                    <button class="btn" onClick="geolocate()"><i class="icon-map-marker" style="margin-left:-5px;"></i> Use my location</button>
+                    <button class="btn" id="useMyLocation"><i class="fa fa-location-arrow fa-lg" style="margin-left:-2px;margin-right:3px;"></i> Use my location</button>
+                    <r:img uri="/images/spinner.gif" class="spinner0 hide" style="height: 30px;"/>
                     <div style="margin: 10px 0;"><span class="label label-info">OR</span></div>
                     <div class="hide">Enter an address, location or coordinates</div>
                     <div class="input-append">

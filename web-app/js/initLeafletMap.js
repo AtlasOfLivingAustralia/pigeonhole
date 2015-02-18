@@ -257,7 +257,13 @@ function geocodeAddress(query) {
 
 function geolocate() {
     // this triggers a 'locationfound' event, which is registered further up in code.
-    map.locate({setView: true, maxZoom: 16});
+    $('.spinner0').show();
+    map.locate({setView: true, maxZoom: 16}).on('locationfound', function(e){
+        $('.spinner0').hide();
+    }).on('locationerror', function(e){
+        $('.spinner0').hide();
+        alert("Location failed: " + e.message);
+    });
 }
 
 function updateLocation(latlng, keepView) {
