@@ -308,7 +308,7 @@
             species selected for you (note you will lose any data on this page so do this step first).
         </div>
         <div class="modal-footer">
-            <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button> |${params.action}|
+            <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
             <g:set var="thisUrl" value="${g.createLink(controller: params.controller, action: params.action, id: (params.action ==  'edit') ? params.id : '', absolute: true)}"/>
             <a href="${g.createLink(uri:'/identify?returnUrl=' + thisUrl )}" class="btn btn-primary">Proceed to Identification Help page</a>
         </div>
