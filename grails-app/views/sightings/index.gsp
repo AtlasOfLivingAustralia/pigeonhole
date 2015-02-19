@@ -119,9 +119,10 @@
                     </tr>
                 </g:each>
                 </tbody>
-            </table>${params.controller}||${controllerName}||||${params.action}||${actionName}||${params as grails.converters.JSON}
+            </table>
             <div class="pagination">
-                <g:paginate total="${sightings.totalRecords?:0}" mapping=""/>
+                <g:set var="mappingName"><g:if test="${actionName == 'index'}">recent</g:if><g:elseif test="${actionName == 'user' && params.id}">spotter</g:elseif><g:else>mine</g:else></g:set>
+                <g:paginate total="${sightings.totalRecords?:0}" mapping="${mappingName}" id="${params.id}"/>
             </div>
             <!-- Modal -->
             <div id="imageModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
