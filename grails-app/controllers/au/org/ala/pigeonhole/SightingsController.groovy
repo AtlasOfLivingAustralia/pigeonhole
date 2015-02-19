@@ -6,7 +6,7 @@ class SightingsController {
     def ecodataService, authService
 
     def index() {
-        [user: authService.userDetails(), sightings: ecodataService.getRecentSightings(params), pageHeading: "Recent sightings"]
+        [user: authService.userDetails()?:[:], sightings: ecodataService.getRecentSightings(params), pageHeading: "Recent sightings"]
     }
 
     def user(String id) {

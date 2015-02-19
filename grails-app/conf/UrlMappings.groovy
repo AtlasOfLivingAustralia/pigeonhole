@@ -16,9 +16,9 @@
 class UrlMappings {
 
     static mappings = {
-        "/recent"(controller: "sightings")
-        "/mine"(controller: "sightings", action:"user")
-        "/spotter/$id"(controller: "sightings", action:"user")
+        name recent: "/recent"(controller: "sightings")
+        name mine: "/mine"(controller: "sightings", action:"user")
+        name spotter: "/spotter/$id"(controller: "sightings", action:"user")
         "/identify"(view:"/identify")
         "/identify-ng"(view:"/identify-ng")
         "/uploads/$file**"(controller:"image", action:"index")
