@@ -94,8 +94,7 @@ class SubmitSightingController {
             //render(status: result.status, text: result as JSON, contentType: "application/json")
             if (result.error) {
                 // ecodata returned an error
-                flash.message = "There was a problem submitting your sighting, please try again. If this problem persists, please send an email to support@ala.org.au.<br>"
-                        + result.error
+                flash.message = "There was a problem submitting your sighting, please try again. If this problem persists, please send an email to support@ala.org.au.<br>${result.error}"
                 chain action: "index", id: "${sighting.taxonConceptID?:''}", model: [sighting: sighting]
             } else {
                 flash.message = "You sighting was successfully submitted."

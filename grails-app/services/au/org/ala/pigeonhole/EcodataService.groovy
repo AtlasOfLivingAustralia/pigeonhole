@@ -92,7 +92,15 @@ class EcodataService {
         log.debug "ecodata result = ${result}"
         // if error return Map below
         // else return Map key/values as JSON
-        [status:result.status?:200, text: result.error?:result]
+        def returnMap = [status: result.status?:200]
+
+        if (result.error) {
+            returnMap.error = result.error
+        } else {
+            returnMap.text = result
+        }
+
+        returnMap
     }
 
     private String getQueryStringForParams(GrailsParameterMap params, Boolean convertKeys) {

@@ -52,7 +52,7 @@
     <g:set var="errorsShown" value="${true}"/>
     <div class="container-fluid">
         <div class="alert alert-error">
-            ${flash.message}
+            ${raw(flash.message)}
             <g:eachError var="err" bean="${sighting}">
                 <li><g:message code="sighting.field.${err.field}"/> - <g:fieldError bean="${sighting}"  field="${err.field}"/></li>
             </g:eachError>
@@ -62,7 +62,7 @@
 <g:if test="${!errorsShown && (flash.message || sighting?.error)}">
     <div class="container-fluid">
         <div class="alert alert-error">
-            ${flash.message?:sighting?.error}
+            ${raw(flash.message)?:sighting?.error}
         </div>
     </div>
 </g:if>
