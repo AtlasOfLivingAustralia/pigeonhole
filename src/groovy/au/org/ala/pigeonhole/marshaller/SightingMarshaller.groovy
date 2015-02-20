@@ -29,6 +29,7 @@ class SightingMarshaller {
             return [
                     "occurrenceID" : sighting.occurrenceID,
                     "userId" : sighting.userId,
+                    "userDisplayName" : sighting.userDisplayName,
                     //"taxonConceptID" : sighting.taxonConceptID,
                     "scientificName" : sighting.scientificName,
                     "family" : sighting.family,

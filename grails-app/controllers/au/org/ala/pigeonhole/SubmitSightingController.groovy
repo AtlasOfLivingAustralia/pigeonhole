@@ -30,8 +30,7 @@ class SubmitSightingController {
                 taxon: getTaxonForGuid(id),
                 coordinateSources: grailsApplication.config.coordinates.sources,
                 speciesGroupsMap: bieService.getSpeciesGroupsMap(),
-                user:authService.userDetails(),
-                //bookmarks: ecodataService.getBookmarkLocationsForUser(authService.userId) // Map
+                user:authService.userDetails()
         ]
     }
 
@@ -66,11 +65,13 @@ class SubmitSightingController {
 
     def upload(Sighting sighting) {
         log.debug "upload params: ${(params as JSON).toString(true)}"
-        //log.debug "upload sighting: ${sighting as JSON}"
+        log.debug "upload sighting: ${sighting as JSON}"
         def userId = authService.userId ?: 99999
+        def userDisplayName = authService.displayName ?: ""
         def debug = grailsApplication.config.submit.debug;
 
         sighting.userId = userId
+        sighting.userDisplayName = userDisplayName
         JSONObject result
 
         if (!sighting.validate()) {

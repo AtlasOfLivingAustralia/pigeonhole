@@ -32,6 +32,7 @@ import java.text.SimpleDateFormat
 @grails.validation.Validateable
 class Sighting {
     String userId
+    String userDisplayName
     String taxonConceptID
     String scientificName
     String family
@@ -61,15 +62,36 @@ class Sighting {
     String error // fromm webservice failures
 
     static constraints = {
+        userId(nullable: true)
+        userDisplayName(nullable: true)
+        taxonConceptID(nullable: true)
         scientificName(nullable: true, validator: { val, obj->
             // one of scientificName or tags must be specified
             if ( (!val && !obj.tags)) {
                 return 'sighting.sciname.tags'
             }
         })
+        kingdom(nullable: true)
+        family(nullable: true)
+        commonName(nullable: true)
+        tags(nullable: true)
+        identificationVerificationStatus(nullable: true)
+        requireIdentification(nullable: true)
+        multimedia(nullable: true)
+        timeZoneOffset(nullable: true)
         eventDate(nullable: false)
         coordinateUncertaintyInMeters(nullable: true, range: 1..10000)
         decimalLatitude(nullable: true, scale: 8, range: -90..90)
         decimalLongitude(nullable: true,  scale: 8, range: -180..180)
+        geodeticDatum(nullable: true)
+        usingReverseGeocodedLocality(nullable: true)
+        locality(nullable: true)
+        locationRemark(nullable: true)
+        occurrenceRemarks(nullable: true)
+        submissionMethod(nullable: true)
+        occurrenceID(nullable: true)
+        dateCreated(nullable: true)
+        lastUpdated(nullable: true)
+        error(nullable: true)
     }
 }

@@ -37,10 +37,15 @@ modules = {
         resource url:'js/alaAutocomplete.js'
     }
 
+    pigeonhole {
+        dependsOn 'jquery'
+        resource url:'/css/pigeonhole.css'
+    }
+
     submitSighting {
-        dependsOn 'jqueryMigrate, moment'
-        resource url:'/css/submit.css'
+        dependsOn 'jqueryMigrate, moment, leaflet'
         resource url:'/js/submitSighting.js'
+        resource url: '/js/initLeafletMap.js'
     }
 
     fileuploads {
@@ -101,11 +106,6 @@ modules = {
         dependsOn 'jquery'
         resource url:'js/jquery.event.ue.js'
         resource url:'js/jquery.udraggable.js'
-    }
-
-    sightingMap {
-        dependsOn 'leaflet'
-        resource url: '/js/initLeafletMap.js'
     }
 
     leafletLocate {

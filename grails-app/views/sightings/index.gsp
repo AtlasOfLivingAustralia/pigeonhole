@@ -27,7 +27,7 @@
 <head>
     <meta name="layout" content="main"/>
     <title>${pageHeading}</title>
-    <r:require modules="jqueryMigrate, moment"/>
+    <r:require modules="pigeonhole, jqueryMigrate, moment"/>
 </head>
 <body class="nav-species">
 <g:render template="/topMenu" />
@@ -69,7 +69,7 @@
                 <thead>
                 <tr>
                     <th style="width:20%;">Identification</th>
-                    <th>Date</th>
+                    <th>Sighting date</th>
                     <th style="width:30%;">Location</th>
                     <g:if test="${user?.userId && user.userId == s?.userId || auth.ifAnyGranted(roles:'ROLE_ADMIN', "1")}"><th>Action</th></g:if>
                     <th>Images</th>
@@ -124,11 +124,11 @@
                 <g:set var="mappingName"><g:if test="${actionName == 'index'}">recent</g:if><g:elseif test="${actionName == 'user' && params.id}">spotter</g:elseif><g:else>mine</g:else></g:set>
                 <g:paginate total="${sightings.totalRecords?:0}" mapping="${mappingName}" id="${params.id}"/>
             </div>
-            <!-- Modal -->
+            <!-- Image Modal -->
             <div id="imageModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                    <h3 id="myModalLabel">Original image</h3>
+                    <h3 id="myModalLabel">Sighting image</h3>
                 </div>
                 <div class="modal-body">
                     <img id="originalImage" src="${g.resource(dir:'images',file:'noImage.jpg')}" alt="original image file for sighting"/>

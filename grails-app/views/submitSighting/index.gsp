@@ -26,8 +26,8 @@
 <head>
     <meta name="layout" content="main"/>
     <title>Report a sighting | Atlas of Living Australia</title>
-    <r:require modules="fileuploads, exif, moment, alaAutocomplete, sightingMap, datepicker, qtip, udraggable, fontawesome, submitSighting"/>
-    <r:script>
+    <r:require modules="fileuploads, exif, moment, alaAutocomplete, pigeonhole, datepicker, qtip, udraggable, fontawesome, submitSighting"/>
+    <r:script disposition="head">
         // global var to pass in GSP/Grails values into external JS files
         GSP_VARS = {
             biocacheBaseUrl: "${(grailsApplication.config.biocache.baseUrl)}",
