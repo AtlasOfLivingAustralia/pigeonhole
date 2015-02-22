@@ -62,20 +62,12 @@ grails.project.dependency.resolution = {
     plugins {
         // plugins for the build system only
         build ":tomcat:7.0.54"
-
-        // plugins for the compile step
-        //compile ":scaffolding:2.0.3"
         compile ':cache:1.1.7'
         compile ":cache-headers:1.1.7"
-        //compile ":ajax-uploader:1.1"
-        // plugins needed at runtime but not for compilation
-        //runtime ":hibernate:3.6.10.16" // or ":hibernate4:4.3.5.4"
-        //runtime ":database-migration:1.4.0"
         runtime ":jquery:1.11.1"
-        //runtime ":angularjs-resources:1.3.0"
         runtime ":resources:1.2.14"
         runtime ":cached-resources:1.0"
-        // runtime ":lesscss-resources:1.3.3"
+        runtime ":release:3.0.1"
         runtime ":ala-bootstrap2:1.3"
         runtime ":ala-auth:1.0"
     }
