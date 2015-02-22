@@ -18,7 +18,7 @@
   - rights and limitations under the License.
   --}%
 
-<r:require modules="jquery, jqueryUIEffects, leaflet, inview, purl, fontawesome"/>
+<r:require modules="jquery, jqueryUIEffects, pigeonhole, leaflet, inview, purl, fontawesome"/>
         <style type="text/css">
             #locationLatLng {
                 color: #DDD;
