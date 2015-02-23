@@ -327,11 +327,11 @@
                     var returnUrl = $.url().param("returnUrl");
                     var lsid = $('#imgModal').data('lsid');
 
-                    if (returnUrl) {
-                        window.location = returnUrl + "/" + lsid;
-                    } else {
-                        alert("your species is (LSID): " + lsid);
+                    if (!returnUrl) {
+                       returnUrl =  "${g.createLink(uri:'/')}";
                     }
+
+                    window.location = returnUrl + "/" + lsid;
                 });
 
 
