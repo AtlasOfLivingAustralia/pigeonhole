@@ -328,7 +328,7 @@
                     var lsid = $('#imgModal').data('lsid');
 
                     if (!returnUrl) {
-                       returnUrl =  "${g.createLink(uri:'/')}";
+                       returnUrl =  "${g.createLink(uri:'/', absolute: true)}";
                     }
 
                     window.location = returnUrl + "/" + lsid;
