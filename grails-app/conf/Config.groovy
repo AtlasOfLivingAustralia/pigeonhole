@@ -16,7 +16,6 @@
 /******************************************************************************\
  *  CONFIG MANAGEMENT
  \******************************************************************************/
-//def appName = 'pidgeonhole'
 def ENV_NAME = "${appName.toUpperCase()}_CONFIG"
 default_config = "/data/${appName}/config/${appName}-config.properties"
 if(!grails.config.locations || !(grails.config.locations instanceof List)) {
@@ -58,7 +57,7 @@ biocache.baseUrl = "http://biocache.ala.org.au/ws";
 ecodata.baseUrl = "http://localhost:8080/ecodata"
 locationBookmark.baseUrl = "http://localhost:8080/ecodata/location/"
 
-media.uploadDir = '/data/cache/imageUploads/' // Path to where files will be uploaded
+media.uploadDir = ""/data/${appName}/cache/imageUploads/" // Path to where files will be uploaded
 coordinates.sources = ["Google maps", "Google earth", "GPS device", "camera/phone", "physical maps", "other"]
 sighting.fields.excludes = ['errors','timeZoneOffset','eventDateNoTime','eventDateTime','class','log','constraints','$constraints']
 sighting.licenses = ['Creative Commons Attribution','Creative Commons Attribution-Noncommercial','Creative Commons Attribution-Share Alike','Creative Commons Attribution-Noncommercial-Share Alike']
