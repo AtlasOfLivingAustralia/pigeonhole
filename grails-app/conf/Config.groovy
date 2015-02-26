@@ -53,7 +53,7 @@ security.cas.casServerUrlPrefix = 'https://auth.ala.org.au/cas'
 security.cas.bypass  // set to true for non-ALA deployment
 
 bie.baseUrl = "http://bie.ala.org.au"
-biocache.baseUrl = "http://biocache.ala.org.au/ws";
+biocache.baseUrl = "http://biocache.ala.org.au/ws"
 ecodata.baseUrl = "http://localhost:8080/ecodata"
 locationBookmark.baseUrl = "http://localhost:8080/ecodata/location/"
 
@@ -164,12 +164,6 @@ environments {
         security.cas.contextPath = "/${appName}"
     }
     production {
-        grails.logging.jul.usebridge = false
-        // TODO: grails.serverURL = "http://www.changeme.com"
-        grails.hostname = "sightings.ala.org.au"
-        grails.serverURL = "http://${grails.hostname}}"
-        security.cas.appServerName = "http://${grails.hostname}"
-        security.cas.contextPath = ""
     }
 }
 
