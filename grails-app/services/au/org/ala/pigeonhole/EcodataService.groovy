@@ -227,6 +227,8 @@ class EcodataService {
                 } catch (Exception e) {
                     log.warn "Error parsing iso date: ${e.message}", e
                 }
+            } else if (it.key == 'imageLicence') {
+                jsonCopy.remove(it.key)
             }
         }
 
