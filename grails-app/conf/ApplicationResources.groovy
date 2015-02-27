@@ -16,7 +16,6 @@
 modules = {
     application {
         resource url: 'js/application.js'
-        resource url: 'css/app.css'
     }
 
     jqueryMigrate {

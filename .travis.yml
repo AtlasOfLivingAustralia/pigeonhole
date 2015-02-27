@@ -32,10 +32,10 @@ before_script:
   = "1" ]; then MAVEN_REPO="ala-repo-release"; fi;
 - echo "MAVEN_REPO:$MAVEN_REPO"
 script:
-- grails clean && grails refresh-dependencies --non-interactive && grails prod war
-  --non-interactive && grails prod maven-install --non-interactive
+- grails clean --stacktrace  && grails refresh-dependencies --verbose  --stacktrace  --non-interactive && grails prod war
+   --stacktrace --non-interactive --verbose && grails prod maven-install --non-interactive  --stacktrace  --verbose
 after_success: '[ "${TRAVIS_PULL_REQUEST}" = "false" ] && grails prod maven-deploy
-  --repository=$MAVEN_REPO --non-interactive'
+  --repository=$MAVEN_REPO --non-interactive  --stacktrace --verbose'
 env:
   global:
   - secure: KkqaSzq1sD9I8/FrAleUNVYvxwTPBbRynlnMfyEeDceoFJg4RheKXW9RoI+GaZsKRKMNNK2faB7yuKPXBXW6HrfMBGNsHYd4SkYXC+AsQpcvKLD0Bof6UV26QpuGYxUNUs1LYMOldQGfunflReCcJrPf7eI6/4Cojr7FWR20lHo=
