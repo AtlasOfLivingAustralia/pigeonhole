@@ -16,6 +16,7 @@
 /******************************************************************************\
  *  CONFIG MANAGEMENT
  \******************************************************************************/
+def appName = 'pigeonhole'
 def ENV_NAME = "${appName.toUpperCase()}_CONFIG"
 default_config = "/data/${appName}/config/${appName}-config.properties"
 if(!grails.config.locations || !(grails.config.locations instanceof List)) {
@@ -41,8 +42,6 @@ println "[${appName}] (*) grails.config.locations = ${grails.config.locations}"
  \******************************************************************************/
 reloadable.cfgs = ["file:/data/${appName}/config/${appName}-config.properties"]
 
-runWithNoExternalConfig = true
-//security.cas.bypass = true
 security.cas.casServerName = 'https://auth.ala.org.au'
 security.cas.uriFilterPattern = '/(?!recent).*'
 security.cas.authenticateOnlyIfLoggedInPattern = "/recent"
@@ -168,7 +167,7 @@ environments {
 }
 
 def loggingDir = (System.getProperty('catalina.base') ? System.getProperty('catalina.base') + '/logs' : './logs')
-def appName = grails.util.Metadata.current.'app.name'
+
 // log4j configuration
 log4j = {
 // Example of changing the log pattern for the default console
