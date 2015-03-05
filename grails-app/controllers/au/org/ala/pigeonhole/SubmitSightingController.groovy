@@ -19,6 +19,7 @@ import au.org.ala.pigeonhole.command.Sighting
 import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.JSONArray
 import org.codehaus.groovy.grails.web.json.JSONObject
+import org.springframework.web.servlet.ModelAndView
 
 class SubmitSightingController {
     def httpWebService, authService, ecodataService, bieService
@@ -53,19 +54,20 @@ class SubmitSightingController {
                 guid = getGuidForName(sighting.scientificName)
             }
 
-            render view: "index", model: [
+            // ModelAndView used to support "chain" with model (work around)
+            return new ModelAndView('index', [
                     sighting: sighting,
                     taxon: getTaxonForGuid(guid),
                     coordinateSources: grailsApplication.config.coordinates.sources,
                     speciesGroupsMap: bieService.getSpeciesGroupsMap(),
                     user:authService.userDetails()
-            ]
+            ])
         }
     }
 
     def upload(Sighting sighting) {
         log.debug "upload params: ${(params as JSON).toString(true)}"
-        log.debug "upload sighting: ${sighting as JSON}"
+        log.debug "upload sighting: ${(sighting as JSON).toString(true)}"
         def userId = authService.userId ?: 99999
         def userDisplayName = authService.displayName ?: ""
         def debug = grailsApplication.config.submit.debug;
@@ -74,9 +76,7 @@ class SubmitSightingController {
             // edits will already have user info - don't clobber
             sighting.userId = userId
             sighting.userDisplayName = userDisplayName
-        }
-
-        JSONObject result
+        } else
 
         if (!sighting.validate()) {
             sighting.errors.allErrors.each {
@@ -84,8 +84,12 @@ class SubmitSightingController {
             }
             log.debug "chaining - sighting = ${sighting}"
             flash.message = "There was a problem with one or more fields, please fix these errors (in red)"
-            // chain action: "index", id: "${sighting.taxonConceptID}", model: [sighting: sighting, taxon: getTaxonForGuid(sighting.taxonConceptID), coordinateSources: grailsApplication.config.coordinates.sources, user:authService.userDetails()]
-            chain action: "index", id: "${sighting.taxonConceptID?:''}", model: [sighting: sighting]
+
+            if (sighting.occurrenceID) {
+                chain(action: "edit", id: "${sighting.occurrenceID?:''}", model: [sighting: sighting])
+            } else {
+                chain(action: "index", id: "${sighting.taxonConceptID?:''}", model: [sighting: sighting])
+            }
         } else if (debug) {
             // testing without ecodata running
             String sj = (sighting as JSON).toString(true)
@@ -93,7 +97,7 @@ class SubmitSightingController {
                     "<br><code>${sj}</code>"
             redirect(uri:'/sightings/user')
         } else {
-            result = ecodataService.submitSighting(sighting)
+            JSONObject result = ecodataService.submitSighting(sighting)
             //render(status: result.status, text: result as JSON, contentType: "application/json")
             if (result.error) {
                 // ecodata returned an error

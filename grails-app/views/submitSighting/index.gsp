@@ -216,7 +216,7 @@
                 <table class="formInputTable">
                     <tr >
                         <td><label for="eventDate">Date:</label></td>
-                        <td id="eventDatePicker" class="${hasErrors(bean:sighting,field:'eventDate','validationErrors')}"><g:datePicker name="eventDate" id="eventDate" noSelection="['':'--']" precision="day" placeholder="DD-MM-YYYY" value="${sighting?.eventDate}"/></td>
+                        <td id="eventDatePicker" class="${hasErrors(bean:sighting,field:'eventDate','validationErrors')}"><g:datePicker name="eventDate" id="eventDate" noSelection="['':'--']" precision="day" placeholder="DD-MM-YYYY" value="${sighting?.eventDate}" default="${(sighting) ? sighting?.eventDate?:'none' : new Date()}"/></td>
                         <td><span class="helphint">* required</span></td>
                     </tr>
                     <tr >
