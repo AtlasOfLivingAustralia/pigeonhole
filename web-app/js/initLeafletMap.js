@@ -198,6 +198,11 @@ $(document).ready(function() {
         map.setView(marker.getLatLng(), 16);
     });
 
+    // update map in edit mode
+    if (GSP_VARS.sightingBean && GSP_VARS.sightingBean.decimalLatitude && GSP_VARS.sightingBean.decimalLongitude) {
+        $('#decimalLongitude').change();
+    }
+
 }); // end document load function
 
 function loadBookmarks() {

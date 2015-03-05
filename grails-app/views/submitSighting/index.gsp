@@ -141,10 +141,6 @@
             <br>Hint: you can drag and drop files onto this window</span>
         <br>
         <br>
-        <!-- The global progress bar -->
-        %{--<div id="progress" class="progress">--}%
-        %{--<div class="progress-bar progress-bar-success"></div>--}%
-        %{--</div>--}%
         <!-- The container for the uploaded files -->
         <div id="files" class="files"></div>
         <div id="imageLicenseDiv" class="hide">

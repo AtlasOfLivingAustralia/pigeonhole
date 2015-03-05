@@ -264,12 +264,6 @@ $(document).ready(function() {
 
     });
 
-    // update map in edit mode
-    if (GSP_VARS.sightingBean.decimalLongitude) {
-        // trigger map to refresh
-        $('#decimalLongitude').change();
-    }
-
     // show tags in edit mode
     var tags = (GSP_VARS.sightingBean.tags) ? GSP_VARS.sightingBean.tags : [];
     $.each(tags, function(i, t) {
