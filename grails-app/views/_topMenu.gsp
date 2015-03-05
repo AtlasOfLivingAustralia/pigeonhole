@@ -12,7 +12,8 @@
   - implied. See the License for the specific language governing
   - rights and limitations under the License.
   --}%
-
+<!-- params: ${params.controller} || ${params.action} -->
+<!--  vars: ${controllerName} || ${actionName} -->
 <span id="sightingLinks" style="padding-right: 20px;">
     <g:if test="${user && params.action == 'user' && params.controller == 'sightings'}">
         <span class="showMySightings">My sightings</span>
@@ -21,8 +22,8 @@
         <a href="${g.createLink(uri:'/mine')}" class="showMySightings">My sightings</a>
     </g:else>
     |
-    <g:if test="${params.action != 'user' && params.controller == 'sightings'}">
-        <span class="showMySightings">Recent sightings</span>
+    <g:if test="${actionName == 'index' && controllerName == 'sightings'}">
+        <a href="${g.createLink(uri:'/sightings/index')}" class="showMySightings adminLink">Recent sightings</a>
     </g:if>
     <g:else>
         <a href="${g.createLink(uri:'/recent')}" class="showMySightings">Recent sightings</a>

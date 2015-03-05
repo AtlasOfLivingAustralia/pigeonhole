@@ -294,6 +294,15 @@ table.formInputTable td {
     cursor: pointer;
 }
 
+a.adminLink {
+    cursor: default;
+}
+
+a.adminLink:hover {
+    cursor: default;
+    text-decoration: none;
+}
+
 /* Fixes for IE < 8 */
 @media screen\9 {
     .fileinput-button input {
