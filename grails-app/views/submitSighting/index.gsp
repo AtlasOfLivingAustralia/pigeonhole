@@ -69,6 +69,8 @@
 <g:if test="${sighting && !sighting?.error || !sighting}">
 <form id="sightingForm" action="${g.createLink(controller:'submitSighting', action:'upload')}" method="POST">
     <input type="hidden" name="occurrenceID" id="occurrenceID" value="${sighting?.occurrenceID}"/>
+    <input type="hidden" name="userId" id="occurrenceID" value="${sighting?.userId?:user?.userId}"/>
+    <input type="hidden" name="userDisplayName" id="occurrenceID" value="${sighting?.userDisplayName?:user?.userDisplayName}"/>
     <!-- Species -->
     <div class="boxed-heading" id="species" data-content="Species">
         <div class="row-fluid">

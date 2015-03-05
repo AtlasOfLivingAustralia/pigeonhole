@@ -70,8 +70,12 @@ class SubmitSightingController {
         def userDisplayName = authService.displayName ?: ""
         def debug = grailsApplication.config.submit.debug;
 
-        sighting.userId = userId
-        sighting.userDisplayName = userDisplayName
+        if (!sighting.userId) {
+            // edits will already have user info - don't clobber
+            sighting.userId = userId
+            sighting.userDisplayName = userDisplayName
+        }
+
         JSONObject result
 
         if (!sighting.validate()) {
