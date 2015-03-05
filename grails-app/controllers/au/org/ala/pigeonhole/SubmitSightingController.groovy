@@ -83,9 +83,7 @@ class SubmitSightingController {
             // chain action: "index", id: "${sighting.taxonConceptID}", model: [sighting: sighting, taxon: getTaxonForGuid(sighting.taxonConceptID), coordinateSources: grailsApplication.config.coordinates.sources, user:authService.userDetails()]
             chain action: "index", id: "${sighting.taxonConceptID?:''}", model: [sighting: sighting]
         } else if (debug) {
-            // render sighting.asJSON()
-            // respond sighting, [formats:['json', 'xml']]
-            //render sighting as JSON
+            // testing without ecodata running
             String sj = (sighting as JSON).toString(true)
             flash.message = "You sighting was successfully (dummy) submitted." +
                     "<br><code>${sj}</code>"
@@ -96,7 +94,11 @@ class SubmitSightingController {
             if (result.error) {
                 // ecodata returned an error
                 flash.message = "There was a problem submitting your sighting, please try again. If this problem persists, please send an email to support@ala.org.au.<br>${result.error}"
-                chain action: "index", id: "${sighting.taxonConceptID?:''}", model: [sighting: sighting]
+                if (sighting.occurrenceID) {
+                    chain action: "edit", id: "${sighting.occurrenceID?:''}", model: [sighting: sighting]
+                } else {
+                    chain action: "index", id: "${sighting.taxonConceptID?:''}", model: [sighting: sighting]
+                }
             } else {
                 flash.message = "You sighting was successfully submitted."
                 redirect(uri:'/sightings/user')
@@ -122,7 +124,7 @@ class SubmitSightingController {
         def guid
 
         if (scientificName) {
-            taxon = httpWebService.getJson("${grailsApplication.config.bie.baseUrl}/ws/guid/${scientificName.encodeAsURL()}.json")
+            taxon = httpWebService.getJson("${grailsApplication.config.bie.baseUrl}/ws/guid/${scientificName.encodeAsURL()}")
 
             if (taxon.has('acceptedIdentifier') || taxon.has('identifier')) {
                 guid = taxon.acceptedIdentifier?:taxon.identifier
