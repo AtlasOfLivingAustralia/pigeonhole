@@ -53,8 +53,7 @@ security.cas.bypass  // set to true for non-ALA deployment
 
 bie.baseUrl = "http://bie.ala.org.au"
 biocache.baseUrl = "http://biocache.ala.org.au/ws"
-ecodata.baseUrl = "http://localhost:8080/ecodata"
-locationBookmark.baseUrl = "http://localhost:8080/ecodata/location/"
+ecodata.baseUrl = "http://ecodata-sightings-dev.ala.org.au"
 
 media.uploadDir = "/data/${appName}/cache/imageUploads/" // Path to where files will be uploaded
 coordinates.sources = ["Google maps", "Google earth", "GPS device", "camera/phone", "physical maps", "other"]
