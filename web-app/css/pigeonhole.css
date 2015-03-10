@@ -303,6 +303,16 @@ a.adminLink:hover {
     text-decoration: none;
 }
 
+#imageModal {
+    width: 700px;
+    margin-left:  -350px;
+}
+
+#imageModal .modal-body {
+    max-height: 500px;
+    text-align: center;
+}
+
 /* Fixes for IE < 8 */
 @media screen\9 {
     .fileinput-button input {
@@ -315,5 +325,13 @@ a.adminLink:hover {
 @media (max-width: 767px) {
     .input-xlarge {
         width: 100%;
+    }
+    #imageModal {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        right: 20px;
+        width: auto;
+        margin: 0;
     }
 }
