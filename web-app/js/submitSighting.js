@@ -224,7 +224,7 @@ $(document).ready(function() {
     // remove species/secientificName box
     $('#species').on('click', 'a.remove', function(e) {
         e.preventDefault();
-        $(this).parent().hide();
+        $(this).parent().remove();
     });
 
     // autocomplete on species lookup
@@ -265,7 +265,12 @@ $(document).ready(function() {
     });
 
     // show tags in edit mode
-    var tags = (GSP_VARS.sightingBean.tags) ? GSP_VARS.sightingBean.tags : [];
+    // look for request params first and then values in sighting bean
+    var tags = ($.url(true).param('tags')) ? $.url(true).param('tags') : GSP_VARS.sightingBean.tags || [];
+    if (tags && $.type(tags) === "string") {
+        // force tags to be Array type
+        tags = new Array(tags);
+    }
     $.each(tags, function(i, t) {
         addTagLabel(t);
     });

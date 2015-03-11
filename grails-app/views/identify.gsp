@@ -140,7 +140,7 @@
 
         </style>
         <r:script disposition="head">
-            var map, geocoding, marker, circle, radius, initalBounds;
+            var map, geocoding, marker, circle, radius, initalBounds, groupSelected, subgroupSelected;
             var biocacheBaseUrl = "${grailsApplication.config.biocache.baseUrl}";
 
             $(document).ready(function() {
@@ -226,17 +226,21 @@
                 $('#speciesGroup').on('click', '.groupBtn', function(e) {
                     $('#speciesGroup .btn').removeClass('btn-primary');
                     $(this).addClass('btn-primary');
+                    var selected = $(this).data('group');
 
                     $('#speciesSubGroup .sub-groups').addClass('hide'); // hide all subgroups
-                    $('#subgroup_' + $(this).data('group')).removeClass('hide'); // expose requested subgroup
+                    $('#subgroup_' + selected).removeClass('hide'); // expose requested subgroup
+                    groupSelected = selected;
                     //updateSubGroups($(this).data('group'));
-                    loadSpeciesGroupImages('species_group:' + unescape($(this).data('group')), null, $(this).find('.badge').text());
+                    loadSpeciesGroupImages('species_group:' + unescape(selected), null, $(this).find('.badge').text());
                 });
 
                 $('#speciesSubGroup').on('click', '.subGroupBtn', function(e) {
                     $('#speciesSubGroup .btn').removeClass('btn-primary');
                     $(this).addClass('btn-primary');
-                    loadSpeciesGroupImages('species_subgroup:' + unescape($(this).data('group')), null, $(this).find('.badge').text());
+                    var selected = $(this).data('group');
+                    subgroupSelected = selected;
+                    loadSpeciesGroupImages('species_subgroup:' + unescape(selected), null, $(this).find('.badge').text());
                 });
 
                 // mouse over affect on thumbnail images
@@ -331,7 +335,19 @@
                        returnUrl =  "${g.createLink(uri:'/', absolute: true)}";
                     }
 
-                    window.location = returnUrl + "/" + lsid;
+                    var queryStr = "";
+                    if (groupSelected || subgroupSelected) {
+                        var paramsList = [];
+                        if (groupSelected) {
+                            paramsList.push("tags=" + groupSelected);
+                        }
+                        if (subgroupSelected) {
+                            paramsList.push("tags=" + subgroupSelected);
+                        }
+                        queryStr = "?" + paramsList.join("&");
+                    }
+
+                    window.location = returnUrl + "/" + lsid + queryStr;
                 });
 
 
@@ -510,6 +526,8 @@
                 $('#speciesGroup').empty();
                 $('#speciesSubGroup').empty();
                 $('#speciesImages').empty();
+                subgroupSelected = null;
+                groupSelected = null;
             }
 
             function geocodeAddress() {
@@ -623,7 +641,7 @@
         </div>
 
         <div class="boxed-heading" id="species_group" data-content="2. Narrow to a species group">
-            <p>Select the group that best fits the species (try different groups if unsuccessful)</p>
+            <p>Select the group and subgroup (optional) that best fits the species (if unsuccessful try different groups or increase the "surrounding area" size - drop-down above)</p>
             <div id="speciesGroup"><span>[Specify a location first]</span></div>
             <r:img uri="/images/spinner.gif" class="spinner1 hide"/>
             <p class="hide">Select a species sub-group (optional)</p>
@@ -633,7 +651,7 @@
 
         <div class="boxed-heading" id="browse_species_images" data-content="3. Browse species images">
             <p>
-                Look for images that match the species you are trying to identify. Click the image for more example images of that species.
+                Look for images that match the species you are trying to identify. Click the image for more example images of that species and finally click the "select this image" button.
                 <br><g:checkBox name="toggleNoImages" id="toggleNoImages" class="" value="${true}"/> hide species without images
             </p>
             <div id="speciesImages">
