@@ -15,6 +15,7 @@
 
 package au.org.ala.pigeonhole
 
+import au.org.ala.pigeonhole.command.Question
 import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.JSONObject
 
@@ -23,7 +24,7 @@ import org.codehaus.groovy.grails.web.json.JSONObject
  * file upload in the background
  */
 class AjaxController {
-    def imageService, ecodataService, authService
+    def imageService, ecodataService, authService, taxonOverflowService
 
     def upload = {
         try {
@@ -76,6 +77,16 @@ class AjaxController {
             return render(status: 400, text: "No bookmark provided")
         }
 
+    }
+
+    def createQuestion() {
+        JSONObject jsonBody = request.JSON
+        log.debug "post json = ${request.JSON}"
+        Question question = new Question(jsonBody) // JsonSlurper slurper = new JsonSlurper().setType( JsonParserType.INDEX_OVERLAY ); slurper.parseText(jsonData)
+        question.userId = authService.userId
+        log.debug "question = ${(question as JSON).toString(true)}"
+        def result = taxonOverflowService.createQuestion(question)
+        render(status: 200, text: "${result as JSON}")
     }
 
 }

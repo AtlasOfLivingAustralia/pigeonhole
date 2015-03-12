@@ -34,7 +34,7 @@ import java.text.DateFormat
 import java.text.SimpleDateFormat;
 
 class EcodataService {
-    def grailsApplication, httpWebService
+    def grailsApplication, httpWebService, webserviceService
 
     Sighting getSighting(String id) {
         Sighting sc = new Sighting()
@@ -79,7 +79,6 @@ class EcodataService {
     }
 
     Map submitSighting(Sighting sightingCommand) {
-        // TODO implement webservice POST
         def url = grailsApplication.config.ecodata.baseUrl + "/record"
 
         if (sightingCommand.occurrenceID) {
@@ -88,7 +87,7 @@ class EcodataService {
         }
 
         def json = sightingCommand as JSON
-        def result = doJsonPost(url, json.toString())
+        def result = webserviceService.doJsonPost(url, json.toString())
         log.debug "ecodata result = ${result}"
         // if error return Map below
         // else return Map key/values as JSON
@@ -166,29 +165,6 @@ class EcodataService {
         [status:result.status?:200, message: (result.error?:result)]
     }
 
-    def doJsonPost(String url, String postBody) {
-        //println "post = " + postBody
-        log.debug "url = ${url} "
-        log.debug "postBody = ${postBody} "
-        def http = new HTTPBuilder(url)
-        http.request( groovyx.net.http.Method.POST, groovyx.net.http.ContentType.JSON ) {
-            body = postBody
-            requestContentType = ContentType.JSON
-
-            response.success = { resp, json ->
-                log.debug "json = " + json
-                log.debug "resp = ${resp}"
-                log.debug "json is a ${json.getClass().name}"
-                return json
-            }
-
-            response.failure = { resp ->
-                def error = [error: "Unexpected error: ${resp.statusLine.statusCode} : ${resp.statusLine.reasonPhrase}", status: resp.statusLine.statusCode]
-                log.error "Oops: " + error.error
-                return error
-            }
-        }
-    }
 
     def doDelete(String url) {
         log.debug "DELETE url = ${url}"

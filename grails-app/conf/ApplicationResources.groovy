@@ -133,4 +133,9 @@ modules = {
         dependsOn 'jquery'
         resource url: 'js/jquery.inview.js'
     }
+
+    bootbox {
+        dependsOn 'bootstrap, jquery'
+        resource url: 'js/bootbox.min.js'
+    }
 }

@@ -27,7 +27,7 @@
 <head>
     <meta name="layout" content="main"/>
     <title>${pageHeading}</title>
-    <r:require modules="pigeonhole, jqueryMigrate, moment"/>
+    <r:require modules="pigeonhole, jqueryMigrate, moment, bootbox"/>
 </head>
 <body class="nav-species">
 <g:render template="/topMenu" />
@@ -79,7 +79,7 @@
                 </thead>
                 <tbody>
                 <g:each in="${sightings.records}" var="s">
-                    <tr>
+                    <tr id="s_${s.occurrenceID}" data-tags="${(si.getTags(sighting: s)).encodeAsJavaScript()}">
                         <td>
                             <span class="speciesName">${s.scientificName}</span>
                             <div>${s.commonName}</div>
@@ -154,7 +154,7 @@
                 <div class="modal-body">
                     <div>Please provide a reason category for why this record requires reviewing:</div>
                     <div class="requiredBlock">
-                        <g:select from="${grailsApplication.config.flag?.issues}" id="issueReason" name="issueReason" valueMessagePrefix="reason" noSelection="['':'-- choose a reason--']" class="span8"/>
+                        <g:select from="${grailsApplication.config.flag?.issues}" id="questionType" name="questionType" valueMessagePrefix="reason" noSelection="['':'-- choose a reason--']" class="span8"/>
                         <i class="fa fa-asterisk"></i>
                     </div>
                     <div>Add a short comment describing the reason for flagging this record:</div>
@@ -213,9 +213,10 @@
                          }
                     });
 
-                    var reasonBorderCss = $('#issueReason').css('border');
+                    var reasonBorderCss = $('#questionType').css('border');
                     var commentBorderCss = $('#comment').css('border');
 
+                    // flag sighting button event handler
                     $('.flagBtn').click(function(e) {
                         e.preventDefault();
                         var occurrenceId = $(this).data('occurrenceid');
@@ -223,23 +224,23 @@
                             $(this).find('#occurrenceId').val(occurrenceId);
                         }).on('hidden', function (event) {
                             $(this).find('#occurrenceId').val('');
-                            $(this).find('#issueReason').val('').css('border', reasonBorderCss);
+                            $(this).find('#questionType').val('').css('border', reasonBorderCss);
                             $(this).find('#comment').val('').css('border', commentBorderCss);
                         });
                     });
 
+                    // submit question via "flag" button (modal)
                     $('#submitFlagIssue').click(function(e) {
                         e.preventDefault();
-                        var issueReason = $('#issueReason').val();
+                        var occurrenceId = $('#occurrenceId').val();
+                        var questionType = $('#questionType').val();
                         var comment = $('#comment').val();
 
-                        if (issueReason && comment) {
-                            alert("functionality coming soon");
-                            $('#flagModal').modal('hide'); // TODO move to ajax async 'always' closure
-                        } else {
-                            if (!issueReason) {
-                                $('#issueReason').css('border','1px solid red');
-                                $('#issueReason').on('change', function(e){
+                        if (!(questionType && comment)) {
+                            // validation failed
+                            if (!questionType) {
+                                $('#questionType').css('border','1px solid red');
+                                $('#questionType').on('change', function(e){
                                     $(this).css('border', reasonBorderCss);
                                 });
                             }
@@ -250,10 +251,75 @@
                                 });
                             }
                             alert('Please fill in required fields (*)')
+                        } else {
+                            // send Question through to taxonOverflow via Ajax controller
+                            var jsonBody = {
+                                occurrenceId: occurrenceId,
+                                questionType: questionType,
+                                tags: getTags(occurrenceId),
+                                comment: comment
+                            }
+                            $.ajax({
+                                url: "${g.createLink(controller:'ajax', action:'createQuestion')}",
+                                type: "POST",
+                                data: JSON.stringify(jsonBody),
+                                contentType: "application/json",
+                                dataType: "json"
+                            })
+                            .done(function(data) {
+                                if (data.success && !data.questionId) {
+                                    bootbox.alert("Sighting was flagged successfully");
+                                } else if (data.success && data.questionId) {
+                                    // TODO make a nicer looking "response" for user with link to Question page, etc.
+                                    // TODO with http://bootboxjs.com/ maybe?
+                                    %{--if(confirm("Sighting was flagged successfully. Click 'OK' to visit this issue or 'Cancel' to stay on this page.")) {--}%
+                                        %{--window.location = "${grailsApplication.config.taxonoverflow?.baseUrl}/question/" + data.questionId--}%
+                                    %{--}--}%
+                                    //bootbox.confirm("Are you sure?", function(confirmed) {
+                                    //    console.log("Confirmed: "+confirmed);
+                                    //});
+                                    bootbox.dialog("Sighting was flagged successfully and a TaxonOverflow question was raised.", [
+                                        {   "label" : "Stay on this page",
+                                            "class" : "btn"
+                                        },
+                                        {  "label" : "View &quot;flagged&quot; question",
+                                            "class" : "btn-success",
+                                            "callback": function() {
+                                                window.location = "${grailsApplication.config.taxonoverflow?.baseUrl}/question/" + data.questionId;
+                                            }
+                                        }
+                                    ]);
+                                } else if (data.message) {
+                                    bootbox.alert(data.message);
+                                } else {
+                                    bootbox.alert("unexpected error: " + data);
+                                }
+                            })
+                            .fail(function( jqXHR, textStatus, errorThrown ) {
+                                bootbox.alert("Error: " + textStatus + " - " + errorThrown);
+                            })
+                            .always(function() {
+                                // clean-up
+                                $('#flagModal').modal('hide');
+                            });
                         }
-
                     });
                 });
+
+                function getTags(occurrenceId) {
+                    //console.log('tags 0', $('#s_' + occurrenceId).data('tags'), $('#s_' + occurrenceId).attr('data-tags'));
+                    var rawTags = $('#s_' + occurrenceId).data('tags');
+                    var tags;
+
+                    if (rawTags) {
+                        tags = JSON.parse('"'+(rawTags)+'"'); // add surrounding quotes to force string un-encoding
+                        //console.log('tags 1', tags);
+                        tags = JSON.parse(tags); // second round gives JS object
+                    }
+
+                    //console.log('tags 2', tags);
+                    return tags;
+                }
             </r:script>
         </g:if>
         <g:elseif test="${sightings && sightings instanceof org.codehaus.groovy.grails.web.json.JSONObject && sightings.has('error')}">

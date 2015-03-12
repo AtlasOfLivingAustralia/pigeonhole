@@ -1,5 +1,7 @@
 package au.org.ala.pigeonhole
 
+import grails.converters.JSON
+
 import java.text.SimpleDateFormat
 
 class SightingTagLib {
@@ -33,5 +35,25 @@ class SightingTagLib {
         }
 
         out << output
+    }
+
+    /**
+     * Get a List of tags for both record tags and any higher taxa names
+     * and output as a JSON list
+     *
+     * @attr sighting REQUIRED
+     */
+    def getTags = { attrs ->
+        def sighting = attrs.sighting
+        def tags = []
+        def fields = ["tags", "kingdom", "family"]
+
+        fields.each {
+            if (sighting.has(it)) {
+                tags.addAll(sighting.get(it))
+            }
+        }
+
+        out << (tags as JSON).toString()
     }
 }
