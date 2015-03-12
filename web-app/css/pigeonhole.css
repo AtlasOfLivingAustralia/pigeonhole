@@ -313,6 +313,21 @@ a.adminLink:hover {
     text-align: center;
 }
 
+.requiredBlock {
+    vertical-align: top;
+}
+
+.requiredBlock i, .requiredBlock textarea, .requiredBlock select  {
+    display: inline-block;
+    vertical-align: top;
+}
+
+span.label, span.badge {
+    font-weight: normal;
+    border-radius: 0;
+    padding-top: 3px;
+}
+
 /* Fixes for IE < 8 */
 @media screen\9 {
     .fileinput-button input {

@@ -61,6 +61,8 @@ sighting.fields.excludes = ['errors','timeZoneOffset','eventDateNoTime','eventDa
 sighting.licenses = ['Creative Commons Attribution','Creative Commons Attribution-Noncommercial','Creative Commons Attribution-Share Alike','Creative Commons Attribution-Noncommercial-Share Alike']
 sortFields=['scientificName','commonName','eventDate','dateCreated','lastUpdated','locality','multimedia']
 accuracyValues=[0,10,50,100,500,1000,5000,10000]
+//flag.issues = ['Identification','Geocoding Issue','Suspected Outlier','Temporal Issue','Taxonomic Issue','Habitat Issue']
+flag.issues = ['INAPPROPRIATE_IMAGE','IDENTIFICATION','GEOCODING_ISSUE','SUSPECTED_OUTLIER','TEMPORAL_ISSUE','TAXONOMIC_ISSUE','HABITAT_ISSUE']
 showBiocacheLinks = false
 
 grails.project.groupId = "au.org.ala" // change this to alter the default package name and Maven publishing destination

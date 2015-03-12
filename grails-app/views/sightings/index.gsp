@@ -67,7 +67,7 @@
                     Displaying records ${fromIndex} to ${(toIndex < total) ? toIndex : total} of ${g.formatNumber(number: total, format: "###,##0")}
                 </div>
             </g:if>
-            <table class="table table-bordered table-condensed table-striped">
+            <table class="table table-bordered table-condensed table-striped" id="sightingsTable">
                 <thead>
                 <tr>
                     <th style="width:20%;">Identification</th>
@@ -83,10 +83,14 @@
                         <td>
                             <span class="speciesName">${s.scientificName}</span>
                             <div>${s.commonName}</div>
-                            <div>${raw((s.tags) ? 'Tags: ' + s.tags.join(', ') : '')}</div>
+                            <g:if test="${s.tags}"><div style="margin-bottom: 5px;">
+                                <g:each in="${s.tags}" var="t"><span class="label">${raw(t)}</span> </g:each>
+                            </div></g:if>
                             <g:if test="${grailsApplication.config.showBiocacheLinks && s.occurrenceID}">
                                 <a href="http://biocache.ala.org.au/occurrence/${s.occurrenceID}">View public record</a>
                             </g:if>
+                            <a class="btn btn-default btn-mini flagBtn" href="#flagModal" role="button" data-occurrenceid="${s.occurrenceID}" title="Suggest this record might require confirmation/correction" style="font-size: 12px;font-weight:300;">
+                                <i class="fa fa-flag"></i> flag</a>
                         </td>
                         <td>
                             <span style="white-space:nowrap;">
@@ -109,8 +113,8 @@
                         </td>
                         <g:if test="${user?.userId && user?.userId == s?.userId || auth.ifAnyGranted(roles:'ROLE_ADMIN', "1")}"><td>
                             <div class="actionButtons">
-                                <a href="${g.createLink(controller: 'submitSighting', action:'edit', id: s.occurrenceID)}" class="btn btn-small editBtn" data-recordid="occurrenceID">Edit</a>
-                                <button class="btn btn-small deleteRecordBtn" data-recordid="${s.occurrenceID}">Delete</button>
+                                <a href="${g.createLink(controller: 'submitSighting', action:'edit', id: s.occurrenceID)}" class="btn btn-small editBtn" data-recordid="occurrenceID"><i class="fa fa-pencil"></i> Edit</a>
+                                <button class="btn btn-small deleteRecordBtn" data-recordid="${s.occurrenceID}"><i class="fa fa-trash"></i>&nbsp;Delete</button>
                             </div>
                         </td></g:if>
                         <td>
@@ -139,6 +143,30 @@
                 </div>
                 <div class="modal-footer">
                     <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+                </div>
+            </div>
+             <!-- Flag Modal -->
+            <div id="flagModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="flagModalLabel" aria-hidden="true">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h3 id="flagModalLabel">Flag sighting</h3>
+                </div>
+                <div class="modal-body">
+                    <div>Please provide a reason category for why this record requires reviewing:</div>
+                    <div class="requiredBlock">
+                        <g:select from="${grailsApplication.config.flag?.issues}" id="issueReason" name="issueReason" valueMessagePrefix="reason" noSelection="['':'-- choose a reason--']" class="span8"/>
+                        <i class="fa fa-asterisk"></i>
+                    </div>
+                    <div>Add a short comment describing the reason for flagging this record:</div>
+                    <div class="requiredBlock">
+                        <g:textArea name="comment" id="comment" rows="8" class="span8"/>
+                        <i class="fa fa-asterisk"></i>
+                    </div>
+                    <input type="hidden" id="occurrenceId" name="occurrenceId" value=""/>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+                    <button id="submitFlagIssue" class="btn btn-primary">Submit</button>
                 </div>
             </div>
             <r:script>
@@ -183,6 +211,47 @@
                                 $('#originalImage').attr('src', initialUrl);
                             });
                          }
+                    });
+
+                    var reasonBorderCss = $('#issueReason').css('border');
+                    var commentBorderCss = $('#comment').css('border');
+
+                    $('.flagBtn').click(function(e) {
+                        e.preventDefault();
+                        var occurrenceId = $(this).data('occurrenceid');
+                        $('#flagModal').modal('show').on('shown', function (event) {
+                            $(this).find('#occurrenceId').val(occurrenceId);
+                        }).on('hidden', function (event) {
+                            $(this).find('#occurrenceId').val('');
+                            $(this).find('#issueReason').val('').css('border', reasonBorderCss);
+                            $(this).find('#comment').val('').css('border', commentBorderCss);
+                        });
+                    });
+
+                    $('#submitFlagIssue').click(function(e) {
+                        e.preventDefault();
+                        var issueReason = $('#issueReason').val();
+                        var comment = $('#comment').val();
+
+                        if (issueReason && comment) {
+                            alert("functionality coming soon");
+                            $('#flagModal').modal('hide'); // TODO move to ajax async 'always' closure
+                        } else {
+                            if (!issueReason) {
+                                $('#issueReason').css('border','1px solid red');
+                                $('#issueReason').on('change', function(e){
+                                    $(this).css('border', reasonBorderCss);
+                                });
+                            }
+                            if (!comment) {
+                                $('#comment').css('border','1px solid red');
+                                $('#comment').on('change', function(e){
+                                    $(this).css('border', commentBorderCss);
+                                });
+                            }
+                            alert('Please fill in required fields (*)')
+                        }
+
                     });
                 });
             </r:script>
