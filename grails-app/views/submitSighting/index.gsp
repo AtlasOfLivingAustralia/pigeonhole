@@ -52,6 +52,7 @@
     <g:set var="errorsShown" value="${true}"/>
     <div class="container-fluid">
         <div class="alert alert-error">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
             ${raw(flash.message)}
             <g:eachError var="err" bean="${sighting}">
                 <li><g:message code="sighting.field.${err.field}"/> - <g:fieldError bean="${sighting}"  field="${err.field}"/></li>
@@ -62,6 +63,7 @@
 <g:if test="${!errorsShown && (flash.message || sighting?.error)}">
     <div class="container-fluid">
         <div class="alert alert-error">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
             ${raw(flash.message)?:sighting?.error}
         </div>
     </div>
@@ -216,15 +218,15 @@
                 <table class="formInputTable">
                     <tr >
                         <td><label for="eventDate">Date:</label></td>
-                        <td id="eventDatePicker" class="${hasErrors(bean:sighting,field:'eventDate','validationErrors')}"><g:datePicker name="eventDate" id="eventDate" noSelection="['':'--']" precision="day" placeholder="DD-MM-YYYY" value="${sighting?.eventDate}" default="${(sighting) ? sighting?.eventDate?:'none' : new Date()}"/></td>
+                        <td id="eventDatePicker" class="${hasErrors(bean:sighting,field:'eventDate','validationErrors')}"><g:datePicker name="eventDate" id="eventDate" relativeYears="[0..-50]" noSelection="['':'--']" precision="day" placeholder="DD-MM-YYYY" value="${sighting?.eventDate}" default="${(sighting) ? sighting?.eventDate?:'none' : new Date()}"/></td>
                         <td><span class="helphint">* required</span></td>
                     </tr>
                     <tr >
                         <td><label for="eventDate_hour">Time:</label></td>
                         <td>
-                            <g:select name="eventDate_hour" id="eventDate_hour" noSelection="['':'--']" class="input-auto"  from="${(0..23).collect{it.toString().padLeft(2,'0')}}" value="${si.getTimeValue(date: sighting?.eventDate, part: Calendar.HOUR)}"/>
+                            <g:select name="eventDate_hour" id="eventDate_hour" class="input-auto"  from="${(0..23).collect{it.toString().padLeft(2,'0')}}" value="${si.getTimeValue(date: sighting?.eventDate, part: Calendar.HOUR)}"/>
                             :
-                            <g:select name="eventDate_minute" id="eventDate_minute" noSelection="['':'--']" class="input-auto"  from="${(0..59).collect{it.toString().padLeft(2,'0')}}" value="${si.getTimeValue(date: sighting?.eventDate, part: Calendar.MINUTE)}"/>
+                            <g:select name="eventDate_minute" id="eventDate_minute" class="input-auto"  from="${(0..59).collect{it.toString().padLeft(2,'0')}}" value="${si.getTimeValue(date: sighting?.eventDate, part: Calendar.MINUTE)}"/>
                         </td>
                         <td><span class="helphint">24 hour format</span></td>
                     </tr>
@@ -303,7 +305,7 @@
             The following page will guide you through the process of identiying a species of interest by allowing you to browse
             images of species from common "groups". The suggested species are selected from a list of species known to be found in the area
             you specify (via a simple map tool). Once you choose a candidate species you will be brought back to this page with the chosen
-            species selected for you (note you will lose any data on this page so do this step first).
+            species selected for you (note you will lose any data on this page, so do this step first).
         </div>
         <div class="modal-footer">
             <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
