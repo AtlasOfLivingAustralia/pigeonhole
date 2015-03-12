@@ -97,8 +97,9 @@ class SubmitSightingController {
                     "<br><code>${sj}</code>"
             redirect(uri:'/sightings/user')
         } else {
+            // POST sighting to ecodata
             JSONObject result = ecodataService.submitSighting(sighting)
-            //render(status: result.status, text: result as JSON, contentType: "application/json")
+
             if (result.error) {
                 // ecodata returned an error
                 flash.message = "There was a problem submitting your sighting, please try again. If this problem persists, please send an email to support@ala.org.au.<br>${result.error}"
