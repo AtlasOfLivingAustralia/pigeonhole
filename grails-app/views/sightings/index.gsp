@@ -250,7 +250,7 @@
                                     $(this).css('border', commentBorderCss);
                                 });
                             }
-                            alert('Please fill in required fields (*)')
+                            bootbox.alert('Please fill in required fields (in <span style="color:red;">red</span>)');
                         } else {
                             // send Question through to taxonOverflow via Ajax controller
                             var jsonBody = {
@@ -271,13 +271,6 @@
                                     bootbox.alert("Sighting was flagged successfully");
                                 } else if (data.success && data.questionId) {
                                     // TODO make a nicer looking "response" for user with link to Question page, etc.
-                                    // TODO with http://bootboxjs.com/ maybe?
-                                    %{--if(confirm("Sighting was flagged successfully. Click 'OK' to visit this issue or 'Cancel' to stay on this page.")) {--}%
-                                        %{--window.location = "${grailsApplication.config.taxonoverflow?.baseUrl}/question/" + data.questionId--}%
-                                    %{--}--}%
-                                    //bootbox.confirm("Are you sure?", function(confirmed) {
-                                    //    console.log("Confirmed: "+confirmed);
-                                    //});
                                     bootbox.dialog("Sighting was flagged successfully and a TaxonOverflow question was raised.", [
                                         {   "label" : "Stay on this page",
                                             "class" : "btn"
@@ -290,7 +283,7 @@
                                         }
                                     ]);
                                 } else if (data.message) {
-                                    bootbox.alert(data.message);
+                                    bootbox.alert(data.message); // shouldn't ever trigger
                                 } else {
                                     bootbox.alert("unexpected error: " + data);
                                 }
