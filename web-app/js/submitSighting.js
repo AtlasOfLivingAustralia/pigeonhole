@@ -210,15 +210,17 @@ $(document).ready(function() {
                         .text(el.common));
             });
             addTagLabel(group);
-            $('#browseSpecesImages').removeClass('disabled').removeAttr('disabled');
+            //$(this).val(''); // reset
+            //$('#browseSpecesImages').removeClass('disabled').removeAttr('disabled');
         } else {
-            $('#browseSpecesImages').addClass('disabled').attr('disabled','');
+            //$('#browseSpecesImages').addClass('disabled').attr('disabled','');
         }
     });
 
     // species subgroup drop-down
     $('#speciesSubgroups').change(function(e) {
         addTagLabel($(this).val());
+        //$(this).val(''); // reset
     });
 
     // remove species/secientificName box
@@ -240,15 +242,14 @@ $(document).ready(function() {
                 .done(function(data) {
                     if (data.scientificName) {
                         $('#taxonDetails').removeClass('hide').show();
-
                         $('.sciName a').attr('href', GSP_VARS.bieBaseUrl + "/species/" + guid).html(data.scientificName);
                         $('.speciesThumbnail').attr('src', GSP_VARS.bieBaseUrl + '/ws/species/image/thumbnail/' + guid);
                         if (data.commonName) {
                             $('.commonName').text(data.commonName);
                             $('#commonName').val(data.commonName);
-                        } else {
-                            //$('.commonName').hide();
                         }
+                        $('#kingdom').val(data.kingdom);
+                        $('#family').val(data.family);
                         $('#noTaxa').hide();
                         $('#matchedTaxa').show();
                         $('#identificationChoice').show();
@@ -331,8 +332,9 @@ $(document).ready(function() {
 
 function insertImageMetadata(imageRow) {
     // imageRow is a jQuery object
-    var dateTime = String(imageRow.find('.imgDate').data('datetime'));
-    if (dateTime) {
+    var dateTimeVal = imageRow.find('.imgDate').data('datetime');
+    if (dateTimeVal) {
+        var dateTime = String(dateTimeVal);
         $('#eventDateTime').val(dateTime);
         $('#eventDateNoTime').val(isoToAusDate(dateTime.substring(0,10)));
         $('#eventTime').val(dateTime.substring(11,19));
@@ -378,9 +380,9 @@ function clearTaxonDetails() {
  * @param group
  */
 function addTagLabel(group) {
-    if (group) {
+    if (!isTagPresent(group) && group) {
         var close = '<a href="#" class="remove" title="remove this item"><i class="remove icon-remove icon-white">&nbsp;</i></a>';
-        var input = '<input type="hidden" value="' + group + '" name="tags"/>';
+        var input = '<input type="hidden" value="' + group + '" name="tags" class="tags"/>';
         var label = $('<span class="label label-infoX"/>').append(input + group + close).after('&nbsp;');
         $('#tagsBlock').append(label);
     }
@@ -457,10 +459,12 @@ function addServerImage(image, index) {
     // populate hidden input fields
     //node.find('.media').val(result.url).attr('name', 'associatedMedia['+ index + ']');
     node.find('.identifier').val(image.identifier).attr('name', 'multimedia['+ index + '].identifier');
+    node.find('.imageId').val(image.imageId).attr('name', 'multimedia['+ index + '].imageId');
     node.find('.title').val(image.title).attr('name', 'multimedia['+ index + '].title');
-    node.find('.format').val(image.mimeType).attr('name', 'multimedia['+ index + '].format');
+    node.find('.format').val(image.format).attr('name', 'multimedia['+ index + '].format');
     node.find('.creator').val(image.creator).attr('name', 'multimedia['+ index + '].creator');
-    node.find('.license').val(image.creator).attr('name', 'multimedia['+ index + '].license');
+    node.find('.created').val(image.created).attr('name', 'multimedia['+ index + '].created');
+    node.find('.license').val(image.license).attr('name', 'multimedia['+ index + '].license');
 
     if (false) {
         //if (result.exif && result.exif.date) {
@@ -469,4 +473,22 @@ function addServerImage(image, index) {
     
     $('#imageLicenseDiv').removeClass('hide'); // show the license options
     node.appendTo('#files');
+}
+
+/**
+ * Returns true if tag is already present in page DOM
+ *
+ * @param tag
+ * @returns {boolean}
+ */
+function isTagPresent(tag) {
+    var isTagPresent = false;
+    $('.tags').each(function() {
+        if (tag == $(this).val()) {
+            isTagPresent = true;
+            return false;
+        }
+    });
+
+    return isTagPresent
 }

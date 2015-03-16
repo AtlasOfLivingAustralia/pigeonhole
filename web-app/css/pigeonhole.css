@@ -266,6 +266,10 @@ table.formInputTable td {
     padding: 1px 8px 1px 0;
 }
 
+.imageRow {
+    margin-bottom: 5px;
+}
+
 #occurrenceRemarks {
     width: 80%;
 }
