@@ -89,7 +89,7 @@
                             <g:if test="${grailsApplication.config.showBiocacheLinks && s.occurrenceID}">
                                 <a href="http://biocache.ala.org.au/occurrence/${s.occurrenceID}">View public record</a>
                             </g:if>
-                            <a class="btn btn-default btn-mini flagBtn" href="#flagModal" role="button" data-occurrenceid="${s.occurrenceID}" title="Suggest this record might require confirmation/correction" style="font-size: 12px;font-weight:300;">
+                            <a class="btn btn-default btn-mini flagBtn" href="#flagModal" role="button" data-occurrenceid="${s.occurrenceID}" title="Suggest this record might require confirmation/correction">
                                 <i class="fa fa-flag"></i> flag</a>
                         </td>
                         <td>
@@ -106,8 +106,7 @@
                             ${s.locality}
                             <g:if test="${s.decimalLatitude && s.decimalLatitude != 'null' && s.decimalLongitude && s.decimalLongitude != 'null' }">
                                 <div>
-                                    Lat: ${s.decimalLatitude}<br>
-                                    Lng: ${s.decimalLongitude}
+                                    <i class="fa fa-location-arrow"></i> ${s.decimalLatitude}, ${s.decimalLongitude}
                                 </div>
                             </g:if>
                         </td>
@@ -169,8 +168,8 @@
                     <button id="submitFlagIssue" class="btn btn-primary">Submit</button>
                 </div>
             </div>
-            <button class="btn btn-default btn-mini questionBtn hide" id="questionBtn" title="View this question on taxon overflow" style="font-size: 12px;font-weight:300;">
-                <i class="fa fa-stack-exchange"></i> View Question</button>
+            <button class="btn btn-default btn-mini questionBtn hide" id="questionBtn" title="View this question on taxon overflow">
+                <i class="fa fa-life-ring"></i> View Question</button>
             <r:script>
                 $(document).ready(function() {
                     // delete record button confirmation
@@ -344,7 +343,6 @@
                         dataType: "json"
                     })
                     .done(function(data) {
-                        console.log("TO data", data);
                         $.each(uuidList, function(i,el) {
                             var questionId = data[i];
                             if (questionId) {
