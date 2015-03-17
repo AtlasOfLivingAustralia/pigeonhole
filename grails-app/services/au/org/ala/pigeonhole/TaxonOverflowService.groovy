@@ -38,4 +38,11 @@ class TaxonOverflowService {
         log.debug "question response = ${response}"
         response
     }
+
+    def bulkLookup(List uuids) {
+        def url =  "${grailsApplication.config.taxonoverflow?.baseUrl}/ws/question/bulkLookup"
+        def response = webserviceService.doJsonPost(url.toString(), (uuids as JSON).toString())
+        log.debug "bulkLookup response = ${response}"
+        response
+    }
 }

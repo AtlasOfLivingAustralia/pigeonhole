@@ -79,7 +79,7 @@
                 </thead>
                 <tbody>
                 <g:each in="${sightings.records}" var="s">
-                    <tr id="s_${s.occurrenceID}" data-tags="${(si.getTags(sighting: s)).encodeAsJavaScript()}">
+                    <tr id="s_${s.occurrenceID}" data-tags="${(si.getTags(sighting: s)).encodeAsJavaScript()}" data-uuid="${s.occurrenceID}">
                         <td>
                             <span class="speciesName">${s.scientificName}</span>
                             <div>${s.commonName}</div>
@@ -169,8 +169,10 @@
                     <button id="submitFlagIssue" class="btn btn-primary">Submit</button>
                 </div>
             </div>
+            <button class="btn btn-default btn-mini questionBtn hide" id="questionBtn" title="View this question on taxon overflow" style="font-size: 12px;font-weight:300;">
+                <i class="fa fa-stack-exchange"></i> View Question</button>
             <r:script>
-                $(function () {
+                $(document).ready(function() {
                     // delete record button confirmation
                     $('.deleteRecordBtn').click(function(e) {
                         e.preventDefault();
@@ -297,7 +299,22 @@
                             });
                         }
                     });
-                });
+
+                    // Lookup taxon overflow for associated Questions
+                    lookupQuestions();
+
+                    $('#sightingsTable').on("click", ".questionBtn", function(e) {
+                        e.preventDefault();
+                        var id = $(this).data('id');
+
+                        if (id) {
+                            window.location = "${grailsApplication.config.taxonoverflow?.baseUrl}/question/" + id;
+                        } else {
+                            bootbox.alert("No ID found for question");
+                        }
+                    });
+
+                }); // end of $(document).ready(function()
 
                 function getTags(occurrenceId) {
                     //console.log('tags 0', $('#s_' + occurrenceId).data('tags'), $('#s_' + occurrenceId).attr('data-tags'));
@@ -312,6 +329,39 @@
 
                     //console.log('tags 2', tags);
                     return tags;
+                }
+
+                function lookupQuestions() {
+                    var uuidList = [];
+                    $('#sightingsTable tbody tr').each(function(i,el) {
+                        uuidList.push($(this).data('uuid'));
+                    });
+                    $.ajax({
+                        url: "${g.createLink(controller:'ajax', action:'bulkLookupQuestions')}",
+                        type: "POST",
+                        data: JSON.stringify(uuidList),
+                        contentType: "application/json",
+                        dataType: "json"
+                    })
+                    .done(function(data) {
+                        console.log("TO data", data);
+                        $.each(uuidList, function(i,el) {
+                            var questionId = data[i];
+                            if (questionId) {
+                                var button = $('#questionBtn').clone(true).removeAttr('id').removeClass('hide');
+                                $(button).data('id', questionId);
+                                console.log('questionId',questionId, $(button).text(), button.html(),  $('tr#s_' + el + ' td:first'));
+                                //$('tr#s_' + el + ' td:first').append(button);
+                                button.appendTo('tr#s_' + el + ' td:first');
+                            }
+                        });
+                    })
+                    .fail(function( jqXHR, textStatus, errorThrown ) {
+                        bootbox.alert("Error loading questions: " + textStatus + " - " + errorThrown);
+                    })
+                    .always(function() {
+                        // clean-up
+                    });
                 }
             </r:script>
         </g:if>

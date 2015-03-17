@@ -78,7 +78,11 @@ class AjaxController {
         }
 
     }
-
+    /**
+     * Create a taxon overflow question
+     *
+     * @return
+     */
     def createQuestion() {
         JSONObject jsonBody = request.JSON
         log.debug "post json = ${request.JSON}"
@@ -87,6 +91,21 @@ class AjaxController {
         log.debug "question = ${(question as JSON).toString(true)}"
         def result = taxonOverflowService.createQuestion(question)
         render(status: 200, text: "${result as JSON}")
+    }
+
+    /**
+     * Bulk lookup against taxon overflow, sending a list of record UUIDs and
+     * getting back a list of questions IDs.
+     */
+    def bulkLookupQuestions() {
+        def jsonBody = request.JSON
+        log.debug "post json = ${request.JSON}"
+        def result = taxonOverflowService.bulkLookup(jsonBody)
+        if (result.hasProperty('error')) {
+            render(status: result.status?:400, text: "${result as JSON}")
+        } else {
+            render(status: 200, text: "${result as JSON}")
+        }
     }
 
 }

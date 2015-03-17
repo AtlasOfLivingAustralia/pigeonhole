@@ -21,7 +21,7 @@ import groovyx.net.http.HTTPBuilder
 class WebserviceService {
     static transactional = false
 
-    Map doJsonPost(String url, String postBody) {
+    def doJsonPost(String url, String postBody) {
         log.debug "url = ${url} "
         log.debug "postBody = ${postBody} "
         def http = new HTTPBuilder(url)
