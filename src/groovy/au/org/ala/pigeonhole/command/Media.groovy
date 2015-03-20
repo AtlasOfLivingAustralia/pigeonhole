@@ -27,6 +27,7 @@ class Media {
     String type = "StillImage" // one of: StillImage, Sound or MovingImage
     String format // mimetype
     String identifier // url
+    String imageId // from image-service
     String title
     String description
     String created // ISO date/time format

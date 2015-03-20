@@ -258,12 +258,22 @@ a.remove {
     font-size: 13px;
 }
 
+#content .btn-mini {
+    font-size: 12px;
+    font-weight: 300;
+    padding-top: 1px;
+}
+
 table.formInputTable {
     margin: 5px 0 5px 0;
 }
 
 table.formInputTable td {
     padding: 1px 8px 1px 0;
+}
+
+.imageRow {
+    margin-bottom: 5px;
 }
 
 #occurrenceRemarks {

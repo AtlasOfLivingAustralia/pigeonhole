@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Atlas of Living Australia
+ * Copyright (C) 2015 Atlas of Living Australia
  * All Rights Reserved.
  *
  * The contents of this file are subject to the Mozilla Public
@@ -12,3 +12,18 @@
  * implied. See the License for the specific language governing
  * rights and limitations under the License.
  */
+package au.org.ala.pigeonhole.command
+
+/**
+ * Bean for TaxonOverflow Question
+ *
+ * @author "Nick dos Remedios <Nick.dosRemedios@csiro.au>"
+ */
+class Question {
+    String source = "ecodata"
+    String userId
+    String occurrenceId
+    String questionType
+    List<String> tags
+    String comment
+}

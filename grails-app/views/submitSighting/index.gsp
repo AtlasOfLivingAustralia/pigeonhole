@@ -106,7 +106,7 @@
                     or common name into the box below and choose from the auto-complete list.</div>
                     <input class="input-xlarge typeahead ${hasErrors(bean:sighting,field:'scientificName','validationErrors')}" id="speciesLookup" type="text">
                 </div>
-                <div id="identificationChoice" class="hide">
+                <div id="identificationChoice" class="">
                     <div>How confident are you with the species identification?
                     <g:radioGroup name="identificationVerificationStatus" labels="['Confident','Uncertain']" values="['confident','uncertain']" value="${sighting?.identificationVerificationStatus?.toLowerCase()?:'confident'}" >
                         <span style="white-space:nowrap;">${it.radio}&nbsp;${it.label}</span>
@@ -262,6 +262,7 @@
                 <input type="hidden" class="title" value=""/>
                 <input type="hidden" class="format" value=""/>
                 <input type="hidden" class="identifier" value=""/>
+                <input type="hidden" class="imageId" value=""/>
                 <input type="hidden" class="license" value=""/>
                 <input type="hidden" class="created" value=""/>
                 <input type="hidden" class="creator" value=""/>

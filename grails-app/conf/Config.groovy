@@ -54,6 +54,7 @@ security.cas.bypass  // set to true for non-ALA deployment
 bie.baseUrl = "http://bie.ala.org.au"
 biocache.baseUrl = "http://biocache.ala.org.au/ws"
 ecodata.baseUrl = "http://ecodata-sightings-dev.ala.org.au"
+taxonoverflow.baseUrl = "http://taxonoverflow-dev.ala.org.au"
 
 media.uploadDir = "/data/${appName}/cache/imageUploads/" // Path to where files will be uploaded
 coordinates.sources = ["Google maps", "Google earth", "GPS device", "camera/phone", "physical maps", "other"]
@@ -62,7 +63,7 @@ sighting.licenses = ['Creative Commons Attribution','Creative Commons Attributio
 sortFields=['scientificName','commonName','eventDate','dateCreated','lastUpdated','locality','multimedia']
 accuracyValues=[0,10,50,100,500,1000,5000,10000]
 //flag.issues = ['Identification','Geocoding Issue','Suspected Outlier','Temporal Issue','Taxonomic Issue','Habitat Issue']
-flag.issues = ['INAPPROPRIATE_IMAGE','IDENTIFICATION','GEOCODING_ISSUE','SUSPECTED_OUTLIER','TEMPORAL_ISSUE','TAXONOMIC_ISSUE','HABITAT_ISSUE']
+flag.issues = ['IDENTIFICATION','GEOCODING_ISSUE','SUSPECTED_OUTLIER','TEMPORAL_ISSUE','TAXONOMIC_ISSUE','HABITAT_ISSUE','--','INAPPROPRIATE_IMAGE']
 showBiocacheLinks = false
 
 grails.project.groupId = "au.org.ala" // change this to alter the default package name and Maven publishing destination

@@ -27,7 +27,7 @@
 <head>
     <meta name="layout" content="main"/>
     <title>${pageHeading}</title>
-    <r:require modules="pigeonhole, jqueryMigrate, moment"/>
+    <r:require modules="pigeonhole, jqueryMigrate, moment, bootbox"/>
 </head>
 <body class="nav-species">
 <g:render template="/topMenu" />
@@ -79,7 +79,7 @@
                 </thead>
                 <tbody>
                 <g:each in="${sightings.records}" var="s">
-                    <tr>
+                    <tr id="s_${s.occurrenceID}" data-tags="${(si.getTags(sighting: s)).encodeAsJavaScript()}" data-uuid="${s.occurrenceID}">
                         <td>
                             <span class="speciesName">${s.scientificName}</span>
                             <div>${s.commonName}</div>
@@ -89,7 +89,7 @@
                             <g:if test="${grailsApplication.config.showBiocacheLinks && s.occurrenceID}">
                                 <a href="http://biocache.ala.org.au/occurrence/${s.occurrenceID}">View public record</a>
                             </g:if>
-                            <a class="btn btn-default btn-mini flagBtn" href="#flagModal" role="button" data-occurrenceid="${s.occurrenceID}" title="Suggest this record might require confirmation/correction" style="font-size: 12px;font-weight:300;">
+                            <a class="btn btn-default btn-mini flagBtn" href="#flagModal" role="button" data-occurrenceid="${s.occurrenceID}" title="Suggest this record might require confirmation/correction">
                                 <i class="fa fa-flag"></i> flag</a>
                         </td>
                         <td>
@@ -109,8 +109,7 @@
                             ${s.locality}
                             <g:if test="${s.decimalLatitude && s.decimalLatitude != 'null' && s.decimalLongitude && s.decimalLongitude != 'null' }">
                                 <div>
-                                    Lat: ${s.decimalLatitude}<br>
-                                    Lng: ${s.decimalLongitude}
+                                    <i class="fa fa-location-arrow"></i> ${s.decimalLatitude}, ${s.decimalLongitude}
                                 </div>
                             </g:if>
                         </td>
@@ -157,7 +156,7 @@
                 <div class="modal-body">
                     <div>Please provide a reason category for why this record requires reviewing:</div>
                     <div class="requiredBlock">
-                        <g:select from="${grailsApplication.config.flag?.issues}" id="issueReason" name="issueReason" valueMessagePrefix="reason" noSelection="['':'-- choose a reason--']" class="span8"/>
+                        <g:select from="${grailsApplication.config.flag?.issues}" id="questionType" name="questionType" valueMessagePrefix="reason" noSelection="['':'-- choose a reason--']" class="span8"/>
                         <i class="fa fa-asterisk"></i>
                     </div>
                     <div>Add a short comment describing the reason for flagging this record:</div>
@@ -172,8 +171,10 @@
                     <button id="submitFlagIssue" class="btn btn-primary">Submit</button>
                 </div>
             </div>
+            <button class="btn btn-default btn-mini questionBtn hide" id="questionBtn" title="View this question on taxon overflow">
+                <i class="fa fa-life-ring"></i> View Question</button>
             <r:script>
-                $(function () {
+                $(document).ready(function() {
                     // delete record button confirmation
                     $('.deleteRecordBtn').click(function(e) {
                         e.preventDefault();
@@ -216,9 +217,10 @@
                          }
                     });
 
-                    var reasonBorderCss = $('#issueReason').css('border');
+                    var reasonBorderCss = $('#questionType').css('border');
                     var commentBorderCss = $('#comment').css('border');
 
+                    // flag sighting button event handler
                     $('.flagBtn').click(function(e) {
                         e.preventDefault();
                         var occurrenceId = $(this).data('occurrenceid');
@@ -226,23 +228,23 @@
                             $(this).find('#occurrenceId').val(occurrenceId);
                         }).on('hidden', function (event) {
                             $(this).find('#occurrenceId').val('');
-                            $(this).find('#issueReason').val('').css('border', reasonBorderCss);
+                            $(this).find('#questionType').val('').css('border', reasonBorderCss);
                             $(this).find('#comment').val('').css('border', commentBorderCss);
                         });
                     });
 
+                    // submit question via "flag" button (modal)
                     $('#submitFlagIssue').click(function(e) {
                         e.preventDefault();
-                        var issueReason = $('#issueReason').val();
+                        var occurrenceId = $('#occurrenceId').val();
+                        var questionType = $('#questionType').val();
                         var comment = $('#comment').val();
 
-                        if (issueReason && comment) {
-                            alert("functionality coming soon");
-                            $('#flagModal').modal('hide'); // TODO move to ajax async 'always' closure
-                        } else {
-                            if (!issueReason) {
-                                $('#issueReason').css('border','1px solid red');
-                                $('#issueReason').on('change', function(e){
+                        if (!(questionType && comment)) {
+                            // validation failed
+                            if (!questionType) {
+                                $('#questionType').css('border','1px solid red');
+                                $('#questionType').on('change', function(e){
                                     $(this).css('border', reasonBorderCss);
                                 });
                             }
@@ -252,11 +254,116 @@
                                     $(this).css('border', commentBorderCss);
                                 });
                             }
-                            alert('Please fill in required fields (*)')
+                            bootbox.alert('Please fill in required fields (in <span style="color:red;">red</span>)');
+                        } else {
+                            // send Question through to taxonOverflow via Ajax controller
+                            var jsonBody = {
+                                occurrenceId: occurrenceId,
+                                questionType: questionType,
+                                tags: getTags(occurrenceId),
+                                comment: comment
+                            }
+                            $.ajax({
+                                url: "${g.createLink(controller:'ajax', action:'createQuestion')}",
+                                type: "POST",
+                                data: JSON.stringify(jsonBody),
+                                contentType: "application/json",
+                                dataType: "json"
+                            })
+                            .done(function(data) {
+                                if (data.success && !data.questionId) {
+                                    bootbox.alert("Sighting was flagged successfully");
+                                } else if (data.success && data.questionId) {
+                                    // TODO make a nicer looking "response" for user with link to Question page, etc.
+                                    bootbox.dialog("Sighting was flagged successfully and a TaxonOverflow question was raised.", [
+                                        {   "label" : "Stay on this page",
+                                            "class" : "btn"
+                                        },
+                                        {  "label" : "View &quot;flagged&quot; question",
+                                            "class" : "btn-success",
+                                            "callback": function() {
+                                                window.location = "${grailsApplication.config.taxonoverflow?.baseUrl}/question/" + data.questionId;
+                                            }
+                                        }
+                                    ]);
+                                } else if (data.message) {
+                                    bootbox.alert(data.message); // shouldn't ever trigger
+                                } else {
+                                    bootbox.alert("unexpected error: " + data);
+                                }
+                            })
+                            .fail(function( jqXHR, textStatus, errorThrown ) {
+                                bootbox.alert("Error: " + textStatus + " - " + errorThrown);
+                            })
+                            .always(function() {
+                                // clean-up
+                                $('#flagModal').modal('hide');
+                            });
                         }
-
                     });
-                });
+
+                    // Lookup taxon overflow for associated Questions
+                    lookupQuestions();
+
+                    $('#sightingsTable').on("click", ".questionBtn", function(e) {
+                        e.preventDefault();
+                        var id = $(this).data('id');
+
+                        if (id) {
+                            window.location = "${grailsApplication.config.taxonoverflow?.baseUrl}/question/" + id;
+                        } else {
+                            bootbox.alert("No ID found for question");
+                        }
+                    });
+
+                }); // end of $(document).ready(function()
+
+                function getTags(occurrenceId) {
+                    //console.log('tags 0', $('#s_' + occurrenceId).data('tags'), $('#s_' + occurrenceId).attr('data-tags'));
+                    var rawTags = $('#s_' + occurrenceId).data('tags');
+                    var tags;
+
+                    if (rawTags) {
+                        tags = JSON.parse('"'+(rawTags)+'"'); // add surrounding quotes to force string un-encoding
+                        //console.log('tags 1', tags);
+                        tags = JSON.parse(tags); // second round gives JS object
+                    }
+
+                    //console.log('tags 2', tags);
+                    return tags;
+                }
+
+                function lookupQuestions() {
+                    var uuidList = [];
+                    $('#sightingsTable tbody tr').each(function(i,el) {
+                        uuidList.push($(this).data('uuid'));
+                    });
+                    $.ajax({
+                        url: "${g.createLink(controller:'ajax', action:'bulkLookupQuestions')}",
+                        type: "POST",
+                        data: JSON.stringify(uuidList),
+                        contentType: "application/json",
+                        dataType: "json"
+                    })
+                    .done(function(data) {
+                        $.each(uuidList, function(i,el) {
+                            var questionId = data[i];
+                            if (questionId) {
+                                var button = $('#questionBtn').clone(true).removeAttr('id').removeClass('hide');
+                                $(button).data('id', questionId);
+                                console.log('questionId',questionId, $(button).text(), button.html(),  $('tr#s_' + el + ' td:first'));
+                                //$('tr#s_' + el + ' td:first').append(button);
+                                button.appendTo('tr#s_' + el + ' td:first');
+                            }
+                        });
+                    })
+                    .fail(function( jqXHR, textStatus, errorThrown ) {
+                        bootbox.alert("Error loading questions: " + textStatus + " - " + errorThrown);
+                    })
+                    .always(function() {
+                        // clean-up
+                    });
+                }
             </r:script>
         </g:if>
         <g:elseif test="${sightings && sightings instanceof org.codehaus.groovy.grails.web.json.JSONObject && sightings.has('error')}">
