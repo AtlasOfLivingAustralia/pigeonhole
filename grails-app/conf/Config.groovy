@@ -42,15 +42,6 @@ println "[${appName}] (*) grails.config.locations = ${grails.config.locations}"
  \******************************************************************************/
 reloadable.cfgs = ["file:/data/${appName}/config/${appName}-config.properties"]
 
-security.cas.casServerName = 'https://auth.ala.org.au'
-security.cas.uriFilterPattern = '/(?!recent).*'
-security.cas.authenticateOnlyIfLoggedInPattern = "/recent"
-security.cas.uriExclusionFilterPattern = '/images.*,/css.*,/js.*,/ajax/upload,/uploads/.*'
-security.cas.loginUrl = 'https://auth.ala.org.au/cas/login'
-security.cas.logoutUrl = 'https://auth.ala.org.au/cas/logout'
-security.cas.casServerUrlPrefix = 'https://auth.ala.org.au/cas'
-security.cas.bypass  // set to true for non-ALA deployment
-
 bie.baseUrl = "http://bie.ala.org.au"
 biocache.baseUrl = "http://biocache.ala.org.au/ws"
 ecodata.baseUrl = "http://ecodata-sightings-dev.ala.org.au"
@@ -63,7 +54,7 @@ sighting.licenses = ['Creative Commons Attribution','Creative Commons Attributio
 sortFields=['scientificName','commonName','eventDate','dateCreated','lastUpdated','locality','multimedia']
 accuracyValues=[0,10,50,100,500,1000,5000,10000]
 //flag.issues = ['Identification','Geocoding Issue','Suspected Outlier','Temporal Issue','Taxonomic Issue','Habitat Issue']
-flag.issues = ['IDENTIFICATION','GEOCODING_ISSUE','SUSPECTED_OUTLIER','TEMPORAL_ISSUE','TAXONOMIC_ISSUE','HABITAT_ISSUE','--','INAPPROPRIATE_IMAGE']
+flag.issues = ['IDENTIFICATION','GEOCODING_ISSUE','TEMPORAL_ISSUE','HABITAT_ISSUE','--','INAPPROPRIATE_IMAGE']
 showBiocacheLinks = false
 
 grails.project.groupId = "au.org.ala" // change this to alter the default package name and Maven publishing destination
@@ -151,18 +142,8 @@ grails.hibernate.osiv.readonly = false
 environments {
     development {
         grails.logging.jul.usebridge = true
-        grails.hostname = "dev.ala.org.au"
-        grails.serverURL = "http://${grails.hostname}:8090/${appName}"
-        security.cas.appServerName = "http://${grails.hostname}:8090"
-        security.cas.contextPath = "/${appName}"
-        //grails.resources.debug = true
-        //submit.debug = true
     }
     test {
-        grails.hostname = "144.6.225.49"
-        grails.serverURL = "http://${grails.hostname}:8080/${appName}"
-        security.cas.appServerName = "http://${grails.hostname}:8080"
-        security.cas.contextPath = "/${appName}"
     }
     production {
     }
