@@ -90,7 +90,7 @@
                                 <a href="http://biocache.ala.org.au/occurrence/${s.occurrenceID}">View public record</a>
                             </g:if>
                             <a class="btn btn-default btn-mini flagBtn" href="#flagModal" role="button" data-occurrenceid="${s.occurrenceID}" title="Suggest this record might require confirmation/correction">
-                                <i class="fa fa-flag"></i> flag</a>
+                                <i class="fa fa-flag"></i> Raise a question</a>
                         </td>
                         <td>
                             <span style="white-space:nowrap;">
@@ -151,7 +151,7 @@
             <div id="flagModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="flagModalLabel" aria-hidden="true">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                    <h3 id="flagModalLabel">Flag sighting</h3>
+                    <h3 id="flagModalLabel">Raise a question about a sighting</h3>
                 </div>
                 <div class="modal-body">
                     <div>Please provide a reason category for why this record requires reviewing:</div>
@@ -159,7 +159,7 @@
                         <g:select from="${grailsApplication.config.flag?.issues}" id="questionType" name="questionType" valueMessagePrefix="reason" noSelection="['':'-- choose a reason--']" class="span8"/>
                         <i class="fa fa-asterisk"></i>
                     </div>
-                    <div>Add a short comment describing the reason for flagging this record:</div>
+                    <div>Add a short comment describing the reason for questioning this record:</div>
                     <div class="requiredBlock">
                         <g:textArea name="comment" id="comment" rows="8" class="span8"/>
                         <i class="fa fa-asterisk"></i>
