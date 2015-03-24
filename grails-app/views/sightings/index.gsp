@@ -120,14 +120,19 @@
                             </div>
                         </td></g:if>
                         <td>
-                            <g:if test="${!s.offensiveFlag}">
+                            <g:if test="${s.offensiveFlag?.toBoolean() == false}">
                                 <g:each in="${s.multimedia}" var="i">
                                     <g:if test="${i.thumbnailUrl?:i.identifier}">
                                         <a href="#imageModal" role="button" class="imageModal" data-imgurl="${i.identifier}" title="view full sized image" target="original"><img src="${i.thumbnailUrl?:i.identifier}" alt="sighting photo thumbnail" style="max-height: 100px;  max-width: 100px;"/></a>
                                     </g:if>
                                 </g:each>
                             </g:if>
-                            <g:elseif test="${s.multimedia}">[image has been flagged as inappropriate]</g:elseif>
+                            <g:elseif test="${s.multimedia}">
+                                [image has been flagged as inappropriate]
+                                <g:if test="${auth.ifAnyGranted(roles:'ROLE_ADMIN', "1")}">
+                                    <button class="btn btn-small unflagBtn" data-recordid="${s.occurrenceID}"><i class="fa fa-flag-o"></i>&nbsp;Unflag image/s</button>
+                                </g:if>
+                            </g:elseif>
                         </td>
                     </tr>
                 </g:each>
@@ -340,6 +345,22 @@
                         } else {
                             bootbox.alert("No ID found for question");
                         }
+                    });
+
+                    $('.unflagBtn').click(function(e) {
+                        e.preventDefault();
+                        var recordId = $(this).data('recordid');
+                        //console.log("unflagBtn", "${g.createLink(controller:'ajax', action:'unflagRecord')}/" + recordId);
+                        $.get("${g.createLink(controller:'ajax', action:'unflagRecord')}/" + recordId)
+                        .done(function() {
+                            //assume 200 is success
+                            bootbox.alert("Record was unflagged", function() {
+                                location.reload(false);
+                            });
+                        })
+                        .fail(function( jqXHR, textStatus, errorThrown ) {
+                            bootbox.alert("Error un-flagging record: " + textStatus + " - " + errorThrown);
+                        });
                     });
 
                 }); // end of $(document).ready(function()

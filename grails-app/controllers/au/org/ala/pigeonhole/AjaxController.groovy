@@ -130,4 +130,26 @@ class AjaxController {
             render(status: 400, text: "Record ID not provided")
         }
     }
+
+    def unflagRecord(String id) {
+        if (id && authService.userInRole("${grailsApplication.config.security.cas.adminRole}")) {
+            def url = grailsApplication.config.ecodata.baseUrl + "/record"
+            def jsonBody = [
+                    offensiveFlag: 'false', // NOTE: ecodata won't accept a Boolean value of false or zero, etc
+                    offensiveReason: "Unflagged by ${grailsApplication.config.security.cas.adminRole}"
+            ]
+            def result = webserviceService.doJsonPost("${url}/${id}", (jsonBody as JSON).toString())
+            log.debug "unflagRecord: result = ${result} || json = ${jsonBody as JSON}"
+            if (result.error) {
+                render(status: 400, text: result.text?:'Unexpected error')
+            } else {
+                def json = [message: "Record (${id}) was UN-flagged by admin"]
+                render(status: 200, text: "${json as JSON}")
+            }
+        } else if (id) {
+            render(status: 401, text: "User not authorised to access this resource - requires role: ${grailsApplication.config.security.cas.adminRole}")
+        } else {
+            render(status: 400, text: "Record ID not provided")
+        }
+    }
 }

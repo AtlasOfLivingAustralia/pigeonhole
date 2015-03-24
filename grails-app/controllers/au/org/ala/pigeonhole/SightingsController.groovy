@@ -34,7 +34,7 @@ class SightingsController {
         String recordUserId = ecodataService.getUserIdForSightingId(id)
 
 
-        if (authService.userInRole("ROLE_ADMIN") || user?.userId == recordUserId) {
+        if (authService.userInRole("${grailsApplication.config.security.cas.adminRole}") || user?.userId == recordUserId) {
             def result = ecodataService.deleteSighting(id)
             log.debug "result = ${result}"
 
