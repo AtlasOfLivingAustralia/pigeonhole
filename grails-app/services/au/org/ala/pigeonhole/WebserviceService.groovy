@@ -21,6 +21,8 @@ import groovyx.net.http.HTTPBuilder
 class WebserviceService {
     static transactional = false
 
+    def grailsApplication, mailService
+
     def doJsonPost(String url, String postBody) {
         log.debug "url = ${url} "
         log.debug "postBody = ${postBody} "
@@ -40,6 +42,17 @@ class WebserviceService {
                 def error = [error: "Unexpected error: ${resp.statusLine.statusCode} : ${resp.statusLine.reasonPhrase}", status: resp.statusLine.statusCode]
                 log.error "Oops: " + error.error
                 return error
+            }
+        }
+    }
+
+    def sendEmail(String recordId, String userId, String comment) {
+        if (grailsApplication.config.grails.mail?.host && !grailsApplication.config.grails.mail?.disabled) {
+
+            mailService.sendMail {
+                // to and from defaults set in config.groovy
+                subject "Sighting image flagged as INAPPROPRIATE"
+                text "Sighting (${recordId}) was flagged as inappropriate by userId: ${userId}\n\nURL: ${grailsApplication.config.ecodata.baseUrl}/record/${recordId}\n\nReason: ${comment}"
             }
         }
     }

@@ -56,9 +56,17 @@ class Sighting {
     String occurrenceRemarks
     String submissionMethod = "website"
     // Properties needed to un-marshall from ecodata
+    Boolean offensiveFlag
+    String offensiveReason
+    String taxonoverflowID
+    String taxonoverflowURL
+    String identifiedBy
+    String identifiedByUserId
     String occurrenceID
     String dateCreated
     String lastUpdated
+    String lastUpdatedFromTaxonoverflow
+    String dateIdentified
     String error // fromm webservice failures
 
     static constraints = {

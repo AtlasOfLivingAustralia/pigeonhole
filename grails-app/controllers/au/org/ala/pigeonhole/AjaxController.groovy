@@ -24,7 +24,9 @@ import org.codehaus.groovy.grails.web.json.JSONObject
  * file upload in the background
  */
 class AjaxController {
-    def imageService, ecodataService, authService, taxonOverflowService
+    def imageService, ecodataService, authService, taxonOverflowService, webserviceService
+
+    static allowedMethods = [upload:'POST', saveBookmarkLocation:'POST', createQuestion:'POST', bulkLookupQuestions:'POST', flagInappropriateImage:'POST']
 
     def upload = {
         try {
@@ -108,4 +110,24 @@ class AjaxController {
         }
     }
 
+    def flagInappropriateImage(String id) {
+        def url = grailsApplication.config.ecodata.baseUrl + "/record/"
+        def comment = params.comment
+        def jsonBody = [ offensiveFlag: true, offensiveReason: comment?:'' ]
+        def userId = authService.userId
+        log.debug "flagInappropriateImage: id = ${id} || userId: ${userId} || comment =- ${comment}"
+
+        if (id) {
+            def result = webserviceService.doJsonPost(url + id, (jsonBody as JSON).toString())
+            if (result.error) {
+                render(status: 400, text: result.text?:'Unexpected error')
+            } else {
+                webserviceService.sendEmail(id, userId, comment)
+                def json = [message: "Record ${id} was flagged"]
+                render(status: 200, text: "${json as JSON}")
+            }
+        } else {
+            render(status: 400, text: "Record ID not provided")
+        }
+    }
 }

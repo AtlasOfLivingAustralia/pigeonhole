@@ -139,9 +139,15 @@ grails.hibernate.pass.readonly = false
 // configure passing read-only to OSIV session by default, requires "singleSession = false" OSIV mode
 grails.hibernate.osiv.readonly = false
 
+// mail plugin
+grails.mail.host = "smtp.csiro.au" // should override this in config (non public hostname)
+grails.mail.default.from = "info@ala.org.au"
+grails.mail.default.to = "support@ala.org.au"
+
 environments {
     development {
         grails.logging.jul.usebridge = true
+        grails.mail.overrideAddress = "nick.dosremedios@csiro.au"
     }
     test {
     }

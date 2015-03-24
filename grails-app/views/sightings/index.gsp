@@ -120,11 +120,14 @@
                             </div>
                         </td></g:if>
                         <td>
-                            <g:each in="${s.multimedia}" var="i">
-                                <g:if test="${i.thumbnailUrl?:i.identifier}">
-                                    <a href="#imageModal" role="button" class="imageModal" data-imgurl="${i.identifier}" title="view full sized image" target="original"><img src="${i.thumbnailUrl?:i.identifier}" alt="sighting photo thumbnail" style="max-height: 100px;  max-width: 100px;"/></a>
-                                </g:if>
-                            </g:each>
+                            <g:if test="${!s.offensiveFlag}">
+                                <g:each in="${s.multimedia}" var="i">
+                                    <g:if test="${i.thumbnailUrl?:i.identifier}">
+                                        <a href="#imageModal" role="button" class="imageModal" data-imgurl="${i.identifier}" title="view full sized image" target="original"><img src="${i.thumbnailUrl?:i.identifier}" alt="sighting photo thumbnail" style="max-height: 100px;  max-width: 100px;"/></a>
+                                    </g:if>
+                                </g:each>
+                            </g:if>
+                            <g:elseif test="${s.multimedia}">[image has been flagged as inappropriate]</g:elseif>
                         </td>
                     </tr>
                 </g:each>
@@ -172,7 +175,7 @@
                 </div>
             </div>
             <button class="btn btn-default btn-mini questionBtn hide" id="questionBtn" title="View this question on taxon overflow">
-                <i class="fa fa-life-ring"></i> View Question</button>
+                <i class="fa fa-life-ring"></i> View question</button>
             <r:script>
                 $(document).ready(function() {
                     // delete record button confirmation
@@ -256,49 +259,72 @@
                             }
                             bootbox.alert('Please fill in required fields (in <span style="color:red;">red</span>)');
                         } else {
-                            // send Question through to taxonOverflow via Ajax controller
-                            var jsonBody = {
-                                occurrenceId: occurrenceId,
-                                questionType: questionType,
-                                tags: getTags(occurrenceId),
-                                comment: comment
-                            }
-                            $.ajax({
-                                url: "${g.createLink(controller:'ajax', action:'createQuestion')}",
-                                type: "POST",
-                                data: JSON.stringify(jsonBody),
-                                contentType: "application/json",
-                                dataType: "json"
-                            })
-                            .done(function(data) {
-                                if (data.success && !data.questionId) {
-                                    bootbox.alert("Sighting was flagged successfully");
-                                } else if (data.success && data.questionId) {
-                                    // TODO make a nicer looking "response" for user with link to Question page, etc.
-                                    bootbox.dialog("Sighting was flagged successfully and a TaxonOverflow question was raised.", [
-                                        {   "label" : "Stay on this page",
-                                            "class" : "btn"
-                                        },
-                                        {  "label" : "View &quot;flagged&quot; question",
-                                            "class" : "btn-success",
-                                            "callback": function() {
-                                                window.location = "${grailsApplication.config.taxonoverflow?.baseUrl}/question/" + data.questionId;
-                                            }
-                                        }
-                                    ]);
-                                } else if (data.message) {
-                                    bootbox.alert(data.message); // shouldn't ever trigger
-                                } else {
-                                    bootbox.alert("unexpected error: " + data);
+                            if (questionType == 'INAPPROPRIATE_IMAGE') {
+                                // inappropriate image - hide record
+                                var params = { comment: comment }
+                                $.ajax({
+                                    url: "${g.createLink(controller:'ajax', action:'flagInappropriateImage')}/" + occurrenceId,
+                                    type: "POST",
+                                    data: params,
+                                    //contentType: "application/json",
+                                    dataType: "json"
+                                })
+                                .done(function(data) {
+                                    bootbox.alert("Thank you - record has been flagged.");
+                                })
+                                .fail(function( jqXHR, textStatus, errorThrown ) {
+                                    bootbox.alert("Error: " + textStatus + " - " + errorThrown);
+                                })
+                                .always(function() {
+                                    // clean-up
+                                    $('#flagModal').modal('hide');
+                                });
+                            } else {
+                                // send Question through to taxonOverflow via Ajax controller
+                                var jsonBody = {
+                                    occurrenceId: occurrenceId,
+                                    questionType: questionType,
+                                    tags: getTags(occurrenceId),
+                                    comment: comment
                                 }
-                            })
-                            .fail(function( jqXHR, textStatus, errorThrown ) {
-                                bootbox.alert("Error: " + textStatus + " - " + errorThrown);
-                            })
-                            .always(function() {
-                                // clean-up
-                                $('#flagModal').modal('hide');
-                            });
+                                $.ajax({
+                                    url: "${g.createLink(controller:'ajax', action:'createQuestion')}",
+                                    type: "POST",
+                                    data: JSON.stringify(jsonBody),
+                                    contentType: "application/json",
+                                    dataType: "json"
+                                })
+                                .done(function(data) {
+                                    if (data.success && !data.questionId) {
+                                        bootbox.alert("Sighting was flagged successfully");
+                                    } else if (data.success && data.questionId) {
+                                        // TODO make a nicer looking "response" for user with link to Question page, etc.
+                                        bootbox.dialog("Sighting was flagged successfully and a TaxonOverflow question was raised.", [
+                                            {   "label" : "Stay on this page",
+                                                "class" : "btn"
+                                            },
+                                            {  "label" : "View &quot;flagged&quot; question",
+                                                "class" : "btn-success",
+                                                "callback": function() {
+                                                    window.location = "${grailsApplication.config.taxonoverflow?.baseUrl}/question/" + data.questionId;
+                                                }
+                                            }
+                                        ]);
+                                    } else if (data.message) {
+                                        bootbox.alert(data.message); // shouldn't ever trigger
+                                    } else {
+                                        bootbox.alert("unexpected error: " + data);
+                                    }
+                                })
+                                .fail(function( jqXHR, textStatus, errorThrown ) {
+                                    bootbox.alert("Error: " + textStatus + " - " + errorThrown);
+                                })
+                                .always(function() {
+                                    // clean-up
+                                    $('#flagModal').modal('hide');
+                                });
+                            }
+
                         }
                     });
 
@@ -351,7 +377,7 @@
                             if (questionId) {
                                 var button = $('#questionBtn').clone(true).removeAttr('id').removeClass('hide');
                                 $(button).data('id', questionId);
-                                console.log('questionId',questionId, $(button).text(), button.html(),  $('tr#s_' + el + ' td:first'));
+                                //console.log('questionId',questionId, $(button).text(), button.html(),  $('tr#s_' + el + ' td:first'));
                                 //$('tr#s_' + el + ' td:first').append(button);
                                 button.appendTo('tr#s_' + el + ' td:first');
                             }
