@@ -15,10 +15,12 @@
 
 package au.org.ala.pigeonhole
 
+import grails.converters.JSON
 import groovyx.net.http.ContentType
 import groovyx.net.http.HTTPBuilder
 
 class WebserviceService {
+
     static transactional = false
 
     def grailsApplication, mailService
@@ -54,6 +56,92 @@ class WebserviceService {
                 subject "Sighting image flagged as INAPPROPRIATE"
                 text "Sighting (${recordId}) was flagged as inappropriate by userId: ${userId}\n\nURL: ${grailsApplication.config.ecodata.baseUrl}/record/${recordId}\n\nReason: ${comment}"
             }
+        }
+    }
+
+    def doPost(String url, Map postBody) {
+        def conn = null
+        def charEncoding = 'utf-8'
+        try {
+            conn = new URL(url).openConnection()
+            conn.setDoOutput(true)
+            conn.setRequestProperty("Content-Type", "application/json;charset=${charEncoding}");
+            OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream(), charEncoding)
+            wr.write((postBody as JSON).toString())
+            wr.flush()
+            def resp = conn.inputStream.text
+            wr.close()
+            return [resp: JSON.parse(resp?:"{}")] // fail over to empty json object if empty response string otherwise JSON.parse fails
+        } catch (SocketTimeoutException e) {
+            def error = [error: "Timed out calling web service. URL= ${url}."]
+            log.error(error, e)
+            return error
+        } catch (Exception e) {
+            def error = [error: "Failed calling web service. ${e.getMessage()} URL= ${url}.",
+                         statusCode: conn?.responseCode?:"",
+                         detail: conn?.errorStream?.text]
+            log.error(error, e)
+            return error
+        }
+    }
+
+    def doPostWithParams(String url, Map params) {
+        def conn = null
+        def charEncoding = 'utf-8'
+        try {
+            String query = ""
+            boolean first = true
+            for (String name:params.keySet()) {
+                query += first?"?":"&"
+                first = false
+                query += name.encodeAsURL()+"="+params.get(name).encodeAsURL()
+            }
+            conn = new URL(url+query).openConnection()
+            conn.setRequestMethod("POST")
+            conn.setDoOutput(true)
+            conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+
+            OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream(), charEncoding)
+
+            wr.flush()
+            def resp = conn.inputStream.text
+            wr.close()
+            return [resp: JSON.parse(resp?:"{}")] // fail over to empty json object if empty response string otherwise JSON.parse fails
+        } catch (SocketTimeoutException e) {
+            def error = [error: "Timed out calling web service. URL= ${url}."]
+            log.error(error, e)
+            return error
+        } catch (Exception e) {
+            def error = [error: "Failed calling web service. ${e.getMessage()} URL= ${url}.",
+                         statusCode: conn?.responseCode?:"",
+                         detail: conn?.errorStream?.text]
+            log.error(error, e)
+            return error
+        }
+    }
+
+    def getJson(String url, Integer timeout = null) {
+        def conn = null
+        try {
+            conn = new URL(url).openConnection()
+            def json = conn.content.getText('UTF-8')
+            return JSON.parse(json)
+        } catch (SocketTimeoutException e) {
+            def error = [error: "Timed out getting json. URL= ${url}."]
+            println error
+            return error
+        } catch (ConnectException ce) {
+            log.info "Exception class = ${ce.getClass().name} - ${ce.getMessage()}"
+            def error = [error: "ecodata service not available. URL= ${url}."]
+            println error
+            return error
+        } catch (Exception e) {
+            log.info "Exception class = ${e.getClass().name} - ${e.getMessage()}"
+            def error = [error: "Failed to get json from web service. ${e.getClass()} ${e.getMessage()} URL= ${url}.",
+                         statusCode: conn?.responseCode?:"",
+                         detail: conn?.errorStream?.text]
+            log.error error
+            return error
         }
     }
 }

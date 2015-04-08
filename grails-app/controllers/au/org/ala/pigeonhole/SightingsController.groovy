@@ -1,13 +1,36 @@
 package au.org.ala.pigeonhole
 
-import au.org.ala.pigeonhole.command.Sighting
+import grails.converters.JSON
 
 class SightingsController {
+
     def ecodataService, authService
+    def sightingValidationService
 
     def index() {
         [user: authService.userDetails()?:[:], sightings: ecodataService.getRecentSightings(params), pageHeading: "Recent sightings"]
     }
+
+    def validateTest1(){
+        def result = sightingValidationService.validate("Diodon holocanthus", -18.4,  144.1)
+        render (result as JSON)
+    }
+
+    def validateTest2(){
+        def result = sightingValidationService.validate("Macropus rufus", -37.1,  149.1)
+        render (result as JSON)
+    }
+
+    def validateTest3(){
+        def result = sightingValidationService.validate("Calyptorhynchus latirostris", -37.1,  149.1)
+        render (result as JSON)
+    }
+
+    def validateTest4(){
+        def result = sightingValidationService.validate("Carcharodon carcharias", -37.1,  145.1)
+        render (result as JSON)
+    }
+
 
     def user(String id) {
         def user = authService.userDetails()
