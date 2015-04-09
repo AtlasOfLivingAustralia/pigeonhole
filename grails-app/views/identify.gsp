@@ -1,9 +1,4 @@
-<!DOCTYPE html>
-<html>
-	<head>
-		<meta name="layout" content="main"/>
-		<title>Identifiy</title>
-        %{--
+%{--
   - Copyright (C) 2014 Atlas of Living Australia
   - All Rights Reserved.
   -
@@ -17,8 +12,12 @@
   - implied. See the License for the specific language governing
   - rights and limitations under the License.
   --}%
-
-<r:require modules="jquery, jqueryUIEffects, pigeonhole, leaflet, inview, purl, fontawesome"/>
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta name="layout" content="main"/>
+		<title>Identifiy</title>
+        <r:require modules="jquery, jqueryUIEffects, pigeonhole, leaflet, inview, purl, fontawesome"/>
         <style type="text/css">
             #locationLatLng {
                 color: #DDD;
@@ -136,6 +135,14 @@
             .bieBtn {
                 display: inline-block;
                 margin-left: 10px;
+            }
+
+            .counts {
+                font-size: 12px;
+                color: #637073;
+            }
+            .btn-primary .counts {
+                color: #fff;
             }
 
         </style>
@@ -402,13 +409,13 @@
                     $.each(data, function(index, value){
                         // console.log(index, value);
                         var btn = ''; //(index == 0) ? 'btn-primary' : '';
-                        group += "<div class='btn groupBtn " +  btn + "' data-group='" + escape(value.name) + "'>" + value.name + " <span class='badge badge-infoX'>" + value.speciesCount + "</span></div>";
+                        group += "<div class='btn groupBtn " +  btn + "' data-group='" + escape(value.name) + "'>" + value.name + " <span class='counts'>[" + value.speciesCount + "]</span></div>";
 
                         if (value.childGroups.length > 0) {
                             var hide = 'hide'; //(index == 0) ? '' : 'hide';
                             var subGroup = "<div id='subgroup_" + value.name + "' class='sub-groups " + hide + "'>";
                             $.each(value.childGroups, function(i, el){
-                                subGroup += "<div class='btn subGroupBtn' data-group='" + escape(el.name) + "'>" + el.name + " <span class='badge badge-infoX'>" + el.speciesCount + "</span></div>";
+                                subGroup += "<div class='btn subGroupBtn' data-group='" + escape(el.name) + "'>" + el.name + " <span class='counts'>[" + el.speciesCount + "]</span></div>";
                             });
                             $('#speciesSubGroup').append(subGroup);
                         }
