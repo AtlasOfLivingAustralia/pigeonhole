@@ -477,11 +477,10 @@
                                 fullName1: (parts[0]) ? parts[0] + " &mdash; " + "<i>" + parts[1] + "</i>" : "<i>" + parts[1] + "</i>",
                                 fullName2: (parts[0]) ? parts[0] + "<br>" + "<i>" + parts[1] + "</i>" : "<i>" + parts[1] + "</i>"
                             };
-                            //var lsid = parts[2];
-                            //var displayName = (parts[0]) ? parts[0] : "<i>" + parts[1] + "</i>";
+                            var displayName = $('<div/>').text(nameObj.fullName1).html(); // use jQuery to escape text
                             var imgUrl = "http://bie.ala.org.au/ws/species/image/small/" + nameObj.lsid; // http://bie.ala.org.au/ws/species/image/thumbnail/urn:lsid:biodiversity.org.au:afd.taxon:aa745ff0-c776-4d0e-851d-369ba0e6f537
                             images += "<div class='imgCon'><a class='cbLink thumbImage tooltips' rel='thumbs' href='http://bie.ala.org.au/species/" +
-                                    nameObj.lsid + "' target='species' data-lsid='" + nameObj.lsid + "' data-displayname='" + nameObj.fullName1 + "'><img src='" + imgUrl +
+                                    nameObj.lsid + "' target='species' data-lsid='" + nameObj.lsid + "' data-displayname='" + displayName + "'><img src='" + imgUrl +
                                     "' alt='species thumbnail' onerror='imgError(this);'/><div class='meta brief'>" +
                                     nameObj.shortName + "</div><div class='meta detail hide'>" +
                                     nameObj.fullName2 + "<br>Records: " + el.count + "</div></a></div>";
