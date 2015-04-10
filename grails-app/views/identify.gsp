@@ -1,9 +1,4 @@
-<!DOCTYPE html>
-<html>
-	<head>
-		<meta name="layout" content="main"/>
-		<title>Identifiy</title>
-        %{--
+%{--
   - Copyright (C) 2014 Atlas of Living Australia
   - All Rights Reserved.
   -
@@ -17,8 +12,12 @@
   - implied. See the License for the specific language governing
   - rights and limitations under the License.
   --}%
-
-<r:require modules="jquery, jqueryUIEffects, pigeonhole, leaflet, inview, purl, fontawesome"/>
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta name="layout" content="main"/>
+		<title>Identifiy</title>
+        <r:require modules="jquery, jqueryUIEffects, pigeonhole, leaflet, inview, purl, fontawesome"/>
         <style type="text/css">
             #locationLatLng {
                 color: #DDD;
@@ -136,6 +135,14 @@
             .bieBtn {
                 display: inline-block;
                 margin-left: 10px;
+            }
+
+            .counts {
+                font-size: 12px;
+                color: #637073;
+            }
+            .btn-primary .counts {
+                color: #fff;
             }
 
         </style>
@@ -402,13 +409,13 @@
                     $.each(data, function(index, value){
                         // console.log(index, value);
                         var btn = ''; //(index == 0) ? 'btn-primary' : '';
-                        group += "<div class='btn groupBtn " +  btn + "' data-group='" + escape(value.name) + "'>" + value.name + " <span class='badge badge-infoX'>" + value.speciesCount + "</span></div>";
+                        group += "<div class='btn groupBtn " +  btn + "' data-group='" + escape(value.name) + "'>" + value.name + " <span class='counts'>[" + value.speciesCount + "]</span></div>";
 
                         if (value.childGroups.length > 0) {
                             var hide = 'hide'; //(index == 0) ? '' : 'hide';
                             var subGroup = "<div id='subgroup_" + value.name + "' class='sub-groups " + hide + "'>";
                             $.each(value.childGroups, function(i, el){
-                                subGroup += "<div class='btn subGroupBtn' data-group='" + escape(el.name) + "'>" + el.name + " <span class='badge badge-infoX'>" + el.speciesCount + "</span></div>";
+                                subGroup += "<div class='btn subGroupBtn' data-group='" + escape(el.name) + "'>" + el.name + " <span class='counts'>[" + el.speciesCount + "]</span></div>";
                             });
                             $('#speciesSubGroup').append(subGroup);
                         }
@@ -477,11 +484,10 @@
                                 fullName1: (parts[0]) ? parts[0] + " &mdash; " + "<i>" + parts[1] + "</i>" : "<i>" + parts[1] + "</i>",
                                 fullName2: (parts[0]) ? parts[0] + "<br>" + "<i>" + parts[1] + "</i>" : "<i>" + parts[1] + "</i>"
                             };
-                            //var lsid = parts[2];
-                            //var displayName = (parts[0]) ? parts[0] : "<i>" + parts[1] + "</i>";
+                            var displayName = $('<div/>').text(nameObj.fullName1).html(); // use jQuery to escape text
                             var imgUrl = "http://bie.ala.org.au/ws/species/image/small/" + nameObj.lsid; // http://bie.ala.org.au/ws/species/image/thumbnail/urn:lsid:biodiversity.org.au:afd.taxon:aa745ff0-c776-4d0e-851d-369ba0e6f537
                             images += "<div class='imgCon'><a class='cbLink thumbImage tooltips' rel='thumbs' href='http://bie.ala.org.au/species/" +
-                                    nameObj.lsid + "' target='species' data-lsid='" + nameObj.lsid + "' data-displayname='" + nameObj.fullName1 + "'><img src='" + imgUrl +
+                                    nameObj.lsid + "' target='species' data-lsid='" + nameObj.lsid + "' data-displayname='" + displayName + "'><img src='" + imgUrl +
                                     "' alt='species thumbnail' onerror='imgError(this);'/><div class='meta brief'>" +
                                     nameObj.shortName + "</div><div class='meta detail hide'>" +
                                     nameObj.fullName2 + "<br>Records: " + el.count + "</div></a></div>";
