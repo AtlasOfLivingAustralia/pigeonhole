@@ -44,7 +44,8 @@ reloadable.cfgs = ["file:/data/${appName}/config/${appName}-config.properties"]
 
 bie.baseUrl = "http://bie.ala.org.au"
 biocache.baseUrl = "http://biocache.ala.org.au/ws"
-biocache.validation.url = "http://biocache-test.ala.org.au/biocache-service/process/adhoc"
+biocache.validation.url = "http://sandbox.ala.org.au/ws/process/adhoc"
+layers.service.url = "http://spatial.ala.org.au/ws"
 ecodata.baseUrl = "http://ecodata-sightings-dev.ala.org.au"
 taxonoverflow.baseUrl = "http://taxonoverflow-dev.ala.org.au"
 

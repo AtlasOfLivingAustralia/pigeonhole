@@ -31,6 +31,11 @@ class SightingsController {
         render (result as JSON)
     }
 
+    def validateTest5(){
+        def result = sightingValidationService.validate("Wollemia nobilis", -37.1,  149.1)
+        render (result as JSON)
+    }
+
 
     def user(String id) {
         def user = authService.userDetails()
