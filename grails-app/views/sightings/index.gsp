@@ -120,7 +120,7 @@
                             </div>
                         </td></g:if>
                         <td>
-                            <g:if test="${s.offensiveFlag?.toBoolean() == false}">
+                            <g:if test="${s.offensiveFlag == null || s.offensiveFlag?.toBoolean() == false}">
                                 <g:each in="${s.multimedia}" var="i">
                                     <g:if test="${i.thumbnailUrl?:i.identifier}">
                                         <a href="#imageModal" role="button" class="imageModal" data-imgurl="${i.identifier}" title="view full sized image" target="original"><img src="${i.thumbnailUrl?:i.identifier}" alt="sighting photo thumbnail" style="max-height: 100px;  max-width: 100px;"/></a>
