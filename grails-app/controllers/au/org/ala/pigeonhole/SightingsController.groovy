@@ -11,6 +11,17 @@ class SightingsController {
         [user: authService.userDetails()?:[:], sightings: ecodataService.getRecentSightings(params), pageHeading: "Recent sightings"]
     }
 
+    def validate(){
+        def requestJson = request.JSON
+        log.debug("Checking: ${requestJson.scientificName} with ${requestJson.decimalLatitude}, ${requestJson.decimalLongitude}")
+        if(requestJson.scientificName && requestJson.decimalLatitude && requestJson.decimalLongitude){
+            def result = sightingValidationService.validate(requestJson.scientificName, requestJson.decimalLatitude, requestJson.decimalLongitude)
+            render (result as JSON)
+        } else {
+            response.sendError(400, "Service requires a JSON payload with scientificName, decimalLatitude and decimalLongitude properties.")
+        }
+    }
+
     def validateTest1(){
         def result = sightingValidationService.validate("Diodon holocanthus", -18.4,  144.1)
         render (result as JSON)

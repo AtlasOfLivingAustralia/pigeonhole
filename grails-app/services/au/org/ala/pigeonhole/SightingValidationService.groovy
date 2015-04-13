@@ -18,7 +18,7 @@ class SightingValidationService {
      * @param lon
      * @return
      */
-    def validate(String name, Float lat, Float lon){
+    def validate(name, lat, lon){
 
         def resp = webserviceService.doPost(grailsApplication.config.biocache.validation.url, [
            scientificName: name,
