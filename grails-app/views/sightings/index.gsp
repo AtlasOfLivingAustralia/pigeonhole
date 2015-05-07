@@ -90,7 +90,7 @@
                                 <a href="http://biocache.ala.org.au/occurrence/${s.occurrenceID}">View public record</a>
                             </g:if>
                             <a class="btn btn-default btn-mini flagBtn" href="#flagModal" role="button" data-occurrenceid="${s.occurrenceID}" title="Suggest this record might require confirmation/correction">
-                                <i class="fa fa-flag"></i> Raise a question</a>
+                                <i class="fa fa-flag"></i> Flag for community identification</a>
                         </td>
                         <td>
                             <span style="white-space:nowrap;">
@@ -179,8 +179,8 @@
                     <button id="submitFlagIssue" class="btn btn-primary">Submit</button>
                 </div>
             </div>
-            <button class="btn btn-default btn-mini questionBtn hide" id="questionBtn" title="View this question on taxon overflow">
-                <i class="fa fa-life-ring"></i> View question</button>
+            <button class="btn btn-default btn-mini questionBtn hide" id="questionBtn" title="View this sighting on the Community identification portal">
+                <i class="fa fa-life-ring"></i> View community identification</button>
             <r:script>
                 $(document).ready(function() {
                     // delete record button confirmation
