@@ -70,16 +70,31 @@
             <table class="table table-bordered table-condensed table-striped" id="sightingsTable">
                 <thead>
                 <tr>
+                    <th>Images</th>
                     <th style="width:20%;">Identification</th>
                     <th>Sighting date</th>
                     <th style="width:30%;">Location</th>
                     <g:if test="${user?.userId && user.userId == s?.userId || auth.ifAnyGranted(roles:'ROLE_ADMIN', "1")}"><th>Action</th></g:if>
-                    <th>Images</th>
                 </tr>
                 </thead>
                 <tbody>
                 <g:each in="${sightings.records}" var="s">
                     <tr id="s_${s.occurrenceID}" data-tags="${(si.getTags(sighting: s)).encodeAsJavaScript()}" data-uuid="${s.occurrenceID}">
+                        <td>
+                            <g:if test="${s.offensiveFlag == null || s.offensiveFlag?.toBoolean() == false}">
+                                <g:each in="${s.multimedia}" var="i" status="st">
+                                    <g:if test="${i.thumbnailUrl?:i.identifier && st < 1}">
+                                        <a href="#imageModal" role="button" class="imageModal" data-imgurl="${i.identifier}" title="view full sized image" target="original"><img src="${i.thumbnailUrl?:i.identifier}" alt="sighting photo thumbnail" style="max-height: 200px;  max-width: 200px;"/></a>
+                                    </g:if>
+                                </g:each>
+                            </g:if>
+                            <g:elseif test="${s.multimedia}">
+                                [image has been flagged as inappropriate]
+                                <g:if test="${auth.ifAnyGranted(roles:'ROLE_ADMIN', "1")}">
+                                    <button class="btn btn-small unflagBtn" data-recordid="${s.occurrenceID}"><i class="fa fa-flag-o"></i>&nbsp;Unflag image/s</button>
+                                </g:if>
+                            </g:elseif>
+                        </td>
                         <td>
                             <span class="speciesName">${s.scientificName}</span>
                             <div>${s.commonName}</div>
@@ -89,8 +104,14 @@
                             <g:if test="${grailsApplication.config.showBiocacheLinks && s.occurrenceID}">
                                 <a href="http://biocache.ala.org.au/occurrence/${s.occurrenceID}">View public record</a>
                             </g:if>
-                            <a class="btn btn-default btn-mini flagBtn" href="#flagModal" role="button" data-occurrenceid="${s.occurrenceID}" title="Suggest this record might require confirmation/correction">
-                                <i class="fa fa-flag"></i> Flag for community identification</a>
+                            <g:if test="${s.taxonoverflowURL}">
+                                <br><a href="${s.taxonoverflowURL}" class="btn btn-default btn-mini questionBtn1" title="View the Community identification discussion of this record">
+                                    <i class="fa fa-comments"></i> View community identification</a>
+                            </g:if>
+                            <g:else>
+                                <br><a class="btn btn-default btn-mini flagBtn" href="#flagModal" role="button" data-occurrenceid="${s.occurrenceID}" title="Suggest this record might require an identification or confirmation" style="white-space: nowrap">
+                                    <i class="fa fa-comments-o"></i> Suggest an identification</a>
+                            </g:else>
                         </td>
                         <td>
                             <span style="white-space:nowrap;">
@@ -109,7 +130,7 @@
                             ${s.locality}
                             <g:if test="${s.decimalLatitude && s.decimalLatitude != 'null' && s.decimalLongitude && s.decimalLongitude != 'null' }">
                                 <div>
-                                    <i class="fa fa-location-arrow"></i> ${s.decimalLatitude}, ${s.decimalLongitude}
+                                    <i class="fa fa-location-arrow"></i> ${s.decimalLatitude?.toString()?.substring(0,8)}, ${s.decimalLongitude?.toString()?.substring(0,8)}
                                 </div>
                             </g:if>
                         </td>
@@ -119,21 +140,6 @@
                                 <button class="btn btn-small deleteRecordBtn" data-recordid="${s.occurrenceID}"><i class="fa fa-trash"></i>&nbsp;Delete</button>
                             </div>
                         </td></g:if>
-                        <td>
-                            <g:if test="${s.offensiveFlag == null || s.offensiveFlag?.toBoolean() == false}">
-                                <g:each in="${s.multimedia}" var="i">
-                                    <g:if test="${i.thumbnailUrl?:i.identifier}">
-                                        <a href="#imageModal" role="button" class="imageModal" data-imgurl="${i.identifier}" title="view full sized image" target="original"><img src="${i.thumbnailUrl?:i.identifier}" alt="sighting photo thumbnail" style="max-height: 100px;  max-width: 100px;"/></a>
-                                    </g:if>
-                                </g:each>
-                            </g:if>
-                            <g:elseif test="${s.multimedia}">
-                                [image has been flagged as inappropriate]
-                                <g:if test="${auth.ifAnyGranted(roles:'ROLE_ADMIN', "1")}">
-                                    <button class="btn btn-small unflagBtn" data-recordid="${s.occurrenceID}"><i class="fa fa-flag-o"></i>&nbsp;Unflag image/s</button>
-                                </g:if>
-                            </g:elseif>
-                        </td>
                     </tr>
                 </g:each>
                 </tbody>
@@ -179,8 +185,6 @@
                     <button id="submitFlagIssue" class="btn btn-primary">Submit</button>
                 </div>
             </div>
-            <button class="btn btn-default btn-mini questionBtn hide" id="questionBtn" title="View this sighting on the Community identification portal">
-                <i class="fa fa-comments"></i> View community identification</button>
             <r:script>
                 $(document).ready(function() {
                     // delete record button confirmation
@@ -333,20 +337,6 @@
                         }
                     });
 
-                    // Lookup taxon overflow for associated Questions
-                    lookupQuestions();
-
-                    $('#sightingsTable').on("click", ".questionBtn", function(e) {
-                        e.preventDefault();
-                        var id = $(this).data('id');
-
-                        if (id) {
-                            window.location = "${grailsApplication.config.taxonoverflow?.baseUrl}/question/" + id;
-                        } else {
-                            bootbox.alert("No ID found for question");
-                        }
-                    });
-
                     $('.unflagBtn').click(function(e) {
                         e.preventDefault();
                         var recordId = $(this).data('recordid');
@@ -378,38 +368,6 @@
 
                     //console.log('tags 2', tags);
                     return tags;
-                }
-
-                function lookupQuestions() {
-                    var uuidList = [];
-                    $('#sightingsTable tbody tr').each(function(i,el) {
-                        uuidList.push($(this).data('uuid'));
-                    });
-                    $.ajax({
-                        url: "${g.createLink(controller:'ajax', action:'bulkLookupQuestions')}",
-                        type: "POST",
-                        data: JSON.stringify(uuidList),
-                        contentType: "application/json",
-                        dataType: "json"
-                    })
-                    .done(function(data) {
-                        $.each(uuidList, function(i,el) {
-                            var questionId = data[i];
-                            if (questionId) {
-                                var button = $('#questionBtn').clone(true).removeAttr('id').removeClass('hide');
-                                $(button).data('id', questionId);
-                                //console.log('questionId',questionId, $(button).text(), button.html(),  $('tr#s_' + el + ' td:first'));
-                                //$('tr#s_' + el + ' td:first').append(button);
-                                button.appendTo('tr#s_' + el + ' td:first');
-                            }
-                        });
-                    })
-                    .fail(function( jqXHR, textStatus, errorThrown ) {
-                        bootbox.alert("Error loading questions: " + textStatus + " - " + errorThrown);
-                    })
-                    .always(function() {
-                        // clean-up
-                    });
                 }
             </r:script>
         </g:if>
