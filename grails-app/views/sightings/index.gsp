@@ -72,8 +72,7 @@
                 <tr>
                     <th>Images</th>
                     <th style="width:20%;">Identification</th>
-                    <th>Sighting date</th>
-                    <th style="width:30%;">Location</th>
+                    <th>Sighting info</th>
                     <g:if test="${user?.userId && user.userId == s?.userId || auth.ifAnyGranted(roles:'ROLE_ADMIN', "1")}"><th>Action</th></g:if>
                 </tr>
                 </thead>
@@ -101,17 +100,24 @@
                             <g:if test="${s.tags}"><div style="margin-bottom: 5px;">
                                 <g:each in="${s.tags}" var="t"><span class="label">${raw(t)}</span> </g:each>
                             </div></g:if>
+                            <g:if test="${s.identificationVerificationStatus}">
+                                <div style="margin-bottom:3px;"><span class="label">${s.identificationVerificationStatus}</span></div>
+                            </g:if>
                             <g:if test="${grailsApplication.config.showBiocacheLinks && s.occurrenceID}">
                                 <a href="http://biocache.ala.org.au/occurrence/${s.occurrenceID}">View public record</a>
                             </g:if>
                             <g:if test="${s.taxonoverflowURL}">
-                                <br><a href="${s.taxonoverflowURL}" class="btn btn-default btn-mini questionBtn1" title="View the Community identification discussion of this record">
-                                    <i class="fa fa-comments"></i> View community identification</a>
+                                <div><a href="${s.taxonoverflowURL}" class="btn btn-default btn-mini questionBtn" title="View the Community identification discussion of this record">
+                                    <i class="fa fa-comments"></i> View community identification</a></div>
                             </g:if>
                             <g:else>
-                                <br><a class="btn btn-default btn-mini flagBtn" href="#flagModal" role="button" data-occurrenceid="${s.occurrenceID}" title="Suggest this record might require an identification or confirmation" style="white-space: nowrap">
-                                    <i class="fa fa-comments-o"></i> Suggest an identification</a>
+                                <div><a class="btn btn-default btn-mini flagBtn" href="#flagModal" role="button" data-occurrenceid="${s.occurrenceID}" title="Suggest this record might require an identification or confirmation" style="white-space: nowrap">
+                                    <i class="fa fa-comments-o"></i> Suggest an identification</a></div>
                             </g:else>
+                            <g:if test="${s.identifiedBy}">
+                                <div>Identified by: ${s.identifiedBy}</div>
+                                <div><i class="fa fa-check"></i>&nbsp;<a href="${s.taxonoverflowURL}">Identification community verified</a></div>
+                            </g:if>
                         </td>
                         <td>
                             <span style="white-space:nowrap;">
@@ -120,14 +126,10 @@
                                 </g:if>
                                 <g:set var="userNameMissing" value="User ${s.userId}"/>
                                 <div>Recorded by: <a href="${g.createLink(mapping: 'spotter', id: s.userId)}" title="View other sightings by this user">${s.userDisplayName?:userNameMissing}</a></div>
-                                <g:if test="${s.identifiedBy}">
-                                    <div>Identified by: ${s.identifiedBy}</div>
-                                    <div><i class="icon-thumbs-up"></i>&nbsp;<a href="${s.taxonoverflowURL}">Identification community verified</a></div>
-                                </g:if>
                             </span>
-                        </td>
-                        <td>
-                            ${s.locality}
+                            <g:if test="${s.locality}">
+                                <div>Locality: ${s.locality}</div>
+                            </g:if>
                             <g:if test="${s.decimalLatitude && s.decimalLatitude != 'null' && s.decimalLongitude && s.decimalLongitude != 'null' }">
                                 <div>
                                     <i class="fa fa-location-arrow"></i> ${s.decimalLatitude?.toString()?.substring(0,8)}, ${s.decimalLongitude?.toString()?.substring(0,8)}
