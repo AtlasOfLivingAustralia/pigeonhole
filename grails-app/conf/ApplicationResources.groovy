@@ -42,7 +42,7 @@ modules = {
     }
 
     submitSighting {
-        dependsOn 'jqueryMigrate, moment, leaflet'
+        dependsOn 'jqueryMigrate, moment, leaflet, bootbox'
         resource url:'/js/submitSighting.js'
         resource url: '/js/initLeafletMap.js'
     }

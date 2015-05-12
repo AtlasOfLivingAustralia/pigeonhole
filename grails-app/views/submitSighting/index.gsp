@@ -40,7 +40,8 @@
             speciesGroups: ${(speciesGroupsMap).encodeAsJson()?:'{}'}, // TODO move this to an ajax call (?)
             leafletImagesDir: "${g.createLink(uri:'/js/leaflet-0.7.3/images')}",
             user: ${(user).encodeAsJson()?:'{}'},
-            sightingBean: ${(sighting).encodeAsJson()?:'{}'}
+            sightingBean: ${(sighting).encodeAsJson()?:'{}'},
+            validateUrl: "${createLink(controller: 'sightings', action:'validate')}"
         };
     </r:script>
 </head>
@@ -128,7 +129,7 @@
                     </div>
                 </g:if>
             </div>
-            <a href="#identifyHelpModal" role="button" class="btn btn-primary" data-toggle="modal">Help me identify my sighting</a>
+            <a href="#identifyHelpModal" role="button" class="btn btn-primary" data-toggle="modal"><i class="fa fa-search"></i> Image-assisted identification</a>
         </div>
     </div>
 

@@ -180,7 +180,7 @@
                 </div>
             </div>
             <button class="btn btn-default btn-mini questionBtn hide" id="questionBtn" title="View this sighting on the Community identification portal">
-                <i class="fa fa-life-ring"></i> View community identification</button>
+                <i class="fa fa-comments"></i> View community identification</button>
             <r:script>
                 $(document).ready(function() {
                     // delete record button confirmation

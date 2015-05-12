@@ -286,8 +286,44 @@ function updateLocation(latlng, keepView) {
         $('#georeferenceProtocol').val('Google maps');
         $('#bookmarkLocation').removeClass('disabled').removeAttr('disabled'); // activate button
         reverseGeocode(latlng.lat, latlng.lng);
+        var sciName = $('#scientificName').val();
         if (latlng.lat > 0 || latlng.lng < 100) {
             alert("Coordinates are not in the Australasia region. Are you sure this location is correct?");
+        } else if (sciName) {
+            // do habitat vlaidation check
+            var params = {
+                decimalLatitude: latlng.lat,
+                decimalLongitude: latlng.lng,
+                scientificName: sciName
+            }
+            $.ajax({
+                url: GSP_VARS.validateUrl,
+                data: JSON.stringify(params),
+                contentType: 'application/json',
+                type: 'POST',
+                dataType: 'json',
+            }).done(function(data){
+                var messages = [];
+                if (data.habitatMismatch && data.habitatMismatchDetail) {
+                    messages.push("Habitat mismatch: " + data.habitatMismatchDetail);
+                }
+                if (data.outlierForExpertDistribution) {
+                    messages.push("Record location falls outside expert distribution");
+                }
+                if (data.sensitive) {
+                    messages.push("Record location/identification is flagged as SENSITIVE, publicly visible coordinates may be altered.");
+                }
+
+                if (messages.length > 0) {
+                    var html = '<h4>Identification/Location pre-submission check</h4><ul><li>' + messages.join('</li><li>') +
+                        '</li></ul><div>You may wish to reconsider the identification or location based on this check.</div>';
+                    bootbox.alert(html);
+                }
+            }).fail(function( jqXHR, textStatus, errorThrown ) {
+                alert("Error: " + textStatus + " - " + errorThrown);
+            })
+        } else {
+            // highlight no sciname set
         }
     }
 }
