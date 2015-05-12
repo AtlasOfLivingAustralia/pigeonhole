@@ -80,10 +80,10 @@
                 <g:each in="${sightings.records}" var="s">
                     <tr id="s_${s.occurrenceID}" data-tags="${(si.getTags(sighting: s)).encodeAsJavaScript()}" data-uuid="${s.occurrenceID}">
                         <td>
-                            <g:if test="${s.offensiveFlag == null || s.offensiveFlag?.toBoolean() == false}">
+                            <g:if test="${(s.offensiveFlag == null || s.offensiveFlag?.toBoolean() == false) && s.multimedia}">
                                 <g:each in="${s.multimedia}" var="i" status="st">
                                     <g:if test="${i.thumbnailUrl?:i.identifier && st < 1}">
-                                        <a href="#imageModal" role="button" class="imageModal" data-imgurl="${i.identifier}" title="view full sized image" target="original"><img src="${i.thumbnailUrl?:i.identifier}" alt="sighting photo thumbnail" style="max-height: 200px;  max-width: 200px;"/></a>
+                                        <a href="#imageModal" role="button" class="imageModal" data-imgurl="${i.identifier}" title="view full sized image" target="original"><img src="${i.thumbnailUrl?:i.identifier}" alt="sighting photo thumbnail" style="max-height: 175px;  max-width: 175px;"/></a>
                                     </g:if>
                                 </g:each>
                             </g:if>
@@ -93,6 +93,9 @@
                                     <button class="btn btn-small unflagBtn" data-recordid="${s.occurrenceID}"><i class="fa fa-flag-o"></i>&nbsp;Unflag image/s</button>
                                 </g:if>
                             </g:elseif>
+                            <g:else>
+                                <g:img dir="images" file="noImage.jpg" style="max-height:140px;  max-width: 140px; opacity: 0.6;"/>
+                            </g:else>
                         </td>
                         <td>
                             <span class="speciesName">${s.scientificName}</span>
