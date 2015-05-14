@@ -38,6 +38,8 @@ $(document).ready(function() {
         previewCrop: true
     }).on('fileuploadadd', function (e, data) {
         // load event triggered (start)
+        // Disable the submit button while images are being uploaded to server in background
+        $('#formSubmit').attr('disabled','disabled').attr('title','image upload in progress').addClass('disabled');
         // Clone the template and reference it via data.context
         data.context = $('#uploadActionsTmpl').clone(true).removeAttr('id').removeClass('hide').appendTo('#files');
         $.each(data.files, function (index, file) {
@@ -122,14 +124,13 @@ $(document).ready(function() {
             node.find('.error').append($('<span class="text-danger"/>').text(file.error));
         }
     }).on('fileuploadprogressall', function (e, data) {
-        // progress metre - gets triggered mulitple times
+        // progress metre - gets triggered mulitple times TODO: not used so remove?
         var progress = parseInt(data.loaded / data.total * 100, 10);
-        $('#progress .progress-bar').css(
-            'width',
-            progress + '%'
-        );
+        $('#progress .progress-bar').css('width', progress + '%');
     }).on('fileuploaddone', function (e, data) {
         // file has successfully uploaded
+        // Re-enable the submit button
+        $('#formSubmit').removeAttr('disabled').removeAttr('title').removeClass('disabled');
         var node = $(data.context[0]);
         var index = node.data('index');
         var result = data.result; // ajax results
@@ -158,6 +159,8 @@ $(document).ready(function() {
             var error = $('<div class="alert alert-error"/>').text('File upload failed.');
             $(data.context.children()[index]).append(error);
         });
+        // Re-enable the submit button
+        $('#formSubmit').removeAttr('disabled').removeAttr('title').removeClass('disabled');
     }).prop('disabled', !$.support.fileInput)
         .parent().addClass($.support.fileInput ? undefined : 'disabled');
 

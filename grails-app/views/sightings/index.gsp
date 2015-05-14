@@ -94,7 +94,7 @@
                                 </g:if>
                             </g:elseif>
                             <g:else>
-                                <g:img dir="images" file="noImage.jpg" style="max-height:140px;  max-width: 140px; opacity: 0.6;"/>
+                                <g:img dir="images" file="noImage.jpg" style="max-height:130px;  max-width: 130px; opacity: 0.6;"/>
                             </g:else>
                         </td>
                         <td>
@@ -160,7 +160,7 @@
                     <h3 id="myModalLabel">Sighting image</h3>
                 </div>
                 <div class="modal-body">
-                    <img id="originalImage" src="${g.resource(dir:'images',file:'noImage.jpg')}" alt="original image file for sighting"/>
+                    <img id="originalImage" src="${g.resource(dir:'images',file:'spinner.gif')}" alt="original image file for sighting"/>
                 </div>
                 <div class="modal-footer">
                     <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
