@@ -338,6 +338,14 @@ span.label, span.badge {
     padding-top: 3px;
 }
 
+#identifyHelpModal {
+    width: 80%; /* respsonsive width */
+    /*height: 80%;*/
+    margin-left:-40%; /* width/2) */
+    z-index: 1100;
+}
+
+
 /* Fixes for IE < 8 */
 @media screen\9 {
     .fileinput-button input {

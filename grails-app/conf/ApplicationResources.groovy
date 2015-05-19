@@ -47,6 +47,12 @@ modules = {
         resource url: '/js/initLeafletMap.js'
     }
 
+    identify {
+        dependsOn 'jquery'
+        resource url:'/js/identify.js'
+        resource url:'/css/identify.css'
+    }
+
     fileuploads {
         dependsOn 'jqueryMigrate'
         resource url:'js/jquery.fileupload/jquery.ui.widget.js'

@@ -237,6 +237,7 @@ $(document).ready(function() {
 
     // detect change on #taxonConceptID input (autocomplete selection) and load species details
     $('#guid').change(function(e) {
+        console.log('#guid on change');
         $('#speciesLookup').alaAutocomplete.reset();
         var guid = $(this).val();
 
@@ -329,6 +330,23 @@ $(document).ready(function() {
             target: 'mouse',
             adjust: { x: 6, y: 14 }
         }
+    });
+
+    // trigger image assisted identification popup
+    $('#identifyHelpTrigger').click(function(e) {
+        e.preventDefault();
+        var lat = $('#decimalLatitude').val();
+        var lng = $('#decimalLongitude').val();
+        var url = $(this).attr('href');
+        if (lat && lng) {
+
+            $('#identifyHelpModal').modal({
+                remote: url + '?lat=' + lat + '&lng=' + lng
+            });
+        } else {
+            bootbox.alert('First include a sighting <b>location</b> using the map tool below, then try again.');
+        }
+
     });
 
 }); // end of $(document).ready(function()

@@ -26,7 +26,7 @@
 <head>
     <meta name="layout" content="main"/>
     <title>Report a sighting | Atlas of Living Australia</title>
-    <r:require modules="fileuploads, exif, moment, alaAutocomplete, pigeonhole, datepicker, qtip, udraggable, fontawesome, purl, submitSighting"/>
+    <r:require modules="fileuploads, exif, moment, alaAutocomplete, pigeonhole, datepicker, qtip, udraggable, fontawesome, purl, submitSighting, jqueryUIEffects, inview"/>
     <r:script disposition="head">
         // global var to pass in GSP/Grails values into external JS files
         GSP_VARS = {
@@ -129,7 +129,7 @@
                     </div>
                 </g:if>
             </div>
-            <a href="#identifyHelpModal" role="button" class="btn btn-primary" data-toggle="modal"><i class="fa fa-search"></i> Image-assisted identification</a>
+            <a href="${g.createLink(uri:'/identify_fragment_nomap')}" id="identifyHelpTrigger" data-target="#identifyHelpModal" role="button" class="btn btn-primary" data-toggle-ignore="modal"><i class="fa fa-search"></i> Image-assisted identification</a>
         </div>
     </div>
 
@@ -301,18 +301,19 @@
     <div id="identifyHelpModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="identifyHelpModalLabel" aria-hidden="true">
         <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-            <h3 id="identifyHelpModalLabel">Help with species identification</h3>
+            <h3 id="identifyHelpModalLabel">Image assisted identification</h3>
         </div>
         <div class="modal-body">
-            The following page will guide you through the process of identiying a species of interest by allowing you to browse
-            images of species from common "groups". The suggested species are selected from a list of species known to be found in the area
-            you specify (via a simple map tool). Once you choose a candidate species you will be brought back to this page with the chosen
-            species selected for you (note you will lose any data on this page, so do this step first).
+            %{--<g:render template="/identify" />--}%
+            %{--The following page will guide you through the process of identifying a sighting by allowing you to <b>browse--}%
+            %{--images of species from common "groups"</b>. You will be presented with a <b>list of species known to be found</b> in the area--}%
+            %{--you specify (via a simple map tool). Once you choose a candidate species you will be brought back to this page with the chosen--}%
+            %{--species selected for you.<br><b>Note: you will lose any data on this page, <u>so do this step first</u></b>.--}%
         </div>
         <div class="modal-footer">
             <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-            <g:set var="thisUrl" value="${g.createLink(controller: params.controller, action: params.action, id: (params.action ==  'edit') ? params.id : '', absolute: true)}"/>
-            <a href="${g.createLink(uri:'/identify?returnUrl=' + thisUrl )}" class="btn btn-primary">Proceed to Identification Help page</a>
+            %{--<g:set var="thisUrl" value="${g.createLink(controller: params.controller, action: params.action, id: (params.action ==  'edit') ? params.id : '', absolute: true)}"/>--}%
+            %{--<a href="${g.createLink(uri:'/identify?returnUrl=' + thisUrl )}" class="btn btn-primary">Proceed to image assisted identification page</a>--}%
         </div>
     </div><!-- /#identifyHelpModal -->
 
