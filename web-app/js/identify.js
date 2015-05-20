@@ -25,7 +25,7 @@ var biocacheBaseUrl = GSP_VARS.biocacheBaseUrl;
 
 $(document).ready(function() {
 
-    updateSubGroups(null, GSP_VARS.lat, GSP_VARS.lng);
+    //updateSubGroups(null, GSP_VARS.lat, GSP_VARS.lng);
 
     $('#radius').change(function() {
         //updateLocation();
@@ -133,25 +133,29 @@ $(document).ready(function() {
     /**
      * Custom button listener for fragment/submit sighting page
      */
-    $('#selectedSpeciesBtn').click(function() {
+    //$('#selectedSpeciesBtn').click(function() {
+    $('#imgModal').on('click', '#selectedSpeciesBtn', function(e) {
+        e.preventDefault();
         //var returnUrl = $.url().param("returnUrl");
-        var lsid = $('#imgModal').data('lsid');
-        $('#guid').val(lsid).change(); // will trigger lookup in BIE
-
-        //var queryStr = "";
-        if (groupSelected || subgroupSelected) {
-
-            if (groupSelected) {
-                addTagLabel(groupSelected);
-            }
-            if (subgroupSelected) {
-                addTagLabel(unescape(subgroupSelected));
-            }
-            //queryStr = "?" + paramsList.join("&");
+        if (groupSelected) {
+            addTagLabel(groupSelected);
         }
+        if (subgroupSelected) {
+            addTagLabel(unescape(subgroupSelected));
+        }
+
+        var guid = $('#imgModal').data('lsid');
+        $('#guid').val(guid);
+        setSpecies(guid);
+
         $('.modal').modal('hide'); // hide all
-        $('#identifyHelpModal').modal('hide');
+        //$('#identifyHelpModal').modal('hide');
         //window.location = returnUrl + "/" + lsid + queryStr;
+    });
+
+    $('.imgModalClose').click(function(e) {
+        e.preventDefault();
+        $('#imgModal').modal('hide')
     });
 
 

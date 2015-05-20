@@ -227,46 +227,34 @@ $(document).ready(function() {
     });
 
     // remove species/secientificName box
-    $('#species').on('click', 'a.remove', function(e) {
+    $('#species').on('click', 'a.removeTag', function(e) {
         e.preventDefault();
         $(this).parent().remove();
+    });
+
+    $('#speciesOne').on('click', 'a.removeHide', function(e) {
+        e.preventDefault();
+        $(this).parent().hide();
+    });
+
+    // prevent enter key on autocomplete submitting form/sighting
+    $(document).on('keydown', '#speciesLookup', function(e) {
+        if (e.which == 13) {
+            return false;
+        }
     });
 
     // autocomplete on species lookup
     $('#speciesLookup').alaAutocomplete({maxHits: 15}); // will trigger a change event on #taxonConceptID when item is selected
 
     // detect change on #taxonConceptID input (autocomplete selection) and load species details
-    $('#guid').change(function(e) {
+    //$('#guid').change(function(e) {
+    $(document.body).on('change', '#guid', function(e) {
         console.log('#guid on change');
         $('#speciesLookup').alaAutocomplete.reset();
         var guid = $(this).val();
 
-        if (guid) {
-            $.getJSON(GSP_VARS.bieBaseUrl + "/ws/species/shortProfile/" + guid + ".json?callback=?")
-                .done(function(data) {
-                    if (data.scientificName) {
-                        $('#taxonDetails').removeClass('hide').show();
-                        $('.sciName a').attr('href', GSP_VARS.bieBaseUrl + "/species/" + guid).html(data.scientificName);
-                        $('.speciesThumbnail').attr('src', GSP_VARS.bieBaseUrl + '/ws/species/image/thumbnail/' + guid);
-                        if (data.commonName) {
-                            $('.commonName').text(data.commonName);
-                            $('#commonName').val(data.commonName);
-                        }
-                        $('#kingdom').val(data.kingdom);
-                        $('#family').val(data.family);
-                        $('#noTaxa').hide();
-                        $('#matchedTaxa').show();
-                        $('#identificationChoice').show();
-                    }
-                })
-                .fail(function( jqXHR, textStatus, errorThrown ) {
-                    alert("Error: " + textStatus + " - " + errorThrown);
-                })
-                .always(function() {
-                    // clean-up & spinner deactivations, etc
-                });
-        }
-
+        setSpecies(guid);
     });
 
     // show tags in edit mode
@@ -337,14 +325,26 @@ $(document).ready(function() {
         e.preventDefault();
         var lat = $('#decimalLatitude').val();
         var lng = $('#decimalLongitude').val();
-        var url = $(this).attr('href');
+        var locality = $('#locality').val();
+        //var url = $(this).attr('href');
         if (lat && lng) {
-
-            $('#identifyHelpModal').modal({
-                remote: url + '?lat=' + lat + '&lng=' + lng
-            });
+            GSP_VARS.lat = lat;
+            GSP_VARS.lng = lng;
+            updateSubGroups(null, GSP_VARS.lat, GSP_VARS.lng);
+            $('#identifyHelpModal').modal('show');
+            //$('#identifyHelpModal').modal({
+            //    remote: url + '?lat=' + lat + '&lng=' + lng + '&locality=' + encodeURIComponent(locality),
+            //    width: '80%',
+            //    height: '80%',
+            //    modalOverflow: true
+            //});
+            //
+            //$.fn.modal.defaults.maxHeight = function(){
+            //    // subtract the height of the modal header and footer
+            //    return $(window).height() - 165;
+            //}
         } else {
-            bootbox.alert('First include a sighting <b>location</b> using the map tool below, then try again.');
+            bootbox.alert('<h3>Image assisted identification</h3>A sighting location is required for this tool, please include a location using the map tool below, then try again');
         }
 
     });
@@ -377,6 +377,36 @@ function insertImageMetadata(imageRow) {
     }
 }
 
+function setSpecies(guid) {
+    console.log('setSpecies', guid);
+    if (guid) {
+        $.getJSON(GSP_VARS.bieBaseUrl + "/ws/species/shortProfile/" + guid + ".json?callback=?")
+            .done(function(data) {
+                if (data.scientificName) {
+                    $('#taxonDetails').removeClass('hide').show();
+                    $('.sciName a').attr('href', GSP_VARS.bieBaseUrl + "/species/" + guid).html(data.scientificName);
+                    $('.speciesThumbnail').attr('src', GSP_VARS.bieBaseUrl + '/ws/species/image/thumbnail/' + guid);
+                    if (data.commonName) {
+                        $('.commonName').text(data.commonName);
+                        $('#commonName').val(data.commonName);
+                    }
+                    $('#kingdom').val(data.kingdom);
+                    $('#family').val(data.family);
+                    $('#noTaxa').hide();
+                    $('#matchedTaxa').show();
+                    $('#identificationChoice').show();
+                }
+            })
+            .fail(function( jqXHR, textStatus, errorThrown ) {
+                console.log('error',jqXHR, textStatus, errorThrown);
+                alert("Error: " + textStatus + " - " + errorThrown);
+            })
+            .always(function() {
+                // clean-up & spinner deactivations, etc
+            });
+    }
+}
+
 function isoToAusDate(isoDate) {
     var dateParts = isoDate.substring(0,10).split('-');
     var ausDate = isoDate.substring(0,10); // fallback
@@ -402,7 +432,7 @@ function clearTaxonDetails() {
  */
 function addTagLabel(group) {
     if (!isTagPresent(group) && group) {
-        var close = '<a href="#" class="remove" title="remove this item"><i class="remove icon-remove icon-white">&nbsp;</i></a>';
+        var close = '<a href="#" class="remove removeTag" title="remove this item"><i class="remove icon-remove icon-white">&nbsp;</i></a>';
         var input = '<input type="hidden" value="' + group + '" name="tags" class="tags"/>';
         var label = $('<span class="label label-infoX"/>').append(input + group + close).after('&nbsp;');
         $('#tagsBlock').append(label);

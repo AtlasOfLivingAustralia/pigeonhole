@@ -42,7 +42,7 @@ modules = {
     }
 
     submitSighting {
-        dependsOn 'jqueryMigrate, moment, leaflet, bootbox'
+        dependsOn 'jqueryMigrate, moment, leaflet, bootbox, identify'
         resource url:'/js/submitSighting.js'
         resource url: '/js/initLeafletMap.js'
     }
@@ -143,5 +143,15 @@ modules = {
     bootbox {
         dependsOn 'bootstrap, jquery'
         resource url: 'js/bootbox.min.js'
+    }
+
+    /**
+     * See https://github.com/jschr/bootstrap-modal
+     */
+    bootstrapModal {
+        dependsOn 'bootstrap'
+        resource url: 'css/bootstrap-modal.css'
+        resource url: 'js/bootstrap-modal.js'
+        resource url: 'js/bootstrap-modalmanager.js'
     }
 }

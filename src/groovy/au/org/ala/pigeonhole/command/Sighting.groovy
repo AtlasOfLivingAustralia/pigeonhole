@@ -73,10 +73,12 @@ class Sighting {
         userId(nullable: true)
         userDisplayName(nullable: true)
         taxonConceptID(nullable: true)
-        scientificName(nullable: true, validator: { val, obj->
-            // one of scientificName or tags must be specified
-            if ( (!val && !obj.tags)) {
-                return 'sighting.sciname.tags'
+        scientificName(nullable: true, validator: { val, obj ->
+            // one of scientificName or (tags + image) must be specified
+            if (!val) {
+                if (!obj.tags || !obj.multimedia) {
+                    return ['sighting.sciname.validation']
+                }
             }
         })
         kingdom(nullable: true)

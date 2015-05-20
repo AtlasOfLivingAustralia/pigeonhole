@@ -26,7 +26,7 @@
 <head>
     <meta name="layout" content="main"/>
     <title>Report a sighting | Atlas of Living Australia</title>
-    <r:require modules="fileuploads, exif, moment, alaAutocomplete, pigeonhole, datepicker, qtip, udraggable, fontawesome, purl, submitSighting, jqueryUIEffects, inview"/>
+    <r:require modules="fileuploads, exif, moment, alaAutocomplete, pigeonhole, datepicker, qtip, udraggable, fontawesome, purl, submitSighting, jqueryUIEffects, inview, identify"/>
     <r:script disposition="head">
         // global var to pass in GSP/Grails values into external JS files
         GSP_VARS = {
@@ -96,7 +96,7 @@
                     <input type="hidden" name="kingdom" id="kingdom" value="${taxon?.kingdom}"/>
                     <input type="hidden" name="family" id="family" value="${taxon?.family}"/>
                     %{--<input type="hidden" name="identificationVerificationStatus" id="identificationVerificationStatus" value="${taxon?.identificationVerificationStatus}"/>--}%
-                    %{--<a href="#" class="remove" title="remove this item"><i class="remove icon-remove">&nbsp;</i></a>--}%
+                    <a href="#" class="remove removeHide" title="remove this item"><i class="remove icon-remove">&nbsp;</i></a>
                 </div>
                 <div id="tagsBlock"></div>
             </div>
@@ -304,16 +304,10 @@
             <h3 id="identifyHelpModalLabel">Image assisted identification</h3>
         </div>
         <div class="modal-body">
-            %{--<g:render template="/identify" />--}%
-            %{--The following page will guide you through the process of identifying a sighting by allowing you to <b>browse--}%
-            %{--images of species from common "groups"</b>. You will be presented with a <b>list of species known to be found</b> in the area--}%
-            %{--you specify (via a simple map tool). Once you choose a candidate species you will be brought back to this page with the chosen--}%
-            %{--species selected for you.<br><b>Note: you will lose any data on this page, <u>so do this step first</u></b>.--}%
+            <g:render template="/identify/widget_nomap"  />
         </div>
         <div class="modal-footer">
             <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-            %{--<g:set var="thisUrl" value="${g.createLink(controller: params.controller, action: params.action, id: (params.action ==  'edit') ? params.id : '', absolute: true)}"/>--}%
-            %{--<a href="${g.createLink(uri:'/identify?returnUrl=' + thisUrl )}" class="btn btn-primary">Proceed to image assisted identification page</a>--}%
         </div>
     </div><!-- /#identifyHelpModal -->
 

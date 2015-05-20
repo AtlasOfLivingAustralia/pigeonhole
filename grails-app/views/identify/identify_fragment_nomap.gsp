@@ -12,8 +12,6 @@
   - implied. See the License for the specific language governing
   - rights and limitations under the License.
   --}%
-
-
 <!DOCTYPE html>
 <html>
 	<head>
@@ -24,6 +22,7 @@
             // global var to pass in GSP/Grails values into external JS files
             GSP_VARS = {
                 biocacheBaseUrl: "${(grailsApplication.config.biocache.baseUrl)}",
+                bieBaseUrl: "${(grailsApplication.config.bie.baseUrl)}",
                 contextPath: "${request.contextPath}",
                 lat: ${params.lat},
                 lng: ${params.lng}
@@ -40,18 +39,21 @@
         </div>
     </g:if>
     <g:else>
-        <div class="boxed-heading" id="species_group" data-content="Choose to a species group">
-            <p>Optionally adjust the search area - currently show species within a <g:select name="radius" id="radius" class="select-mini" from="${[1,2,5,10,20]}" value="${defaultRadius?:5}"/>
+        <div class="intro">
+            This tool assists in the identification of a sighting by providing a list of suggested species known to occur at the
+            sighting location, broken down into common species "groups".<br>
+            <g:if test="${params.locality}"><b>Location: </b> ${params.locality}</g:if>
+            <p>Searching for species within a <g:select name="radius" id="radius" class="select-mini" from="${[1,2,5,10,20]}" value="${defaultRadius?:5}"/>
             km area</p>
+        </div>
+        <div class="boxed-heading" id="species_group" data-content="Choose to a species group">
             <p>Select a species group</p>
-            <div id="speciesGroup"><span></span></div>
             <r:img uri="/images/spinner.gif" class="spinner1 "/>
+            <div id="speciesGroup"><span>[searching ...]</span></div>
             <p class="hide">Select a species sub-group (optional)</p>
             <div id="speciesSubGroup"></div>
             <div class="clearfix"></div>
         </div>
-
-
         <div class="boxed-heading" id="browse_species_images" data-content="Browse species images">
             <p>
                 Look for images that match the species you are trying to identify. Click the image for more example images of that species and finally click the "select this image" button.
@@ -66,7 +68,7 @@
         <!-- Modal -->
         <div id="imgModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="imgModalLabel" aria-hidden="true">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <button type="button" class="close" aria-hidden="true">×</button>
                 <h3 id="imgModalLabel"></h3>
             </div>
             <div class="modal-body">
@@ -81,7 +83,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+                <button class="btn" aria-hidden="true">Close</button>
                 <button class="btn btn-primary pull-left" id="selectedSpeciesBtn">Select this species</button>
             </div>
         </div>

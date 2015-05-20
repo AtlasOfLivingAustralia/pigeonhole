@@ -27,7 +27,7 @@
 <head>
     <meta name="layout" content="main"/>
     <title>${pageHeading}</title>
-    <r:require modules="pigeonhole, jqueryMigrate, moment, bootbox"/>
+    <r:require modules="pigeonhole, jqueryMigrate, moment, bootbox, pigeonhole"/>
 </head>
 <body class="nav-species">
 <g:render template="/topMenu" />
@@ -241,13 +241,19 @@
                     $('.flagBtn').click(function(e) {
                         e.preventDefault();
                         var occurrenceId = $(this).data('occurrenceid');
-                        $('#flagModal').modal('show').on('shown', function (event) {
-                            $(this).find('#occurrenceId').val(occurrenceId);
-                        }).on('hidden', function (event) {
-                            $(this).find('#occurrenceId').val('');
-                            $(this).find('#questionType').val('').css('border', reasonBorderCss);
-                            $(this).find('#comment').val('').css('border', commentBorderCss);
-                        });
+                        createIdentificationCase(occurrenceId, "IDENTIFICATION", "");
+
+                        if (false) {
+                            // NdR - parked this for a later version - keep it as a simple identification case for now
+                            $('#flagModal').modal('show').on('shown', function (event) {
+                                $(this).find('#occurrenceId').val(occurrenceId);
+                            }).on('hidden', function (event) {
+                                $(this).find('#occurrenceId').val('');
+                                $(this).find('#questionType').val('').css('border', reasonBorderCss);
+                                $(this).find('#comment').val('').css('border', commentBorderCss);
+                            });
+                        }
+
                     });
 
                     // submit question via "flag" button (modal)
@@ -294,49 +300,7 @@
                                     $('#flagModal').modal('hide');
                                 });
                             } else {
-                                // send Question through to taxonOverflow via Ajax controller
-                                var jsonBody = {
-                                    occurrenceId: occurrenceId,
-                                    questionType: questionType,
-                                    tags: getTags(occurrenceId),
-                                    comment: comment
-                                }
-                                $.ajax({
-                                    url: "${g.createLink(controller:'ajax', action:'createQuestion')}",
-                                    type: "POST",
-                                    data: JSON.stringify(jsonBody),
-                                    contentType: "application/json",
-                                    dataType: "json"
-                                })
-                                .done(function(data) {
-                                    if (data.success && !data.questionId) {
-                                        bootbox.alert("Sighting was flagged successfully");
-                                    } else if (data.success && data.questionId) {
-                                        // TODO make a nicer looking "response" for user with link to Question page, etc.
-                                        bootbox.dialog("Sighting was flagged successfully and a TaxonOverflow question was raised.", [
-                                            {   "label" : "Stay on this page",
-                                                "class" : "btn"
-                                            },
-                                            {  "label" : "View &quot;flagged&quot; question",
-                                                "class" : "btn-success",
-                                                "callback": function() {
-                                                    window.location = "${grailsApplication.config.taxonoverflow?.baseUrl}/question/" + data.questionId;
-                                                }
-                                            }
-                                        ]);
-                                    } else if (data.message) {
-                                        bootbox.alert(data.message); // shouldn't ever trigger
-                                    } else {
-                                        bootbox.alert("unexpected error: " + data);
-                                    }
-                                })
-                                .fail(function( jqXHR, textStatus, errorThrown ) {
-                                    bootbox.alert("Error: " + textStatus + " - " + errorThrown);
-                                })
-                                .always(function() {
-                                    // clean-up
-                                    $('#flagModal').modal('hide');
-                                });
+                                createIdentificationCase(occurrenceId, questionType, comment);
                             }
 
                         }
@@ -373,6 +337,53 @@
 
                     //console.log('tags 2', tags);
                     return tags;
+                }
+
+                function createIdentificationCase(occurrenceId, questionType, comment) {
+
+                    // send Question through to taxonOverflow via Ajax controller
+                    var jsonBody = {
+                        occurrenceId: occurrenceId,
+                        questionType: questionType,
+                        tags: getTags(occurrenceId),
+                        comment: comment
+                    }
+                    $.ajax({
+                        url: "${g.createLink(controller:'ajax', action:'createQuestion')}",
+                        type: "POST",
+                        data: JSON.stringify(jsonBody),
+                        contentType: "application/json",
+                        dataType: "json"
+                    })
+                    .done(function(data) {
+                        if (data.success && !data.questionId) {
+                            bootbox.alert("Sighting was flagged successfully");
+                        } else if (data.success && data.questionId) {
+                            // TODO make a nicer looking "response" for user with link to Question page, etc.
+                            bootbox.dialog("Community identification discussion created", [
+                                {   "label" : "Stay on this page",
+                                    "class" : "btn"
+                                },
+                                {  "label" : "Take me to identification discussion",
+                                    "class" : "btn-success",
+                                    "callback": function() {
+                                        window.location = "${grailsApplication.config.taxonoverflow?.baseUrl}/question/" + data.questionId;
+                                    }
+                                }
+                            ]);
+                        } else if (data.message) {
+                            bootbox.alert(data.message); // shouldn't ever trigger
+                        } else {
+                            bootbox.alert("unexpected error: " + data);
+                        }
+                    })
+                    .fail(function( jqXHR, textStatus, errorThrown ) {
+                        bootbox.alert("Error: " + textStatus + " - " + errorThrown);
+                    })
+                    .always(function() {
+                        // clean-up
+                        $('#flagModal').modal('hide');
+                    });
                 }
             </r:script>
         </g:if>
