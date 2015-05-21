@@ -113,10 +113,10 @@
                                 <div><a href="${s.taxonoverflowURL}" class="btn btn-default btn-mini questionBtn" title="View the Community identification discussion of this record">
                                     <i class="fa fa-comments"></i> View community identification</a></div>
                             </g:if>
-                            <g:else>
+                            <g:elseif test="${s.multimedia}">
                                 <div><a class="btn btn-default btn-mini flagBtn" href="#flagModal" role="button" data-occurrenceid="${s.occurrenceID}" title="Suggest this record might require an identification or confirmation" style="white-space: nowrap">
                                     <i class="fa fa-comments-o"></i> Suggest an identification</a></div>
-                            </g:else>
+                            </g:elseif>
                             <g:if test="${s.identifiedBy}">
                                 <div>Identified by: ${s.identifiedBy}</div>
                                 <div><i class="fa fa-check"></i>&nbsp;<a href="${s.taxonoverflowURL}">Identification community verified</a></div>
