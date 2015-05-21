@@ -85,7 +85,7 @@ class SightingsController {
         } else {
             flash.message = "You do not have permission to delete record ${id}"
         }
-
-        render(view: "index", model:[user: user, sightings: ecodataService.getSightingsForUserId(user?.userId, params), pageHeading: "Your Sightings"])
+        
+        redirect(uri: request.getHeader('referer') )
     }
 }

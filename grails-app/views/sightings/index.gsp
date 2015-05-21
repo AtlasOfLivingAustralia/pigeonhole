@@ -196,9 +196,11 @@
                     $('.deleteRecordBtn').click(function(e) {
                         e.preventDefault();
                         var id = $(this).data('recordid');
-                        if (confirm("Are you sure you want to delete this record?")) {
-                            window.location = "${g.createLink(controller: 'sightings', action:'delete')}/" + id;
-                        }
+                        bootbox.confirm("Are you sure you want to permanently delete this record?", function(result) {
+                            if (result) {
+                                window.location = "${g.createLink(controller: 'sightings', action:'delete')}/" + id;
+                            }
+                        });
                     });
 
                     // Use Moment.js to output time in correct timezone
