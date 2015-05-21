@@ -118,14 +118,14 @@
                     or common name into the box below and choose from the auto-complete list.</div>
                     <input class="input-xlarge typeahead ${hasErrors(bean:sighting,field:'scientificName','validationErrors')}" id="speciesLookup" type="text">
                 </div>
-                <div id="identificationChoice" class="">
+                <div id="showUncertain" class="">
                     <div>How confident are you with the species identification?
-                    <g:radioGroup name="identificationVerificationStatus" labels="['Confident','Uncertain']" values="['confident','uncertain']" value="${sighting?.identificationVerificationStatus?.toLowerCase()?:'confident'}" >
+                    <g:radioGroup name="identificationVerificationStatus" labels="['Confident','Uncertain']" values="['confident','uncertain']" value="${sighting?.identificationVerificationStatus?.toLowerCase()?:'uncertain'}" >
                         <span style="white-space:nowrap;">${it.radio}&nbsp;${it.label}</span>
                     </g:radioGroup>
                     </div>
                 </div>
-                <div id="showUncertain" class=" ">
+                <div id="identificationChoice" class=" ">
                     <div>(Optional) Tag this sighting with species group and/or sub-group:</div>
                     <g:select name="tag" from="${speciesGroupsMap?.keySet()}" id="speciesGroups" class="slim ${hasErrors(bean:sighting,field:'scientificName','validationErrors')}" noSelection="['':'-- Species group --']"/>
                     <g:select name="tag" from="${[]}" id="speciesSubgroups" class="slim" noSelection="['':'-- Subgroup (select a group first) --']"/>
@@ -319,7 +319,7 @@
         </div>
         <div class="modal-footer">
             <div class="pull-left">Searching for species within a <g:select name="radius" id="radius" class="select-mini" from="${[1,2,5,10,20]}" value="${defaultRadius?:5}"/>
-            km area</div>
+            km area - increase to see more species</div>
             <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
         </div>
     </div><!-- /#identifyHelpModal -->
