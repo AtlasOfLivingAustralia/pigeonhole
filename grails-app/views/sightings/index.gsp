@@ -135,7 +135,7 @@
                             </g:if>
                             <g:if test="${s.decimalLatitude && s.decimalLatitude != 'null' && s.decimalLongitude && s.decimalLongitude != 'null' }">
                                 <div>
-                                    <i class="fa fa-location-arrow"></i> ${s.decimalLatitude?.toString()?.substring(0,8)}, ${s.decimalLongitude?.toString()?.substring(0,8)}
+                                    <a href="#" class="mapPopup tooltips" data-lat="${s.decimalLatitude}" data-lng="${s.decimalLongitude}" title="Click to see map"><i class="fa fa-location-arrow"></i> ${s.decimalLatitude?.toString()?.substring(0,8)}, ${s.decimalLongitude?.toString()?.substring(0,8)}</a>
                                 </div>
                             </g:if>
                         </td>
@@ -322,6 +322,13 @@
                         .fail(function( jqXHR, textStatus, errorThrown ) {
                             bootbox.alert("Error un-flagging record: " + textStatus + " - " + errorThrown);
                         });
+                    });
+
+                    $('.mapPopup').click(function(e) {
+                        e.preventDefault();
+                        var latLngStr = $(this).data('lat') + ',' + $(this).data('lng');
+                        bootbox.alert('<img border="0" src="//maps.googleapis.com/maps/api/staticmap?center=' + latLngStr
+                                + '&zoom=15&size=400x400&markers=|' + latLngStr + '" alt="Map view of ' + latLngStr + '">');
                     });
 
                 }); // end of $(document).ready(function()
