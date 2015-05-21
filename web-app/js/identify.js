@@ -145,8 +145,8 @@ $(document).ready(function() {
         }
 
         var guid = $('#imgModal').data('lsid');
-        $('#guid').val(guid);
-        setSpecies(guid);
+        $('#guid').val(guid).change();
+        //setSpecies(guid);
 
         $('.modal').modal('hide'); // hide all
         //$('#identifyHelpModal').modal('hide');

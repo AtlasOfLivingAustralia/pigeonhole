@@ -27,8 +27,6 @@
         This tool assists in the identification of a sighting by providing a list of suggested species known to occur at the
         sighting location, broken down into common species "groups".<br>
         <g:if test="${params.locality}"><b>Location: </b> ${params.locality}</g:if>
-        <p>Searching for species within a <g:select name="radius" id="radius" class="select-mini" from="${[1,2,5,10,20]}" value="${defaultRadius?:5}"/>
-        km area</p>
     </div>
     <div class="boxed-heading" id="species_group" data-content="Choose to a species group">
         <p>Select a species group</p>

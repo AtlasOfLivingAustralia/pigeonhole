@@ -392,6 +392,7 @@ function setSpecies(guid) {
                     }
                     $('#kingdom').val(data.kingdom);
                     $('#family').val(data.family);
+                    $('#scientificName').val(data.scientificName);
                     $('#noTaxa').hide();
                     $('#matchedTaxa').show();
                     $('#identificationChoice').show();

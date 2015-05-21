@@ -43,6 +43,17 @@
             sightingBean: ${(sighting).encodeAsJson()?:'{}'},
             validateUrl: "${createLink(controller: 'sightings', action:'validate')}"
         };
+
+        function imgError(image){
+            image.onerror = "";
+            image.src = GSP_VARS.contextPath + "/images/noImage.jpg";
+
+            //console.log("img", $(image).parents('.imgCon').html());
+            //$(image).parents('.imgCon').addClass('hide');// hides species without images
+            var hide = ($('#toggleNoImages').is(':checked')) ? 'hide' : '';
+            $(image).parents('.imgCon').addClass('noImage ' + hide);// hides species without images
+            return true;
+        }
     </r:script>
 </head>
 <body class="nav-species">
@@ -307,6 +318,8 @@
             <g:render template="/identify/widget_nomap"  />
         </div>
         <div class="modal-footer">
+            <div class="pull-left">Searching for species within a <g:select name="radius" id="radius" class="select-mini" from="${[1,2,5,10,20]}" value="${defaultRadius?:5}"/>
+            km area</div>
             <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
         </div>
     </div><!-- /#identifyHelpModal -->
