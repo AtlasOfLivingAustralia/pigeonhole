@@ -90,7 +90,7 @@
     <!-- Species -->
     <div class="boxed-heading" id="species" data-content="Species">
         <div class="row">
-            <div class="col-md-6">
+            <div class="col-md-7">
                 <div id="showConfident" class="form-group">
                     <label for="speciesLookup">
                         <div id="noTaxa" style="display: inherit;">Type a scientific or common name into the box below and choose from the auto-complete list.</div>
@@ -169,9 +169,13 @@
         <br>
         <!-- The container for the uploaded files -->
         <div id="files" class="files"></div>
-        <div id="imageLicenseDiv" class="hide">
-            <label for="imageLicense">Licence:</label>
-            <g:select from="${grailsApplication.config.sighting.licenses}" name="imageLicense" class="form-control input-sm" id="imageLicense" value="${sighting?.multimedia?.get(0)?.license}"/>
+        <div id="imageLicenseDiv" class="hide form-horizontal">
+            <div class="form-group">
+                <label for="imageLicense" class="col-sm-2 control-label">Licence:</label>
+                <div class="col-sm-4">
+                    <g:select from="${grailsApplication.config.sighting.licenses}" name="imageLicense" class="form-control input-sm" id="imageLicense" value="${sighting?.multimedia?.get(0)?.license}"/>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -182,24 +186,24 @@
                 <div class="row">
                     <div class="col-md-5">
                         <button class="btn btn-default" id="useMyLocation">
-                            <i class="fa fa-location-arrow fa-lg" style="margin-left:-2px;margin-right:3px;"></i> Use my location <r:img uri="/images/spinner.gif" class="spinner0 hide" style="height: 18px;"/>
+                            <i class="fa fa-location-arrow fa-lg" style="margin-left:-2px;margin-right:2px;"></i> My location <r:img uri="/images/spinner.gif" class="spinner0 hide" style="height: 18px;"/>
                         </button>
                         <span class="pull-right">
-                            <span class="badge" style="font-size:15px;margin-top:4px;"> OR </span>
+                            <span class="badge" style="font-size:14px;margin-top:4px;"> OR </span>
                         </span>
                     </div>
                     <div class="col-md-7">
                         <div class="input-group">
                             <input class="form-control" id="geocodeinput" type="text" placeholder="Enter an address, location or lat/lng">
                             <span class="input-group-btn">
-                                <button id="geocodebutton" class="btn btn-default">Lookup</button>
+                                <button id="geocodebutton" class="btn btn-default"><i class="fa fa-search"></i></button>
                             </span>
                         </div><!-- /input-group -->
                     </div>
                 </div>
                 <div style="position:relative;">
                     <div id="map" style="width: 100%; height: 280px"></div>
-                    <div class="" id="mapTips">Hint: drag the marker to fine-tune your location
+                    <div class="" id="mapTip">Hint: drag the marker to fine-tune your location
                         <img class="drag" id="markerIcon" src="${g.createLink(uri:'/js/leaflet-0.7.3/images')}/marker-icon.png" alt="marker icon" />
                     </div>
                 </div>
@@ -217,11 +221,11 @@
                     </tr>
                     <tr>
                         <td><label for="coordinateUncertaintyInMeters">Accuracy (metres):</label></td>
-                        <td><g:select from="${grailsApplication.config.accuracyValues?:[0,10,50,100,500,1000,10000]}" id="coordinateUncertaintyInMeters" class="form-control input-sm ${hasErrors(bean:sighting,field:'coordinateUncertaintyInMeters','validationErrors')}" name="coordinateUncertaintyInMeters" value="${sighting?.coordinateUncertaintyInMeters?:50}" noSelection="['':'--']"/></td>
+                        <td><g:select from="${grailsApplication.config.accuracyValues?:[0,10,50,100,500,1000,10000]}" id="coordinateUncertaintyInMeters" class="form-control  ${hasErrors(bean:sighting,field:'coordinateUncertaintyInMeters','validationErrors')}" name="coordinateUncertaintyInMeters" value="${sighting?.coordinateUncertaintyInMeters?:50}" noSelection="['':'--']"/></td>
                     </tr>
                     <tr>
                         <td><label for="georeferenceProtocol">Source of coordinates:</label></td>
-                        <td><g:select from="${coordinateSources}" id="georeferenceProtocol" class="form-control input-sm" name="georeferenceProtocol" value="${sighting?.georeferenceProtocol}"/></td>
+                        <td><g:select from="${coordinateSources}" id="georeferenceProtocol" class="form-control " name="georeferenceProtocol" value="${sighting?.georeferenceProtocol}"/></td>
                     </tr>
                     <tr>
                         <td><label for="locality">Matched locality:</label></td>
@@ -235,9 +239,9 @@
                         <td><label for="locationRemark">Saved locations:</label></td>
                         <td>
                             <div class="input-group">
-                                <g:select name="bookmarkedLocations" id="bookmarkedLocations" class="form-control input-sm" from="${[]}" optionKey="" optionValue="" noSelection="['':'-- saved locations --']"/>
+                                <g:select name="bookmarkedLocations" id="bookmarkedLocations" class="form-control " from="${[]}" optionKey="" optionValue="" noSelection="['':'-- saved locations --']"/>
                                 <span class="input-group-btn">
-                                    <button id="bookmarkLocation" class="btn btn-sm btn-default disabled" disabled="disabled">Save this location</button>
+                                    <button id="bookmarkLocation" class="btn btn-default disabled" disabled="disabled">Save this location</button>
                                 </span>
                             </div><!-- /input-group -->
                             %{--<div class="form-horizontal"><g:select name="bookmarkedLocations" id="bookmarkedLocations" class="form-control input-sm" from="${[]}" optionKey="" optionValue="" noSelection="['':'-- saved locations --']"/>--}%
