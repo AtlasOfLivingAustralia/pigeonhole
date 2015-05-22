@@ -161,8 +161,37 @@ $(document).ready(function() {
         });
         // Re-enable the submit button
         $('#formSubmit').removeAttr('disabled').removeAttr('title').removeClass('disabled');
-    }).prop('disabled', !$.support.fileInput)
-        .parent().addClass($.support.fileInput ? undefined : 'disabled');
+    }).prop('disabled', !$.support.fileInput).parent().addClass($.support.fileInput ? undefined : 'disabled');
+
+    $("input#speciesLookup").autocomplete('http://bie.ala.org.au/ws/search/auto.jsonp', {
+        extraParams: {limit: 100},
+        dataType: 'jsonp',
+        parse: function(data) {
+            var rows = new Array();
+            data = data.autoCompleteList;
+            for(var i=0; i<data.length; i++) {
+                rows[i] = {
+                    data:data[i],
+                    value: data[i].matchedNames[0],
+                    result: data[i].matchedNames[0]
+                };
+            }
+            return rows;
+        },
+        matchSubset: false,
+        formatItem: function(row, i, n) {
+            return row.matchedNames[0];
+        },
+        cacheLength: 10,
+        minChars: 3,
+        scroll: false,
+        max: 10,
+        selectFirst: false
+    }).result(function(event, item) {
+        // user has selected an autocomplete item
+        //console.log("item", item);
+        $('input#guid').val(item.guid).change();
+    });
 
     // pass in local time offset from UTC
     var offset = new Date().getTimezoneOffset() * -1;
@@ -245,13 +274,14 @@ $(document).ready(function() {
     });
 
     // autocomplete on species lookup
-    $('#speciesLookup').alaAutocomplete({maxHits: 15}); // will trigger a change event on #taxonConceptID when item is selected
+    //$('#speciesLookup').alaAutocomplete({maxHits: 15}); // will trigger a change event on #taxonConceptID when item is selected
 
     // detect change on #taxonConceptID input (autocomplete selection) and load species details
     //$('#guid').change(function(e) {
     $(document.body).on('change', '#guid', function(e) {
-        console.log('#guid on change');
-        $('#speciesLookup').alaAutocomplete.reset();
+        //console.log('#guid on change');
+        //$('#speciesLookup').alaAutocomplete.reset();
+        $('#speciesLookup').val('');
         var guid = $(this).val();
 
         setSpecies(guid);
@@ -434,9 +464,9 @@ function clearTaxonDetails() {
  */
 function addTagLabel(group) {
     if (!isTagPresent(group) && group) {
-        var close = '<a href="#" class="remove removeTag" title="remove this item"><i class="remove icon-remove icon-white">&nbsp;</i></a>';
+        var close = '<a href="#" class="remove removeTag" title="remove this item"><i class="remove fa fa-close fa-inverse"></i></a>';
         var input = '<input type="hidden" value="' + group + '" name="tags" class="tags"/>';
-        var label = $('<span class="label label-infoX"/>').append(input + group + close).after('&nbsp;');
+        var label = $('<span class="tag label label-default"/>').append(input + '<span>' + group + '</span>' + close).after('&nbsp;');
         $('#tagsBlock').append(label);
     }
 }

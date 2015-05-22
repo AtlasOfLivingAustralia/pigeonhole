@@ -36,7 +36,7 @@
     padding: 7px 15px;
     font-size: 18px;
     font-weight: 300;
-    background-color: #f5f5f5;
+    background-color: #E0E0E0;
     border: 1px solid #ddd;
     color: inherit;
     /*-webkit-border-radius: 4px 0 4px 0;*/
@@ -107,9 +107,9 @@
     cursor: pointer;
 }
 
-.form-horizontal {
-    line-height: 3;
-}
+/*.form-horizontal {*/
+    /*line-height: 3;*/
+/*}*/
 
 .input-auto {
     width: auto !important;
@@ -120,13 +120,15 @@
 }
 
 .validationErrors:not(.tt-hint)  {
-    border: 1px solid red !important;
+    border: 1px solid #f26849 !important;
     /*color: red;*/
 }
 
 label {
     display: inline-block;
+    font-weight: normal !important;
 }
+
 
 select.slim {
     height: 26px;
@@ -151,8 +153,34 @@ input#speciesLookup {
     /*margin-top: 5px;*/
 }
 
-.input-xlarge {
-    width: 350px;
+/*.input-xlarge {*/
+    /*width: 350px;*/
+/*}*/
+
+.tag {
+    font-size: 14px;
+    padding: .3em .4em .4em;
+    margin: 0 .1em;
+}
+.tag a {
+    color: #bbb;
+    cursor: pointer;
+    opacity: 0.6;
+}
+.tag a:hover {
+    opacity: 1.0
+}
+.tag .remove {
+    vertical-align: bottom;
+    top: 0;
+}
+.tag a {
+    margin: 0 0 0 .4em;
+}
+.tag a .fa {
+    /*color: #fff;*/
+    font-size: 12px;
+    margin-bottom: 4px;
 }
 
 #tagsBlock {
@@ -169,7 +197,7 @@ td label {
     margin: 4px 0;
 }
 
-#species .label {
+#species > .label {
     display: inline-block;
     font-size: 12px;
     font-weight: normal;
@@ -178,12 +206,12 @@ td label {
     margin-bottom: 4px;
 }
 
-a.remove {
-    display: inline-block;
-    vertical-align: top;
-    margin-left: 5px;
-    margin-top: -2px;
-}
+/*a.remove {*/
+    /*display: inline-block;*/
+    /*vertical-align: top;*/
+    /*margin-left: 5px;*/
+    /*margin-top: -2px;*/
+/*}*/
 
 .helphint {
     display: inline-block;
@@ -259,9 +287,9 @@ a.remove {
 }
 
 #content .btn-mini {
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 300;
-    padding-top: 1px;
+    /*padding-top: 1px;*/
 }
 
 table.formInputTable {
@@ -333,9 +361,10 @@ a.adminLink:hover {
 }
 
 span.label, span.badge {
-    font-weight: normal;
-    border-radius: 0;
-    padding-top: 3px;
+    /*font-weight: normal;*/
+    /*font-size: 80%;*/
+    /*border-radius: 0;*/
+    /*padding-top: 3px;*/
 }
 
 #identifyHelpTrigger {
@@ -351,7 +380,82 @@ span.label, span.badge {
     z-index: 1100;
 }
 
+/* TypeAhead styles from http://twitter.github.io/typeahead.js/css/examples.css */
+/*
+.typeahead,
+.tt-query,
+.tt-hint {
+    width: 396px;
+    height: 30px;
+    padding: 8px 12px;
+    font-size: 24px;
+    line-height: 30px;
+    border: 2px solid #ccc;
+    -webkit-border-radius: 8px;
+    -moz-border-radius: 8px;
+    border-radius: 8px;
+    outline: none;
+}
 
+.typeahead {
+    background-color: #fff;
+}
+
+.typeahead:focus {
+    border: 2px solid #0097cf;
+}
+
+.tt-query {
+    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+    -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+}
+
+.tt-hint {
+    color: #999
+}
+
+.tt-menu {
+    width: 422px;
+    margin: 12px 0;
+    padding: 8px 0;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    -webkit-border-radius: 8px;
+    -moz-border-radius: 8px;
+    border-radius: 8px;
+    -webkit-box-shadow: 0 5px 10px rgba(0,0,0,.2);
+    -moz-box-shadow: 0 5px 10px rgba(0,0,0,.2);
+    box-shadow: 0 5px 10px rgba(0,0,0,.2);
+}
+
+.tt-suggestion {
+    padding: 3px 20px;
+    font-size: 18px;
+    line-height: 24px;
+}
+
+.tt-suggestion:hover {
+    cursor: pointer;
+    color: #fff;
+    background-color: #0097cf;
+}
+
+.tt-suggestion.tt-cursor {
+    color: #fff;
+    background-color: #0097cf;
+
+}
+
+.tt-suggestion p {
+    margin: 0;
+}
+
+.gist {
+    font-size: 14px;
+}
+*/
 /* Fixes for IE < 8 */
 @media screen\9 {
     .fileinput-button input {

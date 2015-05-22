@@ -26,7 +26,7 @@
 <head>
     <meta name="layout" content="main"/>
     <title>Report a sighting | Atlas of Living Australia</title>
-    <r:require modules="fileuploads, exif, moment, alaAutocomplete, pigeonhole, datepicker, qtip, udraggable, fontawesome, purl, submitSighting, jqueryUIEffects, inview, identify"/>
+    <r:require modules="fileuploads, exif, moment, pigeonhole, datepicker, qtip, udraggable, fontawesome, purl, submitSighting, jqueryUIEffects, inview, identify"/>
     <r:script disposition="head">
         // global var to pass in GSP/Grails values into external JS files
         GSP_VARS = {
@@ -54,6 +54,8 @@
             $(image).parents('.imgCon').addClass('noImage ' + hide);// hides species without images
             return true;
         }
+
+
     </r:script>
 </head>
 <body class="nav-species">
@@ -87,8 +89,45 @@
     <input type="hidden" name="userDisplayName" id="occurrenceID" value="${sighting?.userDisplayName?:user?.userDisplayName}"/>
     <!-- Species -->
     <div class="boxed-heading" id="species" data-content="Species">
-        <div class="row-fluid">
-            <div id="speciesOne">
+        <div class="row">
+            <div class="col-md-6">
+                <div id="showConfident" class="form-group">
+                    <label for="speciesLookup">
+                        <div id="noTaxa" style="display: inherit;">Type a scientific or common name into the box below and choose from the auto-complete list.</div>
+                        <div id="matchedTaxa" style="display: none;">Not the right species? To change identification, type a scientific
+                        or common name into the box below and choose from the auto-complete list.</div>
+                    </label>
+                    <input class="form-control ${hasErrors(bean:sighting,field:'scientificName','validationErrors')}" id="speciesLookup" type="text" placeholder="Start typing a species name (common or latin)">
+                </div>
+                <div id="showUncertain" class="form-group">
+                    <div>How confident are you with the species identification?
+                    <g:radioGroup name="identificationVerificationStatus" labels="['Confident','Uncertain']" values="['confident','uncertain']" value="${sighting?.identificationVerificationStatus?.toLowerCase()?:'uncertain'}" >
+                        <span style="white-space:nowrap;">${it.radio}&nbsp;${it.label}</span>
+                    </g:radioGroup>
+                    </div>
+                </div>
+                <div id="identificationChoice" class="form-group">
+                    <label for="speciesGroups">(Optional) Tag this sighting with species group and/or sub-group:</label>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <g:select name="tag" from="${speciesGroupsMap?.keySet()}" id="speciesGroups" class="form-control input-sm ${hasErrors(bean:sighting,field:'scientificName','validationErrors')}" noSelection="['':'-- Species group --']"/>
+                        </div>
+                        <div class="col-md-6">
+                            <g:select name="tag" from="${[]}" id="speciesSubgroups" class="form-control input-sm" noSelection="['':'-- Subgroup (select a group first) --']"/>
+                        </div>
+                    </div>
+                </div>
+                <g:if test="${grailsApplication.config.include.taxonoverflow}">
+                    <div id="speciesMisc" class="hide">
+                        <label for="requireIdentification" class="checkbox">
+                            <g:checkBox id="requireIdentification" name="requireIdentification"
+                                        value="${(sighting?.requireIdentification)}"/>
+                            Ask the Taxon-Overflow community to assist with or confirm the identification (requires a photo of the sighting)
+                        </label>
+                    </div>
+                </g:if>
+            </div>
+            <div id="" class="col-md-5">
                 <div id="taxonDetails" class="well well-small" style="display: none;">
                     <table>
                         <tr>
@@ -107,38 +146,9 @@
                     <input type="hidden" name="kingdom" id="kingdom" value="${taxon?.kingdom}"/>
                     <input type="hidden" name="family" id="family" value="${taxon?.family}"/>
                     %{--<input type="hidden" name="identificationVerificationStatus" id="identificationVerificationStatus" value="${taxon?.identificationVerificationStatus}"/>--}%
-                    <a href="#" class="remove removeHide" title="remove this item"><i class="remove icon-remove">&nbsp;</i></a>
+                    <a href="#" class="close removeHide" title="remove this item"><span aria-hidden="true">&times;</span></a>
                 </div>
                 <div id="tagsBlock"></div>
-            </div>
-            <div id="speciesTwo">
-                <div id="showConfident" class="">
-                    <div id="noTaxa" style="display: inherit;">Type a scientific or common name into the box below and choose from the auto-complete list.</div>
-                    <div id="matchedTaxa" style="display: none;">Not the right species? To change identification, type a scientific
-                    or common name into the box below and choose from the auto-complete list.</div>
-                    <input class="input-xlarge typeahead ${hasErrors(bean:sighting,field:'scientificName','validationErrors')}" id="speciesLookup" type="text">
-                </div>
-                <div id="showUncertain" class="">
-                    <div>How confident are you with the species identification?
-                    <g:radioGroup name="identificationVerificationStatus" labels="['Confident','Uncertain']" values="['confident','uncertain']" value="${sighting?.identificationVerificationStatus?.toLowerCase()?:'uncertain'}" >
-                        <span style="white-space:nowrap;">${it.radio}&nbsp;${it.label}</span>
-                    </g:radioGroup>
-                    </div>
-                </div>
-                <div id="identificationChoice" class=" ">
-                    <div>(Optional) Tag this sighting with species group and/or sub-group:</div>
-                    <g:select name="tag" from="${speciesGroupsMap?.keySet()}" id="speciesGroups" class="slim ${hasErrors(bean:sighting,field:'scientificName','validationErrors')}" noSelection="['':'-- Species group --']"/>
-                    <g:select name="tag" from="${[]}" id="speciesSubgroups" class="slim" noSelection="['':'-- Subgroup (select a group first) --']"/>
-                </div>
-                <g:if test="${grailsApplication.config.include.taxonoverflow}">
-                    <div id="speciesMisc" class="hide">
-                        <label for="requireIdentification" class="checkbox">
-                            <g:checkBox id="requireIdentification" name="requireIdentification"
-                                        value="${(sighting?.requireIdentification)}"/>
-                            Ask the Taxon-Overflow community to assist with or confirm the identification (requires a photo of the sighting)
-                        </label>
-                    </div>
-                </g:if>
             </div>
             <a href="${g.createLink(uri:'/identify_fragment_nomap')}" id="identifyHelpTrigger" data-target="#identifyHelpModal" role="button" class="btn btn-primary" data-toggle-ignore="modal"><i class="fa fa-search"></i> Image-assisted identification</a>
         </div>
@@ -161,22 +171,30 @@
         <div id="files" class="files"></div>
         <div id="imageLicenseDiv" class="hide">
             <label for="imageLicense">Licence:</label>
-            <g:select from="${grailsApplication.config.sighting.licenses}" name="imageLicense" class="slim" id="imageLicense" value="${sighting?.multimedia?.get(0)?.license}"/>
+            <g:select from="${grailsApplication.config.sighting.licenses}" name="imageLicense" class="form-control input-sm" id="imageLicense" value="${sighting?.multimedia?.get(0)?.license}"/>
         </div>
     </div>
 
     <!-- Location -->
     <div class="boxed-heading" id="location" data-content="Location">
-        <div class="row-fluid">
-            <div class="span6" id="mapWidget">
-                <div class="form-horizontal">
-                    <button class="btn" id="useMyLocation">
-                        <i class="fa fa-location-arrow fa-lg" style="margin-left:-2px;margin-right:3px;"></i> Use my location <r:img uri="/images/spinner.gif" class="spinner0 hide" style="height: 18px;"/>
-                    </button>
-                    &nbsp;<span class="badge badge-infoX"> OR </span>&nbsp;
-                    <div class="input-append">
-                        <input class="input-large" id="geocodeinput" type="text" placeholder="Enter an address, location or lat/lng">
-                        <button id="geocodebutton" class="btn">Lookup</button>
+        <div class="row">
+            <div class="col-md-6" id="mapWidget">
+                <div class="row">
+                    <div class="col-md-5">
+                        <button class="btn btn-default" id="useMyLocation">
+                            <i class="fa fa-location-arrow fa-lg" style="margin-left:-2px;margin-right:3px;"></i> Use my location <r:img uri="/images/spinner.gif" class="spinner0 hide" style="height: 18px;"/>
+                        </button>
+                        <span class="pull-right">
+                            <span class="badge" style="font-size:15px;margin-top:4px;"> OR </span>
+                        </span>
+                    </div>
+                    <div class="col-md-7">
+                        <div class="input-group">
+                            <input class="form-control" id="geocodeinput" type="text" placeholder="Enter an address, location or lat/lng">
+                            <span class="input-group-btn">
+                                <button id="geocodebutton" class="btn btn-default">Lookup</button>
+                            </span>
+                        </div><!-- /input-group -->
                     </div>
                 </div>
                 <div style="position:relative;">
@@ -187,36 +205,44 @@
                 </div>
 
             </div>
-            <div class="span6" style="margin-bottom: 0px;">
+            <div class="col-md-6" style="margin-bottom: 0px;">
                 <table class="formInputTable">
                     <tr>
-                        <td><label for="decimalLatitude">Latitude (decimal):</label></td>
-                        <td><input type="text" name="decimalLatitude" id="decimalLatitude" class="input-auto ${hasErrors(bean:sighting,field:'decimalLatitude','validationErrors')}" value="${sighting?.decimalLatitude}"/></td>
+                        <td width="30%"><label for="decimalLatitude">Latitude (decimal):</label></td>
+                        <td width="70%"><input type="text" name="decimalLatitude" id="decimalLatitude" class="form-control ${hasErrors(bean:sighting,field:'decimalLatitude','validationErrors')}" value="${sighting?.decimalLatitude}"/></td>
                     </tr>
                     <tr>
                         <td><label for="decimalLongitude">Longitude (decimal):</label></td>
-                        <td><input type="text" name="decimalLongitude" id="decimalLongitude" class="input-auto ${hasErrors(bean:sighting,field:'decimalLongitude','validationErrors')}" value="${sighting?.decimalLongitude}"/></td>
+                        <td><input type="text" name="decimalLongitude" id="decimalLongitude" class="form-control ${hasErrors(bean:sighting,field:'decimalLongitude','validationErrors')}" value="${sighting?.decimalLongitude}"/></td>
                     </tr>
                     <tr>
                         <td><label for="coordinateUncertaintyInMeters">Accuracy (metres):</label></td>
-                        <td><g:select from="${grailsApplication.config.accuracyValues?:[0,10,50,100,500,1000,10000]}" id="coordinateUncertaintyInMeters" class="slim ${hasErrors(bean:sighting,field:'coordinateUncertaintyInMeters','validationErrors')}" name="coordinateUncertaintyInMeters" value="${sighting?.coordinateUncertaintyInMeters?:50}" noSelection="['':'--']"/></td>
+                        <td><g:select from="${grailsApplication.config.accuracyValues?:[0,10,50,100,500,1000,10000]}" id="coordinateUncertaintyInMeters" class="form-control input-sm ${hasErrors(bean:sighting,field:'coordinateUncertaintyInMeters','validationErrors')}" name="coordinateUncertaintyInMeters" value="${sighting?.coordinateUncertaintyInMeters?:50}" noSelection="['':'--']"/></td>
                     </tr>
                     <tr>
                         <td><label for="georeferenceProtocol">Source of coordinates:</label></td>
-                        <td><g:select from="${coordinateSources}" id="georeferenceProtocol" class="slim" name="georeferenceProtocol" value="${sighting?.georeferenceProtocol}"/></td>
+                        <td><g:select from="${coordinateSources}" id="georeferenceProtocol" class="form-control input-sm" name="georeferenceProtocol" value="${sighting?.georeferenceProtocol}"/></td>
                     </tr>
                     <tr>
                         <td><label for="locality">Matched locality:</label></td>
-                        <td><textarea id="locality" name="locality" class="disabled" rows="3">${sighting?.locality}</textarea></td>
+                        <td><textarea id="locality" name="locality" class="form-control disabled" rows="3">${sighting?.locality}</textarea></td>
                     </tr>
                     <tr>
                         <td><label for="locationRemark">Location notes:</label></td>
-                        <td><textarea id="locationRemark" name="locationRemark" class="" rows="3" value="${sighting?.decimalLatitude}">${sighting?.locationRemark}</textarea></td>
+                        <td><textarea id="locationRemark" name="locationRemark" class="form-control" rows="3" value="${sighting?.decimalLatitude}">${sighting?.locationRemark}</textarea></td>
                     </tr>
                     <tr>
                         <td><label for="locationRemark">Saved locations:</label></td>
-                        <td><div class="form-horizontal"><g:select name="bookmarkedLocations" id="bookmarkedLocations" class="" from="${[]}" optionKey="" optionValue="" noSelection="['':'-- saved locations --']"/>
-                            <button id="bookmarkLocation" class="btn  disabled" disabled="disabled">Save this location</button></div></td>
+                        <td>
+                            <div class="input-group">
+                                <g:select name="bookmarkedLocations" id="bookmarkedLocations" class="form-control input-sm" from="${[]}" optionKey="" optionValue="" noSelection="['':'-- saved locations --']"/>
+                                <span class="input-group-btn">
+                                    <button id="bookmarkLocation" class="btn btn-sm btn-default disabled" disabled="disabled">Save this location</button>
+                                </span>
+                            </div><!-- /input-group -->
+                            %{--<div class="form-horizontal"><g:select name="bookmarkedLocations" id="bookmarkedLocations" class="form-control input-sm" from="${[]}" optionKey="" optionValue="" noSelection="['':'-- saved locations --']"/>--}%
+                            %{--<button id="bookmarkLocation" class="btn btn-default disabled" disabled="disabled">Save this location</button></div>--}%
+                        </td>
                     </tr>
                 </table>
             </div>
@@ -225,48 +251,50 @@
 
     <!-- Details -->
     <div class="boxed-heading" id="details" data-content="Details">
-        <div class="row-fluid">
-            <div class="span6">
-                <table class="formInputTable">
+        <div class="row">
+            <div class="col-md-6">
+                <table class="formInputTable form-inline">
                     <tr >
                         <td><label for="eventDate">Date:</label></td>
-                        <td id="eventDatePicker" class="${hasErrors(bean:sighting,field:'eventDate','validationErrors')}"><g:datePicker name="eventDate" id="eventDate" relativeYears="[0..-50]" noSelection="['':'--']" precision="day" placeholder="DD-MM-YYYY" value="${sighting?.eventDate}" default="${(sighting) ? sighting?.eventDate?:'none' : new Date()}"/></td>
+                        <td id="eventDatePicker" class="${hasErrors(bean:sighting,field:'eventDate','validationErrors')}"><si:customDatePicker name="eventDate" id="eventDate" class="form-control input-sm" relativeYears="[0..-50]" noSelection="['':'--']" precision="day" placeholder="DD-MM-YYYY" value="${sighting?.eventDate}" default="${(sighting) ? sighting?.eventDate?:'none' : new Date()}"/></td>
                         <td><span class="helphint">* required</span></td>
                     </tr>
                     <tr >
                         <td><label for="eventDate_hour">Time:</label></td>
                         <td>
-                            <g:select name="eventDate_hour" id="eventDate_hour" class="input-auto"  from="${(0..23).collect{it.toString().padLeft(2,'0')}}" value="${si.getTimeValue(date: sighting?.eventDate, part: Calendar.HOUR)}"/>
+                            <g:select name="eventDate_hour" id="eventDate_hour" class="form-control input-sm"  from="${(0..23).collect{it.toString().padLeft(2,'0')}}" value="${si.getTimeValue(date: sighting?.eventDate, part: Calendar.HOUR)}"/>
                             :
-                            <g:select name="eventDate_minute" id="eventDate_minute" class="input-auto"  from="${(0..59).collect{it.toString().padLeft(2,'0')}}" value="${si.getTimeValue(date: sighting?.eventDate, part: Calendar.MINUTE)}"/>
+                            <g:select name="eventDate_minute" id="eventDate_minute" class="form-control input-sm"  from="${(0..59).collect{it.toString().padLeft(2,'0')}}" value="${si.getTimeValue(date: sighting?.eventDate, part: Calendar.MINUTE)}"/>
                         </td>
                         <td><span class="helphint">24 hour format</span></td>
                     </tr>
                     <tr>
                         <td><label for="individualCount">Individuals:</label></td>
-                        <td><g:select from="${1..99}" name="individualCount" class="slim input-auto smartspinner" value="${sighting?.individualCount}" data-validation-engine="validate[custom[integer], min[1]]" id="individualCount"/></td>
+                        <td><g:select from="${1..99}" name="individualCount" class="input-sm form-control smartspinner" value="${sighting?.individualCount}" data-validation-engine="validate[custom[integer], min[1]]" id="individualCount"/></td>
                         <td><span class="helphint">How many did you see?</span></td>
                     </tr>
                 </table>
                 <input type="hidden" name="timeZoneOffset" id="timeZoneOffset" value="${sighting?.timeZoneOffset}"/>
             </div>
-            <div class="span6">
-                <section class="sightings-block ui-corner-all" style="vertical-align: top;">
-                    <label for="occurrenceRemarks" style="vertical-align: top;margin-top: 8px;margin-right: 5px;">Notes: </label>
-                    <textarea name="occurrenceRemarks" rows="4" cols="90" id="occurrenceRemarks">${sighting?.occurrenceRemarks}</textarea>
+            <div class="col-md-6">
+                <section class="sightings-block ui-corner-all form-horizontal" style="vertical-align: top;">
+                    <div class="form-group">
+                        <label for="occurrenceRemarks" class="col-sm-2">Notes: </label>
+                        <textarea name="occurrenceRemarks" rows="4" cols="90" class="form-control col-sm-10" id="occurrenceRemarks">${sighting?.occurrenceRemarks}</textarea>
+                    </div>
                 </section>
             </div>
         </div>
     </div>
 
     <div style="text-align: center;">
-        <input type="submit" id="formSubmit" class="btn btn-large"  value="${actionName == 'edit' ? 'Update' : 'Submit'} Record"/>
+        <input type="submit" id="formSubmit" class="btn btn-primary btn-lg"  value="${actionName == 'edit' ? 'Update' : 'Submit'} Record"/>
     </div>
 
 <%-- Template HTML used by JS code via .clone() --%>
-    <div class="hide imageRow row-fluid" id="uploadActionsTmpl">
-        <div class="span2"><span class="preview pull-right"></span></div>
-        <div class="span10">
+    <div class="hide imageRow row" id="uploadActionsTmpl">
+        <div class="col-md-2"><span class="preview pull-right"></span></div>
+        <div class="col-md-10">
             <div class="metadata media">
                 Filename: <span class="filename"></span>
                 %{--<input type="hidden" class="media" value=""/>--}%
@@ -287,8 +315,8 @@
             </div>
             %{--<button class="btn btn-small imageDate">Use image date</button>--}%
             %{--<button class="btn btn-small imageLocation">Use image location</button>--}%
-            <button class="btn btn-small btn-info imageData" title="No metadata found" disabled>Use image metadata</button>
-            <button class="btn btn-small btn-danger imageRemove" title="remove this image">Remove image</button>
+            <button class="btn btn-sm btn-info imageData" title="No metadata found" disabled>Use image metadata</button>
+            <button class="btn btn-sm btn-danger imageRemove" title="remove this image">Remove image</button>
         </div>
         <div class="error hide"></div>
     </div>
@@ -304,7 +332,7 @@
             <div id="speciesImages"></div>
         </div>
         <div class="modal-footer">
-            <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+            <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">Close</button>
             %{--<button class="btn btn-primary">Save changes</button>--}%
         </div>
     </div><!-- /#speciesBrowserModal -->
@@ -320,7 +348,7 @@
         <div class="modal-footer">
             <div class="pull-left">Searching for species within a <g:select name="radius" id="radius" class="select-mini" from="${[1,2,5,10,20]}" value="${defaultRadius?:5}"/>
             km area - increase to see more species</div>
-            <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+            <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">Close</button>
         </div>
     </div><!-- /#identifyHelpModal -->
 

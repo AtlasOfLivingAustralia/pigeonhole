@@ -56,4 +56,19 @@ class SightingTagLib {
 
         out << (tags as JSON).toString()
     }
+    /**
+     * Add CSS class attribute to rendered datepicker select inputs
+     *
+     *
+     */
+    def customDatePicker = {attrs, body ->
+        def unstyled = g.datePicker(attrs, body)
+        def sizes = [day: 1, month: 2, year:1]
+        def cssClass = attrs.class
+        def styled = unstyled.replaceAll('name="\\S+_(day|month|year)"') { match, timeUnit ->
+            //println match
+            "${match} class=\"${cssClass}\""
+        }
+        out << styled
+    }
 }

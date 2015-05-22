@@ -39,6 +39,7 @@
                 limit: settings.maxHits,
                 //prefetch: '../data/films/post_1960.json',
                 remote: {
+                    wildcard: '%QUERY',
                     url: settings.url + '?limit=' + settings.maxHits + '&q=%QUERY',
                     filter: function (resp) {
                         var results = [];

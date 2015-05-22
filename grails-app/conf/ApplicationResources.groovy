@@ -151,7 +151,5 @@ modules = {
     bootstrapModal {
         dependsOn 'bootstrap'
         resource url: 'css/bootstrap-modal.css'
-        resource url: 'js/bootstrap-modal.js'
-        resource url: 'js/bootstrap-modalmanager.js'
     }
 }
