@@ -260,7 +260,7 @@
                 <table class="formInputTable form-inline">
                     <tr >
                         <td><label for="eventDate">Date:</label></td>
-                        <td id="eventDatePicker" class="${hasErrors(bean:sighting,field:'eventDate','validationErrors')}"><si:customDatePicker name="eventDate" id="eventDate" class="form-control input-sm" relativeYears="[0..-50]" noSelection="['':'--']" precision="day" placeholder="DD-MM-YYYY" value="${sighting?.eventDate}" default="${(sighting) ? sighting?.eventDate?:'none' : new Date()}"/></td>
+                        <td id="eventDatePicker" class="${hasErrors(bean:sighting,field:'eventDate','validationErrors')}"><si:customDatePicker name="eventDate" id="eventDate" class="form-control" relativeYears="[0..-50]" noSelection="['':'--']" precision="day" placeholder="DD-MM-YYYY" value="${sighting?.eventDate}" default="${(sighting) ? sighting?.eventDate?:'none' : new Date()}"/></td>
                         <td><span class="helphint">* required</span></td>
                     </tr>
                     <tr >
@@ -325,37 +325,44 @@
         <div class="error hide"></div>
     </div>
     </div><!-- /#uploadActionsTmpl-->
-
     <!-- Modal -->
-    <div id="speciesBrowserModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-        <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-            <h3 id="myModalLabel">Browse species images</h3>
-        </div>
-        <div class="modal-body">
-            <div id="speciesImages"></div>
-        </div>
-        <div class="modal-footer">
-            <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">Close</button>
-            %{--<button class="btn btn-primary">Save changes</button>--}%
-        </div>
-    </div><!-- /#speciesBrowserModal -->
-<!-- Modal -->
-    <div id="identifyHelpModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="identifyHelpModalLabel" aria-hidden="true">
-        <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-            <h3 id="identifyHelpModalLabel">Image assisted identification</h3>
-        </div>
-        <div class="modal-body">
-            <g:render template="/identify/widget_nomap"  />
-        </div>
-        <div class="modal-footer">
-            <div class="pull-left">Searching for species within a <g:select name="radius" id="radius" class="select-mini" from="${[1,2,5,10,20]}" value="${defaultRadius?:5}"/>
-            km area - increase to see more species</div>
-            <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">Close</button>
-        </div>
+    <div id="identifyHelpModal" class="modal fade">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h3 id="identifyHelpModalLabel">Image assisted identification</h3>
+                </div>
+                <div class="modal-body">
+                    <g:render template="/identify/widget_nomap"  />
+                </div>
+                <div class="modal-footer">
+                    <div class="pull-left" style="margin-top:10px;">Searching for species within a <g:select name="radius" id="radius" class="select-mini" from="${[1,2,5,10,20]}" value="${defaultRadius?:5}"/>
+                    km area - increase to see more species</div>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
     </div><!-- /#identifyHelpModal -->
 
+    <!-- Stacked browser Modal -->
+    %{--<div id="speciesBrowserModal" class="modal fade">--}%
+        %{--<div class="modal-dialog">--}%
+            %{--<div class="modal-content">--}%
+                %{--<div class="modal-header">--}%
+                    %{--<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>--}%
+                    %{--<h3 id="myModalLabel">Browse species images</h3>--}%
+                %{--</div>--}%
+                %{--<div class="modal-body">--}%
+                    %{--<div id="speciesImages"></div>--}%
+                %{--</div>--}%
+                %{--<div class="modal-footer">--}%
+                    %{--<button class="btn btn-default" data-dismiss="modal" aria-hidden="true">Close</button>--}%
+                    %{--<button class="btn btn-primary">Save changes</button>--}%
+                %{--</div>--}%
+            %{--</div>--}%
+        %{--</div>--}%
+    %{--</div><!-- /#speciesBrowserModal -->--}%
 </form>
 </g:if>
 </body>

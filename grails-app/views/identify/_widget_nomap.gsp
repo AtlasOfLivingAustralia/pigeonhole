@@ -48,25 +48,29 @@
     </div>
 
     <!-- Modal -->
-    <div id="imgModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="imgModalLabel" aria-hidden="true">
-        <div class="modal-header">
-            <button type="button" class="close imgModalClose" aria-hidden="true">×</button>
-            <h3 id="imgModalLabel"></h3>
-        </div>
-        <div class="modal-body">
-            <r:img uri="/images/spinner.gif" id="spinner3" class="spinner "/>
-            <div class="" id="singleSpeciesImages"></div>
-            <div id="imgConClone" class="imgCon hide">
-                <a href="#" class="cbLink thumbImage tooltips" rel="thumbs">
-                    <img src="" alt="species thumbnail" onerror="imgError(this);"/>
-                    <div class="meta brief"></div>
-                    <div class="meta detail hide"><span class="scientificName"></span><br><span class="commonName"></span></div>
-                </a>
+    <div id="imgModal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close imgModalClose" aria-hidden="true">×</button>
+                    <h3 id="imgModalLabel"></h3>
+                </div>
+                <div class="modal-body">
+                    <r:img uri="/images/spinner.gif" id="spinner3" class="spinner "/>
+                    <div class="" id="singleSpeciesImages"></div>
+                    <div id="imgConClone" class="imgCon hide">
+                        <a href="#" class="cbLink thumbImage tooltips" rel="thumbs">
+                            <img src="" alt="species thumbnail" onerror="imgError(this);"/>
+                            <div class="meta brief"></div>
+                            <div class="meta detail hide"><span class="scientificName"></span><br><span class="commonName"></span></div>
+                        </a>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn imgModalClose" aria-hidden="true">Close</button>
+                    <button class="btn btn-primary pull-left" id="selectedSpeciesBtn">Select this species</button>
+                </div>
             </div>
-        </div>
-        <div class="modal-footer">
-            <button class="btn imgModalClose" aria-hidden="true">Close</button>
-            <button class="btn btn-primary pull-left" id="selectedSpeciesBtn">Select this species</button>
         </div>
     </div>
 </g:else>

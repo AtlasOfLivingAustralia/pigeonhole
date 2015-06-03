@@ -158,8 +158,34 @@ $(document).ready(function() {
         $('#imgModal').modal('hide')
     });
 
+    //$('.modal').on('hidden.bs.modal', function( event ) {
+    //    $(this).removeClass( 'fv-modal-stack' );
+    //    $('body').data( 'fv_open_modals', $('body').data( 'fv_open_modals' ) - 1 );
+    //});
+    //
+    //$( '.modal' ).on( 'shown.bs.modal', function ( event ) {
+    //    // keep track of the number of open modals
+    //    if ( typeof( $('body').data( 'fv_open_modals' ) ) == 'undefined' ){
+    //        $('body').data( 'fv_open_modals', 0 );
+    //    }
+    //
+    //    // if the z-index of this modal has been set, ignore.
+    //    if ( $(this).hasClass( 'fv-modal-stack' ) ) {
+    //        return;
+    //    }
+    //
+    //    $(this).addClass( 'fv-modal-stack' );
+    //    $('body').data( 'fv_open_modals', $('body').data( 'fv_open_modals' ) + 1 );
+    //    $(this).css('z-index', 1040 + (10 * $('body').data( 'fv_open_modals' )));
+    //    $( '.modal-backdrop' ).not( '.fv-modal-stack' )
+    //        .css( 'z-index', 1039 + (10 * $('body').data( 'fv_open_modals' )));
+    //    $( '.modal-backdrop' ).not( 'fv-modal-stack' )
+    //        .addClass( 'fv-modal-stack' );
+    //});
 
 }); // end document load
+
+
 
 function imgError(image){
     image.onerror = "";
@@ -201,13 +227,13 @@ function updateSubGroups(group, lat, lng) {
         $.each(data, function(index, value){
             // console.log(index, value);
             var btn = ''; //(index == 0) ? 'btn-primary' : '';
-            group += "<div class='btn groupBtn " +  btn + "' data-group='" + escape(value.name) + "'>" + value.name + " <span class='counts'>[" + value.speciesCount + "]</span></div>";
+            group += "<div class='btn btn-default groupBtn " +  btn + "' data-group='" + escape(value.name) + "'>" + value.name + " <span class='counts'>[" + value.speciesCount + "]</span></div>";
 
             if (value.childGroups.length > 0) {
                 var hide = 'hide'; //(index == 0) ? '' : 'hide';
                 var subGroup = "<div id='subgroup_" + value.name + "' class='sub-groups " + hide + "'>";
                 $.each(value.childGroups, function(i, el){
-                    subGroup += "<div class='btn subGroupBtn' data-group='" + escape(el.name) + "'>" + el.name + " <span class='counts'>[" + el.speciesCount + "]</span></div>";
+                    subGroup += "<div class='btn btn-default subGroupBtn' data-group='" + escape(el.name) + "'>" + el.name + " <span class='counts'>[" + el.speciesCount + "]</span></div>";
                 });
                 $('#speciesSubGroup').append(subGroup);
             }

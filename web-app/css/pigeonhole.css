@@ -309,7 +309,7 @@ table.formInputTable td {
 }
 
 #eventDatePicker select {
-    height: 26px;
+    height: 30px;
     width: auto;
     font-size: 13px;
     line-height: 18px;
@@ -377,11 +377,8 @@ span.label, span.badge {
     right: 10px;
 }
 
-#identifyHelpModal {
-    width: 80%; /* respsonsive width */
-    /*height: 80%;*/
-    margin-left:-40%; /* width/2) */
-    z-index: 1100;
+#identifyHelpModal .modal-dialog  {
+    width:90%;
 }
 
 /* TypeAhead styles from http://twitter.github.io/typeahead.js/css/examples.css */
@@ -460,6 +457,12 @@ span.label, span.badge {
     font-size: 14px;
 }
 */
+
+.modal-body {
+    max-height: calc(100vh - 212px);
+    overflow-y: auto;
+}
+
 /* Fixes for IE < 8 */
 @media screen\9 {
     .fileinput-button input {

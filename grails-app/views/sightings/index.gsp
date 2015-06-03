@@ -86,8 +86,10 @@
                                 <td>
                                     <g:if test="${(s.offensiveFlag == null || s.offensiveFlag?.toBoolean() == false) && s.multimedia}">
                                         <g:each in="${s.multimedia}" var="i" status="st">
+                                            <g:set var="imagUrls" value="${s.multimedia.collect{it.identifier}}"/>
                                             <g:if test="${i.thumbnailUrl?:i.identifier && st < 1}">
-                                                <a href="#imageModal" role="button" class="imageModal" data-imgurl="${i.identifier}" title="view full sized image" target="original"><img src="${i.thumbnailUrl?:i.identifier}" alt="sighting photo thumbnail" style="max-height: 175px;  max-width: 175px;"/></a>
+                                                <a href="#imageModal2" role="button" class="imageModal" data-imgurls='${imagUrls.encodeAsJSON()}' title="view full sized image" target="original"><img src="${i.thumbnailUrl?:i.identifier}" alt="sighting photo thumbnail" style="max-height: 175px;  max-width: 175px;"/></a>
+                                                ${s.multimedia.size() > 1 ? "&times;${s.multimedia.size()}" : ""}
                                             </g:if>
                                         </g:each>
                                     </g:if>
@@ -113,17 +115,19 @@
                                     <g:if test="${grailsApplication.config.showBiocacheLinks && s.occurrenceID}">
                                         <a href="http://biocache.ala.org.au/occurrence/${s.occurrenceID}">View public record</a>
                                     </g:if>
-                                    <g:if test="${s.taxonoverflowURL}">
-                                        <div><a href="${s.taxonoverflowURL}" class="btn btn-default btn-sm questionBtn" title="View the Community identification discussion of this record">
-                                            <i class="fa fa-comments"></i> View community identification</a></div>
-                                    </g:if>
-                                    <g:elseif test="${s.multimedia}">
-                                        <div><a class="btn btn-default btn-sm flagBtn" href="#flagModal" role="button" data-occurrenceid="${s.occurrenceID}" title="Suggest this record might require an identification or confirmation" style="white-space: nowrap">
-                                            <i class="fa fa-comments-o"></i> Suggest an identification</a></div>
-                                    </g:elseif>
-                                    <g:if test="${s.identifiedBy}">
-                                        <div>Identified by: ${s.identifiedBy}</div>
-                                        <div><i class="fa fa-check"></i>&nbsp;<a href="${s.taxonoverflowURL}">Identification community verified</a></div>
+                                    <g:if test="${!grailsApplication.config.hideTaxonOverflowLinks?.toBoolean() || params.show_to}">
+                                        <g:if test="${s.taxonoverflowURL}">
+                                            <div><a href="${s.taxonoverflowURL}" class="btn btn-default btn-sm questionBtn" title="View the Community identification discussion of this record">
+                                                <i class="fa fa-comments"></i> View community identification</a></div>
+                                        </g:if>
+                                        <g:elseif test="${s.multimedia}">
+                                            <div><a class="btn btn-default btn-sm flagBtn" href="#flagModal" role="button" data-occurrenceid="${s.occurrenceID}" title="Suggest this record might require an identification or confirmation" style="white-space: nowrap">
+                                                <i class="fa fa-comments-o"></i> Suggest an identification</a></div>
+                                        </g:elseif>
+                                        <g:if test="${s.identifiedBy}">
+                                            <div>Identified by: ${s.identifiedBy}</div>
+                                            <div><i class="fa fa-check"></i>&nbsp;<a href="${s.taxonoverflowURL}">Identification community verified</a></div>
+                                        </g:if>
                                     </g:if>
                                 </td>
                                 <td>
@@ -158,19 +162,40 @@
                         <g:paginate total="${sightings.totalRecords?:0}" mapping="${mappingName}" id="${params.id}"/>
                     </div>
                     <!-- Image Modal -->
-                    <div id="imageModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                            <h3 id="myModalLabel">Sighting image</h3>
-                        </div>
-                        <div class="modal-body">
-                            <img id="originalImage" src="${g.resource(dir:'images',file:'spinner.gif')}" alt="original image file for sighting"/>
-                        </div>
-                        <div class="modal-footer">
-                            <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-                        </div>
-                    </div>
-                     <!-- Flag Modal -->
+                    %{--<div class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">--}%
+                        %{--<div class="modal-header">--}%
+                            %{--<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>--}%
+                            %{--<h3 id="myModalLabel">Sighting image</h3>--}%
+                        %{--</div>--}%
+                        %{--<div class="modal-body">--}%
+                            %{--<img id="originalImage" src="${g.resource(dir:'images',file:'spinner.gif')}" alt="original image file for sighting"/>--}%
+                        %{--</div>--}%
+                        %{--<div class="modal-footer">--}%
+                            %{--<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>--}%
+                        %{--</div>--}%
+                    %{--</div>--}%
+                    <div id="imageModal2" class="modal fade">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                    <h4 class="modal-title">Sighting images</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <img id="originalImage" src="${g.resource(dir:'images',file:'spinner.gif')}" alt="original image file for sighting"/>
+                                </div>
+                                <div class="modal-footer">
+                                    <div class="pull-left">
+                                        <button type="button" id="prevImage" class="btn btn-default" disabled><i class="fa fa-chevron-circle-left"></i> Prev</button>
+                                        <button type="button" id="nextImage" class="btn btn-default" disabled>Next <i class="fa fa-chevron-circle-right"></i></button>
+                                    </div>
+                                   <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                </div>
+                            </div><!-- /.modal-content -->
+                        </div><!-- /.modal-dialog -->
+                    </div><!-- /.modal -->
+
+                    <!-- Flag Modal -->
                     <div id="flagModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="flagModalLabel" aria-hidden="true">
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
@@ -222,23 +247,62 @@
                                 window.location = "?sort=" + $(this).val();
                             });
 
-                             $('#orderBy').change(function(e) {
+                            $('#orderBy').change(function(e) {
                                 e.preventDefault();
                                 window.location = "?sort=${params.sort?:'lastUpdated'}&order=" + $(this).val();
                             });
 
+                            // trigger image viewer in modal
                             $('.imageModal').click(function(e) {
                                  e.preventDefault();
-                                 var url = $(this).data('imgurl');
+                                 var urls = $(this).data('imgurls');
                                  var initialUrl = $('#originalImage').attr('src');
-                                 if (url) {
-                                    $('#imageModal').modal('show').on('shown', function () {
-                                        $('#originalImage').attr('src', url);
+
+                                 if (urls[0]) {
+                                    $('#imageModal2').data('imgurls', urls);
+                                    $('#prevImage').attr('disabled', true);
+                                    $('#nextImage').attr('disabled', true);
+
+                                    $('#imageModal2').modal('show').on('shown.bs.modal', function (e) {
+                                        var urls = $(this).data('imgurls');
+                                        $('#originalImage').attr('src', urls[0]);
+                                        $('#imageModal2').data('index', 0);
+                                        if (urls.length > 1) {
+                                            $('#nextImage').removeAttr('disabled');
+                                        }
+
                                     }).on('hidden', function () {
                                         $('#originalImage').attr('src', initialUrl);
                                     });
                                  }
                             });
+
+                            // next/prev image buttons in image model
+                            $('#imageModal2').on('click', '#nextImage', function(e) {
+                                e.preventDefault();
+                                var i = $('#imageModal2').data('index');
+                                showImageInModal((i + 1), i);
+                            });
+                            $('#imageModal2').on('click', '#prevImage', function(e) {
+                                e.preventDefault();
+                                var i = $('#imageModal2').data('index');
+                                showImageInModal((i - 1), i);
+                            });
+
+                            function showImageInModal(newIndex, oldIndex) {
+                                var urls = $('#imageModal2').data('imgurls');
+                                $('#originalImage').attr('src', urls[newIndex]);
+                                $('#prevImage').removeAttr('disabled');
+                                $('#nextImage').removeAttr('disabled');
+                                if (newIndex == urls.length - 1) {
+                                    // last image
+                                    $('#nextImage').attr('disabled', true);
+                                } else if (newIndex == 0) {
+                                    // first image
+                                    $('#prevImage').attr('disabled', true);
+                                }
+                                $('#imageModal2').data('index', newIndex); // reset index stored
+                            }
 
                             var reasonBorderCss = $('#questionType').css('border');
                             var commentBorderCss = $('#comment').css('border');
