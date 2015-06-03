@@ -36,8 +36,9 @@
     padding: 7px 15px;
     font-size: 18px;
     font-weight: 300;
-    background-color: #E0E0E0;
-    border: 1px solid #ddd;
+    background-color: #ddd;
+    /*background-color: #E0E0E0;*/
+    border: 1px solid #ccc;
     color: inherit;
     /*-webkit-border-radius: 4px 0 4px 0;*/
     /*-moz-border-radius: 4px 0 4px 0;*/
@@ -158,7 +159,7 @@ input#speciesLookup {
 /*}*/
 
 .tag {
-    font-size: 14px;
+    font-size: 13px;
     padding: .3em .4em .4em;
     margin: 0 .1em;
 }
@@ -461,6 +462,10 @@ span.label, span.badge {
 .modal-body {
     max-height: calc(100vh - 212px);
     overflow-y: auto;
+}
+
+.modal-header h2, .modal-header h3, .modal-header h4 {
+    margin-bottom: 0;
 }
 
 /* Fixes for IE < 8 */

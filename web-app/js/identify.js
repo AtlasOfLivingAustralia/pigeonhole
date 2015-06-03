@@ -68,7 +68,7 @@ $(document).ready(function() {
     });
 
     $('#toggleNoImages').on('change', function(e) {
-        $('.imgCon.noImage').toggleClass('hide');
+        $('.imgCon.noImage').toggleClass('hidden');
     });
 
     $('#speciesImagesDiv').on('click', '.imgCon a', function() {

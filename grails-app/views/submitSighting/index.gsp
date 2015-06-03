@@ -155,7 +155,7 @@
     </div>
 
     <!-- Media -->
-    <div class="boxed-heading" id="media" data-content="Media">
+    <div class="boxed-heading" id="media" data-content="Images">
         <!-- The fileinput-button span is used to style the file input field as button -->
         <button class="btn btn-success fileinput-button tooltips" title="Select one or more photos to upload (you can also simply drag and drop files onto the page).">
             <i class="icon icon-white icon-plus"></i>
