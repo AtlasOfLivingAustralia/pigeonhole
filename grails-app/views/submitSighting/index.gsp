@@ -150,7 +150,7 @@
                 </div>
                 <div id="tagsBlock"></div>
             </div>
-            <a href="${g.createLink(uri:'/identify_fragment_nomap')}" id="identifyHelpTrigger" data-target="#identifyHelpModal" role="button" class="btn btn-primary" data-toggle-ignore="modal"><i class="fa fa-search"></i> Image-assisted identification</a>
+            <a href="${g.createLink(uri:'/identify_fragment_nomap')}" id="identifyHelpTrigger" data-target="#identifyHelpModal" role="button" class="btn btn-primary tooltips" title="assists identification by providing a list of suggested species with images, known to occur at the sighting location" data-toggle-ignore="modal"><i class="fa fa-search"></i> Image-assisted identification</a>
         </div>
     </div>
 
