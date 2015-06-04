@@ -143,7 +143,7 @@
                                     </g:if>
                                     <g:if test="${s.decimalLatitude && s.decimalLatitude != 'null' && s.decimalLongitude && s.decimalLongitude != 'null' }">
                                         <div>
-                                            <a href="#" class="mapPopup tooltips" data-lat="${s.decimalLatitude}" data-lng="${s.decimalLongitude}" title="Click to see map"><i class="fa fa-location-arrow"></i> ${s.decimalLatitude?.toString()?.substring(0,8)}, ${s.decimalLongitude?.toString()?.substring(0,8)}</a>
+                                            <a href="#" class="mapPopup tooltips" data-lat="${s.decimalLatitude}" data-lng="${s.decimalLongitude}" title="Click to see map"><i class="fa fa-location-arrow"></i> ${s.decimalLatitude?.round(5)}, ${s.decimalLongitude?.round(5)}</a>
                                         </div>
                                     </g:if>
                                 </td>
