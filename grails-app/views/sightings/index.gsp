@@ -88,8 +88,8 @@
                                         <g:each in="${s.multimedia}" var="i" status="st">
                                             <g:set var="imagUrls" value="${s.multimedia.collect{it.identifier}}"/>
                                             <g:if test="${i.thumbnailUrl?:i.identifier && st < 1}">
-                                                <a href="#imageModal2" role="button" class="imageModal" data-imgurls='${imagUrls.encodeAsJSON()}' title="view full sized image" target="original"><img src="${i.thumbnailUrl?:i.identifier}" alt="sighting photo thumbnail" style="max-height: 175px;  max-width: 175px;"/></a>
-                                                ${s.multimedia.size() > 1 ? "&times;${s.multimedia.size()}" : ""}
+                                                <a href="#imageModal2" role="button" class="imageModal" style="white-space:nowrap;" data-imgurls='${imagUrls.encodeAsJSON()}' title="view full sized image" target="original"><img src="${i.thumbnailUrl?:i.identifier}" alt="sighting photo thumbnail"
+                                                      style="max-height: 175px;  max-width: 175px;"/>${s.multimedia.size() > 1 ? "&times;${s.multimedia.size()}" : ""}</a>
                                             </g:if>
                                         </g:each>
                                     </g:if>
