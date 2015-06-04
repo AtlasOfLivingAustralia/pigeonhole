@@ -115,7 +115,7 @@
                                     <g:if test="${grailsApplication.config.showBiocacheLinks && s.occurrenceID}">
                                         <a href="http://biocache.ala.org.au/occurrence/${s.occurrenceID}">View public record</a>
                                     </g:if>
-                                    <g:if test="${!grailsApplication.config.hideTaxonOverflowLinks?.toBoolean() || params.show_to}">
+                                    <g:if test="${!grailsApplication.config.hideTaxonOverflowLinks?.asBoolean() || params.show_to}">
                                         <g:if test="${s.taxonoverflowURL}">
                                             <div><a href="${s.taxonoverflowURL}" class="btn btn-default btn-sm questionBtn" title="View the Community identification discussion of this record">
                                                 <i class="fa fa-comments"></i> View community identification</a></div>
