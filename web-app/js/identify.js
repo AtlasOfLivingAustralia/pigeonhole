@@ -17,7 +17,7 @@
  * Created by dos009 on 18/05/15.
  */
 
-var groupSelected, subgroupSelected;
+var groupSelected, subgroupSelected, groupsAjax;
 //var lat = GSP_VARS.lat;
 //var lng = GSP_VARS.lng;
 
@@ -207,14 +207,23 @@ function geocode() {
 function updateSubGroups(group, lat, lng) {
     var radius = $('#radius').val();
     //var latlng = $('#locationLatLng span').data('latlng');
+    var latF = parseFloat(lat).toFixed(6);
+    var lngF = parseFloat(lng).toFixed(6);
+    clearGroupsAndImages();
 
-    $.ajax({
+    if (groupsAjax) {
+        groupsAjax.abort(); // kill any existing requests still pending
+        $('.spinner1').removeClass('hide'); // restart spinner
+    }
+
+    groupsAjax = $.ajax({
         url : biocacheBaseUrl + '/explore/hierarchy/groups.json'
         , dataType : 'jsonp'
         , jsonp : 'callback'
+        , timeout: 30000
         , data : {
-            'lat' : lat
-            , 'lon' : lng
+            'lat' : latF
+            , 'lon' : lngF
             , 'radius' : radius
             , 'fq' : 'rank_id:[7000 TO *]' // TODO - check this is not being ignored by biocache-service
             , 'speciesGroup': group
@@ -222,8 +231,6 @@ function updateSubGroups(group, lat, lng) {
     })
     .done(function(data){
         var group = "<div id='speciesGroup1' class=''>";
-        $('#speciesSubGroup').html('');
-
         $.each(data, function(index, value){
             // console.log(index, value);
             var btn = ''; //(index == 0) ? 'btn-primary' : '';
@@ -246,7 +253,8 @@ function updateSubGroups(group, lat, lng) {
         $('.spinner1').addClass('hide');
     })
     .fail(function( jqXHR, textStatus, errorThrown ) {
-        alert("Error: " + textStatus + " - " + errorThrown);
+        //alert("Error: " + textStatus + " - " + errorThrown);
+        $('#speciesGroup').html("<b>Error</b>: " + errorThrown);
     });
 }
 
@@ -295,52 +303,52 @@ function loadSpeciesGroupImages(speciesGroup, start) {
             'radius' : radius
         }
     })
-        .done(function(data){
-            if (data.facetResults && data.facetResults.length > 0 && data.facetResults[0].fieldResult.length > 0) {
-                //console.log(speciesGroup + ': species count = ' + data.facetResults[0].fieldResult.length);
-                var images = "<span id='imagesGrid'>";
-                var newTotal = Number(start);
-                $.each(data.facetResults[0].fieldResult, function(i, el){
-                    //if (i >= 30) return false;
-                    newTotal++;
-                    var parts = el.label.split("|");
-                    var nameObj = {
-                        sciName: parts[1],
-                        commonName: parts[0],
-                        lsid: parts[2],
-                        shortName: (parts[0]) ? parts[0] : "<i>" + parts[1] + "</i>",
-                        fullName1: (parts[0]) ? parts[0] + " &mdash; " + "<i>" + parts[1] + "</i>" : "<i>" + parts[1] + "</i>",
-                        fullName2: (parts[0]) ? parts[0] + "<br>" + "<i>" + parts[1] + "</i>" : "<i>" + parts[1] + "</i>"
-                    };
-                    var displayName = $('<div/>').text(nameObj.fullName1).html(); // use jQuery to escape text
-                    var imgUrl = "http://bie.ala.org.au/ws/species/image/small/" + nameObj.lsid; // http://bie.ala.org.au/ws/species/image/thumbnail/urn:lsid:biodiversity.org.au:afd.taxon:aa745ff0-c776-4d0e-851d-369ba0e6f537
-                    images += "<div class='imgCon'><a class='cbLink thumbImage tooltips' rel='thumbs' href='http://bie.ala.org.au/species/" +
-                    nameObj.lsid + "' target='species' data-lsid='" + nameObj.lsid + "' data-displayname='" + displayName + "'><img src='" + imgUrl +
-                    "' alt='species thumbnail' onerror='imgError(this);'/><div class='meta brief'>" +
-                    nameObj.shortName + "</div><div class='meta detail hide'>" +
-                    nameObj.fullName2 + "<br>Records: " + el.count + "</div></a></div>";
-                });
-                images += "</span>";
-                images += "<div id='end'>&nbsp;</div>";
-                $('#speciesImagesDiv').append(images);
-                $('#speciesImagesDiv').data('start', start + pageSize);
-                $('#speciesImagesDiv').data('species_group', speciesGroup);
-                //$('#speciesImagesDiv').data('total', total);
-            } else if (!start) {
-                $('#speciesImagesDiv').append("No species found.");
-            }
-        })
-        .always(function() {
-            $('.spinner2').addClass('hide');
-        })
-        .fail(function( jqXHR, textStatus, errorThrown ) {
-            // alert("Error: " + textStatus + " - " + errorThrown);
-            $('#speciesImagesDiv').append("Error: " + textStatus + " - " + errorThrown);
-        });
+    .done(function(data){
+        if (data.facetResults && data.facetResults.length > 0 && data.facetResults[0].fieldResult.length > 0) {
+            //console.log(speciesGroup + ': species count = ' + data.facetResults[0].fieldResult.length);
+            var images = "<span id='imagesGrid'>";
+            var newTotal = Number(start);
+            $.each(data.facetResults[0].fieldResult, function(i, el){
+                //if (i >= 30) return false;
+                newTotal++;
+                var parts = el.label.split("|");
+                var nameObj = {
+                    sciName: parts[1],
+                    commonName: parts[0],
+                    lsid: parts[2],
+                    shortName: (parts[0]) ? parts[0] : "<i>" + parts[1] + "</i>",
+                    fullName1: (parts[0]) ? parts[0] + " &mdash; " + "<i>" + parts[1] + "</i>" : "<i>" + parts[1] + "</i>",
+                    fullName2: (parts[0]) ? parts[0] + "<br>" + "<i>" + parts[1] + "</i>" : "<i>" + parts[1] + "</i>"
+                };
+                var displayName = $('<div/>').text(nameObj.fullName1).html(); // use jQuery to escape text
+                var imgUrl = "http://bie.ala.org.au/ws/species/image/small/" + nameObj.lsid; // http://bie.ala.org.au/ws/species/image/thumbnail/urn:lsid:biodiversity.org.au:afd.taxon:aa745ff0-c776-4d0e-851d-369ba0e6f537
+                images += "<div class='imgCon'><a class='cbLink thumbImage tooltips' rel='thumbs' href='http://bie.ala.org.au/species/" +
+                nameObj.lsid + "' target='species' data-lsid='" + nameObj.lsid + "' data-displayname='" + displayName + "'><img src='" + imgUrl +
+                "' alt='species thumbnail' onerror='imgError(this);'/><div class='meta brief'>" +
+                nameObj.shortName + "</div><div class='meta detail hide'>" +
+                nameObj.fullName2 + "<br>Records: " + el.count + "</div></a></div>";
+            });
+            images += "</span>";
+            images += "<div id='end'>&nbsp;</div>";
+            $('#speciesImagesDiv').append(images);
+            $('#speciesImagesDiv').data('start', start + pageSize);
+            $('#speciesImagesDiv').data('species_group', speciesGroup);
+            //$('#speciesImagesDiv').data('total', total);
+        } else if (!start) {
+            $('#speciesImagesDiv').append("No species found.");
+        }
+    })
+    .always(function() {
+        $('.spinner2').addClass('hide');
+    })
+    .fail(function( jqXHR, textStatus, errorThrown ) {
+        // alert("Error: " + textStatus + " - " + errorThrown);
+        $('#speciesImagesDiv').append("Error: " + textStatus + " - " + errorThrown);
+    });
 }
 
 function clearGroupsAndImages() {
-    $('#speciesGroup').empty();
+    $('#speciesGroup').html("[searching...]");
     $('#speciesSubGroup').empty();
     $('#speciesImagesDiv').empty();
     subgroupSelected = null;
