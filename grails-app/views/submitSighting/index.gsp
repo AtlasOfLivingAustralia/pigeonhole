@@ -150,14 +150,14 @@
                 </div>
                 <div id="tagsBlock"></div>
             </div>
-            <a href="${g.createLink(uri:'/identify_fragment_nomap')}" id="identifyHelpTrigger" data-target="#identifyHelpModal" role="button" class="btn btn-primary tooltips" title="assists identification by providing a list of suggested species with images, known to occur at the sighting location" data-toggle-ignore="modal"><i class="fa fa-search"></i> Image-assisted identification</a>
+            <a href="${g.createLink(uri:'/identify_fragment_nomap')}" id="identifyHelpTrigger" data-target="#identifyHelpModal" role="button" class="btn btn-primary tooltipsZ" title="assists identification by providing a list of suggested species with images, known to occur at the sighting location" data-toggle-ignore="modal"><i class="fa fa-search"></i> Image-assisted identification</a>
         </div>
     </div>
 
     <!-- Media -->
     <div class="boxed-heading" id="media" data-content="Images">
         <!-- The fileinput-button span is used to style the file input field as button -->
-        <button class="btn btn-success fileinput-button tooltips" title="Select one or more photos to upload (you can also simply drag and drop files onto the page).">
+        <button class="btn btn-success fileinput-button tooltipsZ" title="Select one or more photos to upload (you can also simply drag and drop files onto the page).">
             <i class="icon icon-white icon-plus"></i>
             <span>Add files...</span>
             <!-- The file input field used as target for the file upload widget -->
@@ -292,6 +292,8 @@
     </div>
 
     <div style="text-align: center;">
+        <div id="termsOfUse">Please read the <a href="http://www.ala.org.au/about-the-atlas/terms-of-use/" target="_blank">ALA
+            terms of use</a> before submitting your sighting</div>
         <input type="submit" id="formSubmit" class="btn btn-primary btn-lg"  value="${actionName == 'edit' ? 'Update' : 'Submit'} Record"/>
     </div>
 

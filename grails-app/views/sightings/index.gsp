@@ -106,11 +106,11 @@
                                 <td>
                                     <span class="speciesName">${s.scientificName}</span>
                                     <div>${s.commonName}</div>
-                                    <g:if test="${s.tags}"><div style="margin-bottom: 5px;">
+                                    <g:if test="${s.tags}"><div class="tagGroup">
                                         <g:each in="${s.tags}" var="t"><span class="label label-default">${raw(t)}</span> </g:each>
                                     </div></g:if>
                                     <g:if test="${s.identificationVerificationStatus}">
-                                        <div style="margin-bottom:3px;"><span class="label label-default">${s.identificationVerificationStatus}</span></div>
+                                        <div class="tagGroup"><span class="label label-default">${s.identificationVerificationStatus}</span></div>
                                     </g:if>
                                     <g:if test="${grailsApplication.config.showBiocacheLinks && s.occurrenceID}">
                                         <a href="http://biocache.ala.org.au/occurrence/${s.occurrenceID}">View public record</a>

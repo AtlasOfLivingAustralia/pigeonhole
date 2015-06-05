@@ -51,6 +51,19 @@
     padding-top: 15px;
 }
 
+.container h1 {
+    font-size: 30px;
+}
+.container h2 {
+    font-size: 24px;
+}
+.container h3 {
+    font-size: 20px;
+}
+.container h4 {
+    font-size: 16px;
+}
+
 /* Links menu  */
 #sightingLinks {
     float: right;
@@ -192,6 +205,11 @@ span.label, span.badge {
     margin: 10px 0;
 }
 
+.tagGroup {
+    /*margin-bottom: 2px;*/
+    line-height: 1.8em;
+}
+
 #speciesOne, #speciesTwo {
     float: left;
     max-width: 47%;
@@ -211,26 +229,15 @@ td label {
     margin-bottom: 4px;
 }
 
-/*a.remove {*/
-    /*display: inline-block;*/
-    /*vertical-align: top;*/
-    /*margin-left: 5px;*/
-    /*margin-top: -2px;*/
-/*}*/
+.flagBtn, .questionBtn {
+    margin-top: 3px;
+}
 
 .helphint {
     display: inline-block;
     margin-bottom: 5px;
     color: grey;
 }
-
-/*#species input[type='text'] {*/
-/*height: 20px;*/
-/* width: auto; */
-/*font-size: 11px;*/
-/*line-height: 18px;*/
-/*margin-bottom: 4px;*/
-/*}*/
 
 #species .row-fluid .span6 {
     /*display: table-cell;*/
@@ -377,6 +384,10 @@ a.adminLink:hover {
 
 #identifyHelpModal .modal-dialog  {
     width:90%;
+}
+
+#termsOfUse {
+    margin-bottom: 14px;
 }
 
 .modal-body {

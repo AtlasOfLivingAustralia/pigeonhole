@@ -360,7 +360,7 @@ $(document).ready(function() {
         if (lat && lng) {
             GSP_VARS.lat = lat;
             GSP_VARS.lng = lng;
-            updateSubGroups(null, GSP_VARS.lat, GSP_VARS.lng);
+            updateSpeciesGroups(null, GSP_VARS.lat, GSP_VARS.lng);
             $('#identifyHelpModal').modal('show');
             //$('#identifyHelpModal').modal({
             //    remote: url + '?lat=' + lat + '&lng=' + lng + '&locality=' + encodeURIComponent(locality),
