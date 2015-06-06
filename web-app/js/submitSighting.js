@@ -340,15 +340,15 @@ $(document).ready(function() {
     }
 
     // init qtip (tooltip)
-    $('.tooltips').qtip({
-        style: {
-            classes: 'ui-tooltip-rounded ui-tooltip-shadow'
-        },
-        position: {
-            target: 'mouse',
-            adjust: { x: 6, y: 14 }
-        }
-    });
+    //$('.tooltips').qtip({
+    //    style: {
+    //        classes: 'ui-tooltip-rounded ui-tooltip-shadow'
+    //    },
+    //    position: {
+    //        target: 'mouse',
+    //        adjust: { x: 6, y: 14 }
+    //    }
+    //});
 
     // trigger image assisted identification popup
     $('#identifyHelpTrigger').click(function(e) {
