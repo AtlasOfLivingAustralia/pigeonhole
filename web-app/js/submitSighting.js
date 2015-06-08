@@ -242,10 +242,6 @@ $(document).ready(function() {
                         .text(el.common));
             });
             addTagLabel(group);
-            //$(this).val(''); // reset
-            //$('#browseSpecesImages').removeClass('disabled').removeAttr('disabled');
-        } else {
-            //$('#browseSpecesImages').addClass('disabled').attr('disabled','');
         }
     });
 
@@ -277,13 +273,11 @@ $(document).ready(function() {
     //$('#speciesLookup').alaAutocomplete({maxHits: 15}); // will trigger a change event on #taxonConceptID when item is selected
 
     // detect change on #taxonConceptID input (autocomplete selection) and load species details
-    //$('#guid').change(function(e) {
     $(document.body).on('change', '#guid', function(e) {
         //console.log('#guid on change');
         //$('#speciesLookup').alaAutocomplete.reset();
         $('#speciesLookup').val('');
         var guid = $(this).val();
-
         setSpecies(guid);
     });
 
@@ -311,26 +305,6 @@ $(document).ready(function() {
     // clear validation errors red border on input blur
     $('.validationErrors').on('blur', function(e) {
         $(this).removeClass('validationErrors');
-    });
-
-    // click event on confidence button group
-    $('#confidentZ#uncertain').click(function(e) {
-        e.preventDefault();
-        var $this = this;
-        var highlightClass = 'btn-inverse';
-        $('#confident, #uncertain').removeClass(highlightClass);
-        //$('#showConfident, #showUncertain').addClass('hide');
-        $($this).addClass(highlightClass);
-        //$('#speciesMisc').removeClass('hide')
-        if ($($this).attr('id') == 'confident') {
-            //$('#showConfident').removeClass('hide');
-            $('#identificationVerificationStatus').val('Confident');
-            $('#requireIdentification').prop('checked', false);
-        } else {
-            //$('#showUncertain').removeClass('hide');
-            $('#identificationVerificationStatus').val('Uncertain');
-            $('#requireIdentification').prop('checked', true);
-        }
     });
 
     // load species info if id is in the URL
