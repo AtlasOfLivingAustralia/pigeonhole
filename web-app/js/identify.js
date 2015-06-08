@@ -78,6 +78,7 @@ $(document).ready(function() {
         //var name = $(this).find('.brief').html(); // TODO: store info in object and store object in 'data' attribute
         var displayname = $(this).data('displayname');
         loadSpeciesPopup(lsid, displayname);
+        $('#singleSpeciesImages')[0].scrollIntoView( true ); // mobile view - scroll div
         return false;
     });
 
@@ -192,9 +193,6 @@ $(document).ready(function() {
 function imgError(image){
     image.onerror = "";
     image.src = GSP_VARS.contextPath + "/images/noImage.jpg";
-
-    //console.log("img", $(image).parents('.imgCon').html());
-    //$(image).parents('.imgCon').addClass('hide');// hides species without images
     var hide = ($('#toggleNoImages').is(':checked')) ? 'hide' : '';
     $(image).parents('.imgCon').addClass('noImage ' + hide);// hides species without images
     return true;
@@ -228,7 +226,7 @@ function updateSpeciesGroups(group, lat, lng) {
         url : biocacheBaseUrl + '/explore/hierarchy/groups.json'
         , dataType : 'jsonp'
         , jsonp : 'callback'
-        , timeout: 30000
+        , timeout: 60000
         , data : {
             'lat' : latF
             , 'lon' : lngF
