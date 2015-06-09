@@ -382,7 +382,7 @@ function insertImageMetadata(imageRow) {
 }
 
 function setSpecies(guid) {
-    console.log('setSpecies', guid);
+    //console.log('setSpecies', guid);
     if (guid) {
         $.getJSON(GSP_VARS.bieBaseUrl + "/ws/species/shortProfile/" + guid + ".json?callback=?")
             .done(function(data) {
@@ -404,7 +404,7 @@ function setSpecies(guid) {
                 }
             })
             .fail(function( jqXHR, textStatus, errorThrown ) {
-                console.log('error',jqXHR, textStatus, errorThrown);
+                //console.log('error',jqXHR, textStatus, errorThrown);
                 alert("Error: " + textStatus + " - " + errorThrown);
             })
             .always(function() {

@@ -112,7 +112,7 @@ $(document).ready(function() {
                 width: imageCopy.width,
                 height: imageCopy.height
             },'fast', function() {
-                console.log("setting preImg to img",prevImgId);
+                //console.log("setting preImg to img",prevImgId);
                 prevImgId = imgId;
             });
         }
