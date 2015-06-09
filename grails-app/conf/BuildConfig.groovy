@@ -60,7 +60,7 @@ grails.project.dependency.resolution = {
         runtime ":resources:1.2.14"
         runtime ":cached-resources:1.0"
         runtime ":release:3.0.1"
-        runtime ":ala-bootstrap3:1.1"
+        runtime ":ala-bootstrap3:1.2-SNAPSHOT"
         runtime ":ala-auth:1.3-SNAPSHOT"
     }
 }
