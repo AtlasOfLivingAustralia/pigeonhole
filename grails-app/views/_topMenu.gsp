@@ -14,7 +14,7 @@
   --}%
 <!-- params: ${params.controller} || ${params.action} -->
 <!--  vars: ${controllerName} || ${actionName} -->
-<span id="sightingLinks" style="padding-right: 20px;">
+<div id="sightingLinks">
     <g:if test="${user && params.action == 'user' && params.controller == 'sightings'}">
         <span class="showMySightings">My sightings</span>
     </g:if>
@@ -36,4 +36,4 @@
         <a href="${g.createLink(uri:'/')}" class="btn btn-primary btn-small" style="font-size: 13px;" title="Login required" >Report a sighting</a>
     </g:if>
 
-</span>
+</div>

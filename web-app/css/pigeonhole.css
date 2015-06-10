@@ -64,11 +64,6 @@
     font-size: 16px;
 }
 
-/* Links menu  */
-#sightingLinks {
-    float: right;
-}
-
 .speciesName {
     font-weight: bold;
     font-style: italic;
@@ -390,6 +385,12 @@ a.adminLink:hover {
     margin-bottom: 14px;
 }
 
+.titleRow {
+    margin-bottom: 10px;
+}
+.titleRow h2 {
+    margin-bottom: 0;
+}
 .modal-body {
     max-height: calc(100vh - 212px);
     overflow-y: auto;
@@ -401,6 +402,16 @@ a.adminLink:hover {
 
 #content .table-responsive {
     overflow-x: visible;
+}
+
+/* Fix for ala-styles.css "issues" */
+body #main {
+    padding-right: 15px;
+    padding-left: 15px;
+}
+
+body p, body li, body ul {
+    font-size: 14px;
 }
 
 /* Fixes for IE < 8 */
