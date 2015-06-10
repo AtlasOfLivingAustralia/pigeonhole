@@ -121,10 +121,10 @@
                         <div id="identificationChoice" class="form-group">
                             <label for="speciesGroups">(Optional) Tag this sighting with species group and/or sub-group:</label>
                             <div class="row">
-                                <div class="col-md-6">
+                                <div class="col-sm-6">
                                     <g:select name="tag" from="${speciesGroupsMap?.keySet()}" id="speciesGroups" class="form-control input-sm ${hasErrors(bean:sighting,field:'scientificName','validationErrors')}" noSelection="['':'-- Species group --']"/>
                                 </div>
-                                <div class="col-md-6">
+                                <div class="col-sm-6">
                                     <g:select name="tag" from="${[]}" id="speciesSubgroups" class="form-control input-sm" noSelection="['':'-- Subgroup (select a group first) --']"/>
                                 </div>
                             </div>
@@ -194,9 +194,9 @@
             <!-- Location -->
             <div class="boxed-heading" id="location" data-content="Location">
                 <div class="row">
-                    <div class="col-md-6" id="mapWidget">
+                    <div class="col-sm-6" id="mapWidget">
                         <div class="row">
-                            <div class="col-md-5">
+                            <div class="col-sm-5">
                                 <button class="btn btn-default" id="useMyLocation">
                                     <i class="fa fa-location-arrow fa-lg" style="margin-left:-2px;margin-right:2px;"></i> My location <r:img uri="/images/spinner.gif" class="spinner0 hide" style="height: 18px;"/>
                                 </button>
@@ -204,7 +204,7 @@
                                     <span class="badge" style="font-size:14px;margin-top:4px;"> OR </span>
                                 </span>
                             </div>
-                            <div class="col-md-7">
+                            <div class="col-sm-7">
                                 <div class="input-group">
                                     <input class="form-control" id="geocodeinput" type="text" placeholder="Enter an address, location or lat/lng">
                                     <span class="input-group-btn">
@@ -221,7 +221,7 @@
                         </div>
 
                     </div>
-                    <div class="col-md-6" style="margin-bottom: 0px;">
+                    <div class="col-sm-6" style="margin-bottom: 0px;">
                         <table class="formInputTable">
                             <tr>
                                 <td width="30%"><label for="decimalLatitude">Latitude (decimal):</label></td>
@@ -268,7 +268,7 @@
             <!-- Details -->
             <div class="boxed-heading" id="details" data-content="Details">
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-sm-6">
                         <table class="formInputTable form-inline">
                             <tr >
                                 <td><label for="eventDate">Date:</label></td>
@@ -292,7 +292,7 @@
                         </table>
                         <input type="hidden" name="timeZoneOffset" id="timeZoneOffset" value="${sighting?.timeZoneOffset}"/>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-sm-6">
                         <section class="sightings-block ui-corner-all form-horizontal" style="vertical-align: top;">
                             <div class="form-group">
                                 <label for="occurrenceRemarks" class="col-sm-2">Notes: </label>
@@ -311,8 +311,8 @@
 
         <%-- Template HTML used by JS code via .clone() --%>
             <div class="hide imageRow row" id="uploadActionsTmpl">
-                <div class="col-md-2"><span class="preview pull-right"></span></div>
-                <div class="col-md-10">
+                <div class="col-sm-2"><span class="preview pull-right"></span></div>
+                <div class="col-sm-10">
                     <div class="metadata media">
                         Filename: <span class="filename"></span>
                         %{--<input type="hidden" class="media" value=""/>--}%
