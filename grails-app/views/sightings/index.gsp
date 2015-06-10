@@ -31,7 +31,7 @@
 </head>
 <body class="nav-species">
 <div class="row titleRow">
-    <div class="col-sm-4">
+    <div class="col-sm-12">
         <h2>${pageHeading}</h2>
         <g:if test="${flash.message?:flash.errorMessage}">
             <div class="container-fluid">
