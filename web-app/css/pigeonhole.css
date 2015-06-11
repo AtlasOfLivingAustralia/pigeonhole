@@ -294,6 +294,10 @@ td label {
     font-size: 13px;
 }
 
+.row#content {
+    margin-top: 15px;
+}
+
 #content .btn-mini {
     font-size: 13px;
     font-weight: 300;
@@ -419,7 +423,10 @@ body.nav-species {
     font-size: 12px;
 }
 
-body .panel .panel-heading { font-size: 115%; }
+body .panel .panel-heading {
+    font-size: 115%;
+    font-weight: normal;
+}
 
 /* Fixes for IE < 8 */
 @media screen\9 {

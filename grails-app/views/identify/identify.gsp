@@ -15,196 +15,202 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta name="layout" content="main"/>
-  <title>Identifiy</title>
-  <r:require modules="jquery, jqueryUIEffects, pigeonhole, leaflet, inview, purl, fontawesome"/>
-  <style type="text/css">
-  #locationLatLng {
-    color: #DDD;
-  }
+    <meta name="layout" content="main"/>
+    <title>Identifiy</title>
+    <r:require modules="jquery, jqueryUIEffects, pigeonhole, leaflet, inview, purl, fontawesome"/>
+    <style type="text/css">
+    #locationLatLng {
+        color: #DDD;
+    }
 
+    .select-mini {
+        width: auto !important;
+        height: 24px;
+        font-size: 12px;
+        line-height: 20px;
+        margin-bottom: 2px;
+    }
 
+    #speciesGroup {
+        /*width: 18%;*/
+        /*float: left;*/
+        margin-bottom: 10px;
+    }
 
-  .select-mini {
-    width: auto !important;
-    height: 24px;
-    font-size: 12px;
-    line-height: 20px;
-    margin-bottom: 2px;
-  }
+    #speciesSubGroup {
+        /*width: 80%;*/
+        /*float: left;*/
+        /*padding-left: 15px;*/
+        /*margin-top: 20px;*/
+    }
 
-  #speciesGroup {
-    /*width: 18%;*/
-    /*float: left;*/
-    margin-bottom: 10px;
-  }
+    #speciesSubGroup .btn-group {
+        margin-left: 0 !important;
+        margin-top: 10px;
+    }
 
-  #speciesSubGroup {
-    /*width: 80%;*/
-    /*float: left;*/
-    /*padding-left: 15px;*/
-    /*margin-top: 20px;*/
-  }
+    .sub-groups {
+        /*display: inline-block;*/
+        /*margin-top: 10px;*/
+    }
 
-  #speciesSubGroup .btn-group {
-    margin-left: 0 !important;
-    margin-top: 10px;
-  }
+    .sub-groups .btn, #speciesGroup1 .btn {
+        margin-bottom: 4px;
+        margin-right: 4px;
+    }
 
-  .sub-groups {
-    /*display: inline-block;*/
-    /*margin-top: 10px;*/
-  }
+    .leaflet-popup-content {
+        font-size: 11px;
+    }
 
-  .sub-groups .btn, #speciesGroup1 .btn {
-    margin-bottom: 4px;
-    margin-right: 4px;
-  }
+    /* Gallery styling */
+    .imgCon {
+        display: inline-block;
+        /* margin-right: 8px; */
+        text-align: center;
+        line-height: 1.3em;
+        background-color: #DDD;
+        color: #DDD;
+        font-size: 12px;
+        /*text-shadow: 2px 2px 6px rgba(255, 255, 255, 1);*/
+        /* padding: 5px; */
+        /* margin-bottom: 8px; */
+        margin: 2px 4px 2px 0;
+        position: relative;
+    }
 
-  .leaflet-popup-content {
-    font-size: 11px;
-  }
+    .imgCon img {
+        height: 120px;
+        /*min-width: 100px;*/
+        max-width: 300px;
+    }
 
-  /* Gallery styling */
-  .imgCon {
-    display: inline-block;
-    /* margin-right: 8px; */
-    text-align: center;
-    line-height: 1.3em;
-    background-color: #DDD;
-    color: #DDD;
-    font-size: 12px;
-    /*text-shadow: 2px 2px 6px rgba(255, 255, 255, 1);*/
-    /* padding: 5px; */
-    /* margin-bottom: 8px; */
-    margin: 2px 4px 2px 0;
-    position: relative;
-  }
-  .imgCon img {
-    height: 120px;
-    /*min-width: 100px;*/
-    max-width: 300px;
-  }
-  #singleSpeciesImages .imgCon img {
-    height: 90px;
-    /*min-width: 90px;*/
-    max-width: 150px;
-    cursor: zoom-in;
-  }
-  #singleSpeciesImages .imgCon img.zoomed {
-    height: 100%;
-    min-width: auto;
-    max-width: none;
-    cursor: zoom-out;
-  }
-  /*#singleSpeciesImages .imgCon img {*/
-  /*-webkit-transition: all 0.5s ease;*/
-  /*-moz-transition: all 0.5s ease;*/
-  /*-o-transition: all 0.5s ease;*/
-  /*transition: all 0.5s ease;*/
-  /*}*/
-  .imgCon .meta {
-    opacity: 0.8;
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    overflow: hidden;
-    text-align: left;
-    padding: 4px 5px 2px 5px;
-  }
-  .imgCon .brief {
-    color: black;
-    background-color: white;
-  }
-  .imgCon .detail {
-    color: white;
-    background-color: black;
-    opacity: 0.7;
-  }
-  .imgCon.hide {
-    display: none;
-  }
+    #singleSpeciesImages .imgCon img {
+        height: 90px;
+        /*min-width: 90px;*/
+        max-width: 150px;
+        cursor: zoom-in;
+    }
 
-  #imgModal {
-    width: 700px;
-    /*margin-top: -300px !important; */
-    margin-left: -350px !important;
-  }
+    #singleSpeciesImages .imgCon img.zoomed {
+        height: 100%;
+        min-width: auto;
+        max-width: none;
+        cursor: zoom-out;
+    }
 
-  .bieBtn {
-    display: inline-block;
-    margin-left: 10px;
-  }
+    /*#singleSpeciesImages .imgCon img {*/
+    /*-webkit-transition: all 0.5s ease;*/
+    /*-moz-transition: all 0.5s ease;*/
+    /*-o-transition: all 0.5s ease;*/
+    /*transition: all 0.5s ease;*/
+    /*}*/
+    .imgCon .meta {
+        opacity: 0.8;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        overflow: hidden;
+        text-align: left;
+        padding: 4px 5px 2px 5px;
+    }
 
-  .counts {
-    font-size: 12px;
-    color: #637073;
-  }
-  .btn-primary .counts {
-    color: #fff;
-  }
+    .imgCon .brief {
+        color: black;
+        background-color: white;
+    }
 
-  </style>
-  <r:script disposition="head">
-            var map, geocoding, marker, circle, radius, initalBounds, groupSelected, subgroupSelected;
-            var biocacheBaseUrl = "${grailsApplication.config.biocache.baseUrl}";
+    .imgCon .detail {
+        color: white;
+        background-color: black;
+        opacity: 0.7;
+    }
 
-            $(document).ready(function() {
+    .imgCon.hide {
+        display: none;
+    }
 
-                var osm = L.tileLayer('https://{s}.tiles.mapbox.com/v3/{id}/{z}/{x}/{y}.png', {
-                    maxZoom: 18,
-                    attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
-                        '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
-                        'Imagery © <a href="http://mapbox.com">Mapbox</a>',
-                    id: 'nickdos.kf2g7gpb'
-                });
-  <%--
-  var OpenStreetMap_Mapnik = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'
-  });
+    #imgModalX {
+        width: 700px;
+        /*margin-top: -300px !important; */
+        margin-left: -350px !important;
+    }
 
-  var MapQuestOpen_OSM = L.tileLayer('http://otile{s}.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.jpeg', {
-      attribution: 'Tiles Courtesy of <a href="http://www.mapquest.com/">MapQuest</a> &mdash; Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
-      subdomains: '1234'
-  });
+    .bieBtn {
+        display: inline-block;
+        margin-left: 10px;
+    }
 
-  var MapQuestOpen_Aerial = L.tileLayer('http://oatile{s}.mqcdn.com/tiles/1.0.0/sat/{z}/{x}/{y}.jpg', {
-      attribution: 'Tiles Courtesy of <a href="http://www.mapquest.com/">MapQuest</a> &mdash; Portions Courtesy NASA/JPL-Caltech and U.S. Depart. of Agriculture, Farm Service Agency',
-      subdomains: '1234'
-  });
-  --%>
+    .counts {
+        font-size: 12px;
+        color: #637073;
+    }
 
-    var Esri_WorldImagery = L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-        attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
-        maxZoom: 17
-    });
+    .btn-primary .counts {
+        color: #fff;
+    }
 
-    map = L.map('map', {
-        center: [-28, 134],
-        zoom: 3//,
-        //layers: [osm, MapQuestOpen_Aerial]
-    });
+    </style>
+    <r:script disposition="head">
+        var map, geocoding, marker, circle, radius, initalBounds, groupSelected, subgroupSelected;
+        var biocacheBaseUrl = "${grailsApplication.config.biocache.baseUrl}";
 
-    initalBounds = map.getBounds().toBBoxString(); // save for geocoding lookups
+        $(document).ready(function() {
 
-    var baseLayers = {
-        "Street": osm,
-        "Satellite": Esri_WorldImagery
-    };
+            var osm = L.tileLayer('https://{s}.tiles.mapbox.com/v3/{id}/{z}/{x}/{y}.png', {
+                maxZoom: 18,
+                attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+                    '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+                    'Imagery © <a href="http://mapbox.com">Mapbox</a>',
+                id: 'nickdos.kf2g7gpb'
+            });
+        <%--
+        var OpenStreetMap_Mapnik = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'
+        });
 
-    map.addLayer(osm);
+        var MapQuestOpen_OSM = L.tileLayer('http://otile{s}.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.jpeg', {
+            attribution: 'Tiles Courtesy of <a href="http://www.mapquest.com/">MapQuest</a> &mdash; Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
+            subdomains: '1234'
+        });
 
-    L.control.layers(baseLayers).addTo(map);
+        var MapQuestOpen_Aerial = L.tileLayer('http://oatile{s}.mqcdn.com/tiles/1.0.0/sat/{z}/{x}/{y}.jpg', {
+            attribution: 'Tiles Courtesy of <a href="http://www.mapquest.com/">MapQuest</a> &mdash; Portions Courtesy NASA/JPL-Caltech and U.S. Depart. of Agriculture, Farm Service Agency',
+            subdomains: '1234'
+        });
+        --%>
 
-    marker = L.marker(null, {draggable: true}).on('dragend', function() {
-        updateLocation(this.getLatLng());
-    });
+        var Esri_WorldImagery = L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+            attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
+            maxZoom: 17
+        });
 
-    radius = $('#radius').val();
-    circle = L.circle(null, radius * 1000,  {color: '#df4a21'}); // #bada55
+        map = L.map('map', {
+            center: [-28, 134],
+            zoom: 3//,
+            //layers: [osm, MapQuestOpen_Aerial]
+        });
 
-    L.Icon.Default.imagePath = "${g.createLink(uri:'/js/leaflet-0.7.3/images')}";
+        initalBounds = map.getBounds().toBBoxString(); // save for geocoding lookups
+
+        var baseLayers = {
+            "Street": osm,
+            "Satellite": Esri_WorldImagery
+        };
+
+        map.addLayer(osm);
+
+        L.control.layers(baseLayers).addTo(map);
+
+        marker = L.marker(null, {draggable: true}).on('dragend', function() {
+            updateLocation(this.getLatLng());
+        });
+
+        radius = $('#radius').val();
+        circle = L.circle(null, radius * 1000,  {color: '#df4a21'}); // #bada55
+
+        L.Icon.Default.imagePath = "${g.createLink(uri: '/js/leaflet-0.7.3/images')}";
 
                 map.on('locationfound', onLocationFound);
 
@@ -231,8 +237,8 @@
                 });
 
                 $('#speciesGroup').on('click', '.groupBtn', function(e) {
-                    $('#speciesGroup .btn').removeClass('btn-primary');
-                    $(this).addClass('btn-primary');
+                    $('#speciesGroup .btn').removeClass('btn-primary').addClass('btn-default');
+                    $(this).removeClass('btn-default').addClass('btn-primary');
                     var selected = $(this).data('group');
 
                     $('#speciesSubGroup .sub-groups').addClass('hide'); // hide all subgroups
@@ -243,8 +249,8 @@
                 });
 
                 $('#speciesSubGroup').on('click', '.subGroupBtn', function(e) {
-                    $('#speciesSubGroup .btn').removeClass('btn-primary');
-                    $(this).addClass('btn-primary');
+                    $('#speciesSubGroup .btn').removeClass('btn-primary').addClass('btn-default');
+                    $(this).removeClass('btn-default').addClass('btn-primary');
                     var selected = $(this).data('group');
                     subgroupSelected = selected;
                     loadSpeciesGroupImages('species_subgroup:' + unescape(selected), null, $(this).find('.badge').text());
@@ -326,20 +332,14 @@
                         enlarge(img);
                         //prevImg = img;
                     }
+        });
 
-  %{--console.log('largeimageurl', this, $(img).data('largeimageurl'));--}%
-  %{--var smallImgUrl = $(img).attr('src'); // keep a copy--}%
-  %{--var largeImgUrl = $(img).data('largeimageurl');--}%
-  %{--$(img).data('smallimageurl', smallImgUrl);--}%
-  %{--$(img).attr('src', largeImgUrl);--}%
-    });
+        $('#selectedSpeciesBtn').click(function() {
+            var returnUrl = $.url().param("returnUrl");
+            var lsid = $('#imgModal').data('lsid');
 
-    $('#selectedSpeciesBtn').click(function() {
-        var returnUrl = $.url().param("returnUrl");
-        var lsid = $('#imgModal').data('lsid');
-
-        if (!returnUrl) {
-           returnUrl =  "${g.createLink(uri:'/', absolute: true)}";
+            if (!returnUrl) {
+               returnUrl =  "${g.createLink(uri: '/', absolute: true)}";
                     }
 
                     var queryStr = "";
@@ -355,6 +355,11 @@
                     }
 
                     window.location = returnUrl + "/" + lsid + queryStr;
+                });
+
+                $('#geocodebutton').click(function(e) {
+                    e.preventDefault();
+                    geocode();
                 });
 
 
@@ -408,14 +413,14 @@
 
                     $.each(data, function(index, value){
                         // console.log(index, value);
-                        var btn = ''; //(index == 0) ? 'btn-primary' : '';
+                        var btn = 'btn-default'; //(index == 0) ? 'btn-primary' : 'btn-default';
                         group += "<div class='btn groupBtn " +  btn + "' data-group='" + escape(value.name) + "'>" + value.name + " <span class='counts'>[" + value.speciesCount + "]</span></div>";
 
                         if (value.childGroups.length > 0) {
                             var hide = 'hide'; //(index == 0) ? '' : 'hide';
                             var subGroup = "<div id='subgroup_" + value.name + "' class='sub-groups " + hide + "'>";
                             $.each(value.childGroups, function(i, el){
-                                subGroup += "<div class='btn subGroupBtn' data-group='" + escape(el.name) + "'>" + el.name + " <span class='counts'>[" + el.speciesCount + "]</span></div>";
+                                subGroup += "<div class='btn btn-default subGroupBtn' data-group='" + escape(el.name) + "'>" + el.name + " <span class='counts'>[" + el.speciesCount + "]</span></div>";
                             });
                             $('#speciesSubGroup').append(subGroup);
                         }
@@ -537,6 +542,7 @@
             }
 
             function geocodeAddress() {
+                $('.spinner0').show();
                 var query = $('#geocodeinput').val();
                 $.ajax({
                         // https://api.opencagedata.com/geocode/v1/json?q=Canberra,+ACT&key=577ca677f86a3a4589b17814ec399112
@@ -567,13 +573,13 @@
                 .fail(function( jqXHR, textStatus, errorThrown ) {
                     alert("Error: " + textStatus + " - " + errorThrown);
                 })
-                .always(function() {  $('.spinner').hide(); });
+                .always(function() {  $('.spinner, .spinner0').hide(); });
             }
 
             function loadSpeciesPopup(lsid, name) {
                 $('#imgModalLabel, #speciesDetails, #singleSpeciesImages').empty(); // clear any old values
                 $('#imgModalLabel').html(name);
-                $('<a class="btn btn-small bieBtn" href="http://bie.ala.org.au/species/' + lsid +
+                $('<a class="btn btn-default btn-small bieBtn" href="http://bie.ala.org.au/species/' + lsid +
                         '" target="bie"><i class="icon-info-sign"></i> species page</a>').appendTo($('#imgModalLabel'));
                 $('#spinner3').removeClass('hide');
                 var start = 0, pageSize = 20;
@@ -618,75 +624,95 @@
                 $('#imgModal').modal(); // trigger modal popup
             }
 
-  </r:script>
+    </r:script>
 </head>
+
 <body class="nav-species">
 <h2>Help with species identification</h2>
-<div class="boxed-heading" id="location" data-content="1. Specify a location">
-  <div class="row">
-    <div class="span5">
-      <p>Where did you see the species of interest?</p>
-      <button class="btn" id="useMyLocation"><i class="fa fa-location-arrow fa-lg" style="margin-left:-2px;margin-right:3px;"></i> Use my location</button>
-      <r:img uri="/images/spinner.gif" class="spinner0 hide" style="height: 30px;"/>
-      <div style="margin: 10px 0;"><span class="label label-info">OR</span></div>
-      <div class="hide">Enter an address, location or coordinates</div>
-      <div class="input-append">
-        <input class="span4" id="geocodeinput" type="text" placeholder="Enter an address, location or lat/lng">
-        <button id="geocodebutton" class="btn" onclick="geocode()">Lookup</button>
-      </div>
-      <div>Show known species in a
-      <g:select name="radius" id="radius" class="select-mini" from="${[1,2,5,10,20]}" value="${defaultRadius?:5}"/>
-      km area surrounding this location</div>
-      <div id="locationLatLng"><span></span></div>
-    </div>
-    <div class="span6">
-      <div id="map" style="width: 100%; height: 280px"></div>
-      <div class="" id="mapTips">Tip: drag the marker to fine-tune your location</div>
-    </div>
-  </div>
-</div>
 
-<div class="boxed-heading" id="species_group" data-content="2. Narrow to a species group">
-  <p>Select the group and subgroup (optional) that best fits the species (if unsuccessful try different groups or increase the "surrounding area" size - drop-down above)</p>
-  <div id="speciesGroup"><span>[Specify a location first]</span></div>
-  <r:img uri="/images/spinner.gif" class="spinner1 hide"/>
-  <p class="hide">Select a species sub-group (optional)</p>
-  <div id="speciesSubGroup"></div>
-  <div class="clearfix"></div>
-</div>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="boxed-heading" id="location" data-content="1. Specify a location">
+            <div class="row">
+                <div class="col-sm-5">
+                    <p>Where did you see the species of interest?</p>
+                    <button class="btn btn-default" id="useMyLocation"><i class="fa fa-location-arrow fa-lg" style="margin-left:-2px;margin-right:3px;"></i> Use my location
+                    </button>
+                    <r:img uri="/images/spinner.gif" class="spinner0" style="display: none; height: 30px;"/>
+                    <div style="margin: 10px 0;"><span class="label label-info">OR</span></div>
+                    <div class="hide">Enter an address, location or coordinates</div>
+                    <div class="input-group">
+                        <input class="form-control" id="geocodeinput" type="text" placeholder="Enter an address, location or lat/lng">
+                        <span class="input-group-btn">
+                            <button id="geocodebutton" class="btn btn-default"><i class="fa fa-search"></i></button>
+                        </span>
+                    </div><!-- /input-group -->
+                    <br>
+                    <div>
+                        Show known species in a
+                        <g:select name="radius" id="radius" class="" from="${[1, 2, 5, 10, 20]}"
+                                  value="${defaultRadius ?: 5}"/>
+                        km area surrounding this location
+                    </div>
+                    <br>
+                    <div id="locationLatLng"><span></span></div>
+                </div>
 
-<div class="boxed-heading" id="browse_species_images" data-content="3. Browse species images">
-  <p>
-    Look for images that match the species you are trying to identify. Click the image for more example images of that species and finally click the "select this image" button.
-    <br><g:checkBox name="toggleNoImages" id="toggleNoImages" class="" value="${true}"/> hide species without images
-  </p>
-  <div id="speciesImages">
-    <span>[Specify a location first]</span>
-  </div>
-  <r:img uri="/images/spinner.gif" class="spinner2 hide"/>
-</div>
+                <div class="col-sm-6">
+                    <div id="map" style="width: 100%; height: 280px"></div>
+                    <div class="" id="mapTips">Tip: drag the marker to fine-tune your location</div>
+                </div>
+            </div>
+        </div>
 
-<!-- Modal -->
-<div id="imgModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="imgModalLabel" aria-hidden="true">
-  <div class="modal-header">
-    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-    <h3 id="imgModalLabel"></h3>
-  </div>
-  <div class="modal-body">
-    <r:img uri="/images/spinner.gif" id="spinner3" class="spinner "/>
-    <div class="" id="singleSpeciesImages"></div>
-    <div id="imgConClone" class="imgCon hide">
-      <a href="#" class="cbLink thumbImage tooltips" rel="thumbs">
-        <img src="" alt="species thumbnail" onerror="imgError(this);"/>
-        <div class="meta brief"></div>
-        <div class="meta detail hide"><span class="scientificName"></span><br><span class="commonName"></span></div>
-      </a>
+        <div class="boxed-heading" id="species_group" data-content="2. Narrow to a species group">
+            <p>Select the group and subgroup (optional) that best fits the species (if unsuccessful try
+            different groups or increase the "surrounding area" size - drop-down above)</p>
+            <div id="speciesGroup"><span>[Specify a location first]</span></div>
+            <r:img uri="/images/spinner.gif" class="spinner1 hide"/>
+            <p class="hide">Select a species sub-group (optional)</p>
+            <div id="speciesSubGroup"></div>
+            <div class="clearfix"></div>
+        </div>
+        <div class="boxed-heading" id="browse_species_images" data-content="3. Browse species images">
+            <p>
+                Look for images that match the species you are trying to identify. Click the image for more
+                example images of that species and finally click the "select this image" button.
+                <br><g:checkBox name="toggleNoImages" id="toggleNoImages" class="" value="${true}"/> hide species without images
+            </p>
+            <div id="speciesImages">
+                <span>[Specify a location first]</span>
+            </div>
+            <r:img uri="/images/spinner.gif" class="spinner2 hide"/>
+        </div>
+
+        <!-- Modal -->
+        <div id="imgModal" class="modal fade">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        <h3 id="imgModalLabel"></h3>
+                    </div>
+                    <div class="modal-body">
+                        <r:img uri="/images/spinner.gif" id="spinner3" class="spinner "/>
+                        <div class="" id="singleSpeciesImages"></div>
+                        <div id="imgConClone" class="imgCon hide">
+                            <a href="#" class="cbLink thumbImage tooltips" rel="thumbs">
+                                <img src="" alt="species thumbnail" onerror="imgError(this);"/>
+                                <div class="meta brief"></div>
+                                <div class="meta detail hide"><span class="scientificName"></span><br><span class="commonName"></span></div>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">Close</button>
+                        <button class="btn btn-primary pull-left" id="selectedSpeciesBtn">Select this species</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
-  <div class="modal-footer">
-    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-    <button class="btn btn-primary pull-left" id="selectedSpeciesBtn">Select this species</button>
-  </div>
 </div>
 </body>
 </html>
