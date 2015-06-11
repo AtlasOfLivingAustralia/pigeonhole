@@ -59,14 +59,7 @@
     </r:script>
 </head>
 <body class="nav-species">
-<div class="row titleRow">
-    <div class="col-sm-4">
-        <h2>Report a Sighting</h2>
-    </div>
-    <div class="col-sm-8" style="text-align: right;">
-        <g:render template="/topMenu" />
-    </div>
-</div>
+<g:render template="/topMenu"  model="[pageHeading: 'Report a Sighting']"/>
 <div class="row">
     <div class="col-sm-12">
         <g:set var="errorsShown" value="${false}"/>

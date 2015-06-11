@@ -14,26 +14,32 @@
   --}%
 <!-- params: ${params.controller} || ${params.action} -->
 <!--  vars: ${controllerName} || ${actionName} -->
-<div id="sightingLinks">
-    <g:if test="${user && params.action == 'user' && params.controller == 'sightings'}">
-        <span class="showMySightings">My sightings</span>
-    </g:if>
-    <g:else>
-        <a href="${g.createLink(uri:'/mine')}" class="showMySightings">My sightings</a>
-    </g:else>
-    |
-    <g:if test="${actionName == 'index' && controllerName == 'sightings'}">
-        <a href="${g.createLink(uri:'/sightings/index')}" class="showMySightings adminLink">Recent sightings</a>
-    </g:if>
-    <g:else>
-        <a href="${g.createLink(uri:'/recent')}" class="showMySightings">Recent sightings</a>
-    </g:else>
-    <g:if test="${params.controller != 'submitSighting'}">
-        | <a href="http://biocache.ala.org.au/occurrences/search?q=*:*&fq=data_resource_uid:dr364${(actionName != 'index' && user && user.userId) ? '&fq=alau_user_id:' + user.userId : ''}">Occurrence explorer</a>
-    </g:if>
-    &nbsp;&nbsp;
-    <g:if test="${params.controller != 'submitSighting'}">
-        <a href="${g.createLink(uri:'/')}" class="btn btn-primary btn-small" style="font-size: 13px;" title="Login required" >Report a sighting</a>
-    </g:if>
-
+<div class="row titleRow">
+    <div class="col-sm-4">
+        <h2>${pageHeading}</h2>
+    </div>
+    <div class="col-sm-8" style="text-align: right;">
+        <div id="sightingLinks">
+            <g:if test="${user && params.action == 'user' && params.controller == 'sightings'}">
+                <span class="showMySightings">My sightings</span>
+            </g:if>
+            <g:else>
+                <a href="${g.createLink(uri:'/mine')}" class="showMySightings">My sightings</a>
+            </g:else>
+            |
+            <g:if test="${actionName == 'index' && controllerName == 'sightings'}">
+                <a href="${g.createLink(uri:'/sightings/index')}" class="showMySightings adminLink">Recent sightings</a>
+            </g:if>
+            <g:else>
+                <a href="${g.createLink(uri:'/recent')}" class="showMySightings">Recent sightings</a>
+            </g:else>
+            <g:if test="${params.controller != 'submitSighting'}">
+                | <a href="http://biocache.ala.org.au/occurrences/search?q=*:*&fq=data_resource_uid:dr364${(actionName != 'index' && user && user.userId) ? '&fq=alau_user_id:' + user.userId : ''}">Occurrence explorer</a>
+            </g:if>
+        &nbsp;&nbsp;
+            <g:if test="${params.controller != 'submitSighting'}">
+                <a href="${g.createLink(uri:'/')}" class="btn btn-primary btn-small" style="font-size: 13px;" title="Login required" >Report a sighting</a>
+            </g:if>
+        </div>
+    </div>
 </div>

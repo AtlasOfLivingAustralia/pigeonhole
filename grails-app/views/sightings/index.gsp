@@ -30,9 +30,9 @@
     <r:require modules="pigeonhole, jqueryMigrate, moment, bootbox, pigeonhole"/>
 </head>
 <body class="nav-species">
-<div class="row titleRow">
-    <div class="col-sm-4">
-        <h2>${pageHeading}</h2>
+<g:render template="/topMenu" model="[pageHeading: pageHeading]"/>
+<div class="row">
+    <div class="col-sm-12">
         <g:if test="${flash.message?:flash.errorMessage}">
             <div class="container-fluid">
                 <div class="alert ${(flash.errorMessage) ? 'alert-error' : 'alert-info'}">
@@ -42,9 +42,6 @@
                 </div>
             </div>
         </g:if>
-    </div>
-    <div class="col-sm-8" style="text-align: right;">
-        <g:render template="/topMenu" />
     </div>
 </div>
 <div class="row">
