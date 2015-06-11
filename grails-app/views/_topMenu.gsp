@@ -38,7 +38,7 @@
             </g:if>
         &nbsp;&nbsp;
             <g:if test="${params.controller != 'submitSighting'}">
-                <a href="${g.createLink(uri:'/')}" class="btn btn-primary btn-small" style="font-size: 13px;" title="Login required" >Report a sighting</a>
+                <a href="${g.createLink(uri:'/')}" class="btn btn-primary btn-small" style="font-size: 13px;" title="Login required" ><i class="fa fa-binoculars fa-inverse"></i>&nbsp;&nbsp;Report a sighting</a>
             </g:if>
         </div>
     </div>
