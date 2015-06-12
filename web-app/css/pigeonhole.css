@@ -316,6 +316,11 @@ table.formInputTable td {
     margin-bottom: 5px;
 }
 
+.imageRow img.serverLoaded {
+    max-height: 100px;
+    max-width:100px;
+}
+
 #occurrenceRemarks {
     width: 80%;
 }

@@ -295,7 +295,7 @@ $(document).ready(function() {
     // show images in edit mode
     var media = (GSP_VARS.sightingBean.multimedia) ? GSP_VARS.sightingBean.multimedia : [];
     $.each(media, function(i, m) {
-        // console.log("image", m);
+        //console.log("image", m);
         addServerImage(m, i);
     });
 
@@ -512,7 +512,7 @@ function addServerImage(image, index) {
         .attr('target', '_blank')
         .prop('href', image.identifier);
     node.find('.preview').wrap(link);
-    node.find('.preview').append($('<img/>').attr('src',image.identifier)).attr('style','height:100px;width:100px');
+    node.find('.preview').append($('<img/>').attr('src',image.identifier).addClass('serverLoaded'));
     // populate hidden input fields
     //node.find('.media').val(result.url).attr('name', 'associatedMedia['+ index + ']');
     node.find('.identifier').val(image.identifier).attr('name', 'multimedia['+ index + '].identifier');
