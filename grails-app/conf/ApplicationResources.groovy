@@ -20,6 +20,7 @@ modules = {
 
     jqueryMigrate {
         dependsOn 'jquery'
+        //resource url:'js/jquery-2.0.3.min.js'
         resource url:'http://code.jquery.com/jquery-migrate-1.2.1.min.js'
     }
 
@@ -94,6 +95,12 @@ modules = {
         dependsOn 'jqueryMigrate'
         resource url:'js/datepicker/css/datepicker.css'
         resource url:'js/datepicker/js/bootstrap-datepicker.js'
+    }
+
+    bs3_datepicker {
+        dependsOn 'jqueryMigrate, bootstrap, moment'
+        resource url:'js/bootstrap3-datetimepicker/css/bootstrap-datetimepicker.min.css'
+        resource url:'js/bootstrap3-datetimepicker/js/bootstrap-datetimepicker.min.js'
     }
 
     exif {

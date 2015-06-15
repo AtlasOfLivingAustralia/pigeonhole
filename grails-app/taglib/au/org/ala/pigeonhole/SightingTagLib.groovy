@@ -1,6 +1,9 @@
 package au.org.ala.pigeonhole
 
 import grails.converters.JSON
+import org.joda.time.DateTime
+import org.joda.time.format.DateTimeFormat
+import org.joda.time.format.DateTimeFormatter
 
 import java.text.SimpleDateFormat
 
@@ -16,12 +19,16 @@ class SightingTagLib {
      * @attr date REQUIRED - java.util.Date
      * @attr part REQUIRED - java.util.Calendar int field (HOUR or MINUTE)
      */
-    def getTimeValue = { attrs ->
+    def getDateTimeValue = { attrs ->
         def inputDate = attrs.date
         def part = attrs.part
 
         if (!inputDate) {
             inputDate = new Date()
+        } else if (inputDate instanceof String) {
+            DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZ");
+            DateTime dt = formatter.parseDateTime(inputDate);
+            inputDate = dt.toDate()
         }
 
         def output
@@ -31,6 +38,12 @@ class SightingTagLib {
             output = hourFormat.format(inputDate)
         } else if (part == Calendar.MINUTE) {
             SimpleDateFormat minFormat = new SimpleDateFormat("mm");
+            output = minFormat.format(inputDate)
+        } else if (part == "time" && attrs.date) {
+            SimpleDateFormat minFormat = new SimpleDateFormat("HH:mm");
+            output = minFormat.format(inputDate)
+        } else if (part == "date" && attrs.date) {
+            SimpleDateFormat minFormat = new SimpleDateFormat("dd-MM-yyyy");
             output = minFormat.format(inputDate)
         }
 

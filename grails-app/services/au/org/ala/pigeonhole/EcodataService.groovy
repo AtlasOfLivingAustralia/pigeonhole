@@ -194,7 +194,7 @@ class EcodataService {
         json.each {
             if (it.value == JSONObject.NULL) {
                 jsonCopy.remove(it.key)
-            } else if (it.key == 'eventDate') {
+            } else if (it.key == 'eventDateZ') {
                 try {
                     DateTimeFormatter format = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZ");
                     DateTime dateTime = format.withOffsetParsed().parseDateTime(it.value)

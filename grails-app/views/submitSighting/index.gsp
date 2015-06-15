@@ -26,7 +26,7 @@
 <head>
     <meta name="layout" content="main"/>
     <title>Report a sighting | Atlas of Living Australia</title>
-    <r:require modules="fileuploads, exif, moment, pigeonhole, datepicker, qtip, udraggable, fontawesome, purl, submitSighting, jqueryUIEffects, inview, identify"/>
+    <r:require modules="fileuploads, exif, moment, pigeonhole, bs3_datepicker, udraggable, fontawesome, purl, submitSighting, jqueryUIEffects, inview, identify"/>
     <r:script disposition="head">
         // global var to pass in GSP/Grails values into external JS files
         GSP_VARS = {
@@ -264,16 +264,34 @@
                         <div class="col-sm-6">
                             <table class="formInputTable form-inline">
                                 <tr >
-                                    <td><label for="eventDate">Date:</label></td>
-                                    <td id="eventDatePicker" class="${hasErrors(bean:sighting,field:'eventDate','validationErrors')}"><si:customDatePicker name="eventDate" id="eventDate" class="form-control" relativeYears="[0..-50]" noSelection="['':'--']" precision="day" placeholder="DD-MM-YYYY" value="${sighting?.eventDate}" default="${(sighting) ? sighting?.eventDate?:'none' : new Date()}"/></td>
+                                    <td><label for="dateStr">Date:</label></td>
+                                    %{--<td id="eventDatePicker" class="${hasErrors(bean:sighting,field:'eventDate','validationErrors')}"><si:customDatePicker name="eventDate" id="eventDate" class="form-control" relativeYears="[0..-50]" noSelection="['':'--']" precision="day" placeholder="DD-MM-YYYY" value="${sighting?.eventDate}" default="${(sighting) ? sighting?.eventDate?:'none' : new Date()}"/></td>--}%
+                                    <td id="eventDatePicker" class="${hasErrors(bean:sighting,field:'eventDate','validationErrors')}">
+                                        <div class="form-group">
+                                            <div class='input-group date' id='datetimepicker1'>
+                                                <input id="dateStr" name="dateStr" class="form-control" placeholder="DD-MM-YYYY" value="${si.getDateTimeValue(date: sighting?.eventDate, part: 'date')}"/>
+                                                <span class="input-group-addon">
+                                                    <span class="fa fa-calendar"></span>
+                                                </span>
+                                            </div>
+                                        </div>
+                                        </td>
                                     <td><span class="helphint">* required</span></td>
                                 </tr>
                                 <tr >
-                                    <td><label for="eventDate_hour">Time:</label></td>
+                                    <td><label for="timeStr">Time:</label></td>
                                     <td>
-                                        <g:select name="eventDate_hour" id="eventDate_hour" class="form-control input-sm"  from="${(0..23).collect{it.toString().padLeft(2,'0')}}" value="${si.getTimeValue(date: sighting?.eventDate, part: Calendar.HOUR)}"/>
-                                        :
-                                        <g:select name="eventDate_minute" id="eventDate_minute" class="form-control input-sm"  from="${(0..59).collect{it.toString().padLeft(2,'0')}}" value="${si.getTimeValue(date: sighting?.eventDate, part: Calendar.MINUTE)}"/>
+                                        <div class="form-group">
+                                            <div class='input-group date' id='datetimepicker2'>
+                                                <input type='text' id="timeStr" name="timeStr" class="form-control" placeholder="HH:MM" value="${si.getDateTimeValue(date: sighting?.eventDate, part: 'time')}"/>
+                                                <span class="input-group-addon">
+                                                    <span class="fa fa-clock-o"></span>
+                                                </span>
+                                            </div>
+                                        </div>
+                                        %{--<g:select name="eventDate_hour" id="eventDate_hour" class="form-control input-sm"  from="${(0..23).collect{it.toString().padLeft(2,'0')}}" value="${si.getDateTimeValue(date: sighting?.eventDate, part: Calendar.HOUR)}"/>--}%
+                                        %{--:--}%
+                                        %{--<g:select name="eventDate_minute" id="eventDate_minute" class="form-control input-sm"  from="${(0..59).collect{it.toString().padLeft(2,'0')}}" value="${si.getDateTimeValue(date: sighting?.eventDate, part: Calendar.MINUTE)}"/>--}%
                                     </td>
                                     <td><span class="helphint">24 hour format</span></td>
                                 </tr>
@@ -284,6 +302,7 @@
                                 </tr>
                             </table>
                             <input type="hidden" name="timeZoneOffset" id="timeZoneOffset" value="${sighting?.timeZoneOffset}"/>
+                            <input type="hidden" name="eventDate" id="eventDate" value="${sighting?.eventDate}"/>
                         </div>
                         <div class="col-sm-6">
                             <section class="sightings-block ui-corner-all form-horizontal" style="vertical-align: top;">

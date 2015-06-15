@@ -89,7 +89,7 @@ grails.mime.types = [ // the first one is the default format
 grails.resources.adhoc.patterns = ['/images/*', '/css/*', '/js/*', '/plugins/*']
 grails.resources.adhoc.includes = ['/images/**', '/css/**', '/js/**', '/plugins/**']
 
-grails.databinding.dateFormats = ["dd-MM-yyyy", "yyyy-MM-dd HH:mm:ss.S", "yyyy-MM-dd'T'hh:mm:ss'Z'", "yyyy-MM-dd'T'hh:mm:ssX"]
+grails.databinding.dateFormats = ["dd-MM-yyyy", "yyyy-MM-dd HH:mm:ss.S", "yyyy-MM-dd'T'hh:mm:ss'Z'"]
 
 // Legacy setting for codec used to encode data with ${}
 grails.views.default.codec = "html"

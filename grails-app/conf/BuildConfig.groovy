@@ -56,7 +56,7 @@ grails.project.dependency.resolution = {
         compile ':cache:1.1.7'
         compile ":cache-headers:1.1.7"
         compile ":mail:1.0.7"
-        runtime ":jquery:1.11.1"
+        //runtime ":jquery:1.11.1"
         runtime ":resources:1.2.14"
         runtime ":cached-resources:1.0"
         runtime ":release:3.0.1"

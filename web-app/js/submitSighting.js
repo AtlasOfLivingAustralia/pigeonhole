@@ -300,7 +300,7 @@ $(document).ready(function() {
     });
 
     // init date picker
-    $('#eventDateNoTime').datepicker({format: 'dd-mm-yyyy'});
+    //$('#eventDateNoTime').datepicker({format: 'dd-mm-yyyy'});
 
     // clear validation errors red border on input blur
     $('.validationErrors').on('blur', function(e) {
@@ -336,21 +336,57 @@ $(document).ready(function() {
             GSP_VARS.lng = lng;
             updateSpeciesGroups(null, GSP_VARS.lat, GSP_VARS.lng);
             $('#identifyHelpModal').modal('show');
-            //$('#identifyHelpModal').modal({
-            //    remote: url + '?lat=' + lat + '&lng=' + lng + '&locality=' + encodeURIComponent(locality),
-            //    width: '80%',
-            //    height: '80%',
-            //    modalOverflow: true
-            //});
-            //
-            //$.fn.modal.defaults.maxHeight = function(){
-            //    // subtract the height of the modal header and footer
-            //    return $(window).height() - 165;
-            //}
         } else {
             bootbox.alert('<h3>Image assisted identification</h3>A sighting location is required for this tool, please include a location using the map tool below, then try again');
         }
 
+    });
+
+    // Configure datetime pickers
+    $('#datetimepicker1').datetimepicker({
+        format: 'DD-MM-YYYY',
+        showTodayButton: true,
+        showClear: true,
+        maxDate: moment().add(1, 'hours'),
+        useCurrent: true,
+        icons: {
+            time: 'fa fa-clock-o',
+            date: 'fa fa-calendar',
+            up: 'fa fa-chevron-up',
+            down: 'fa fa-chevron-down',
+            previous: 'fa fa-chevron-left',
+            next: 'fa fa-chevron-right',
+            today: 'fa fa-crosshairs',
+            clear: 'fa fa-trash'
+        }
+    });
+
+    $('#datetimepicker2').datetimepicker({
+        format: 'HH:mm',
+        useCurrent: true,
+        showClear: true,
+        icons: {
+            time: 'fa fa-clock-o',
+            date: 'fa fa-calendar',
+            up: 'fa fa-chevron-up',
+            down: 'fa fa-chevron-down',
+            previous: 'fa fa-chevron-left',
+            next: 'fa fa-chevron-right',
+            today: 'fa fa-crosshairs',
+            clear: 'fa fa-trash'
+        }
+    });
+
+    // catch submit button and convert date & time to ISO string
+    $('#formSubmit').click(function(e) {
+        e.preventDefault();
+        var date = $('#dateStr').val();
+        var time = $('#timeStr').val() || '00:00';
+        var timeZone = $('#timeZoneOffset').val() || '+10:00';
+        var dateInput = date + " " + time  + " " +  timeZone
+        var mDateTime = moment(dateInput, "DD-MM-YYYY HH:mm Z"); // format("DD-MM-YYYY, HH:mm");
+        $('#eventDate').val(mDateTime.format()); // default is ISO
+        $('#sightingForm').submit();
     });
 
 }); // end of $(document).ready(function()

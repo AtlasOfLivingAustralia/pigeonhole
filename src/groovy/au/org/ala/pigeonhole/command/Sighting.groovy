@@ -18,7 +18,10 @@ import grails.web.JSONBuilder
 import grails.util.Holders
 import groovy.util.logging.Log4j
 import org.apache.commons.lang.time.DateUtils
-import org.grails.databinding.BindingFormat;
+import org.grails.databinding.BindingFormat
+import org.joda.time.DateTime
+import org.joda.time.format.DateTimeFormat
+import org.joda.time.format.DateTimeFormatter;
 
 import java.text.DateFormat
 import java.text.SimpleDateFormat
@@ -43,7 +46,9 @@ class Sighting {
     Boolean requireIdentification
     Integer individualCount
     List<Media> multimedia = [].withDefault { new Media() }
-    Date eventDate // output - ISO date with time
+    String dateStr // date part that is copied into eventDate
+    String timeStr // time part that is copied into eventDate
+    String eventDate // output - ISO date with time
     String timeZoneOffset = (((TimeZone.getDefault().getRawOffset() / 1000) / 60) / 60)
     BigDecimal decimalLatitude
     BigDecimal decimalLongitude
@@ -111,5 +116,19 @@ class Sighting {
         dateCreated(nullable: true)
         lastUpdated(nullable: true)
         error(nullable: true)
+        dateStr(nullable: true)
+        timeStr(nullable: true)
+    }
+
+    public void setDateStrZ(String dateInputStr) {
+        if (dateInputStr) {
+            DateTimeFormatter format = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZ");
+            String input = "${dateInputStr}T${timeStr?:'00:00'}:00${timeZoneOffset?:'Z+10:00'}"
+            DateTime dateTime = format.withOffsetParsed().parseDateTime(input)
+            Date date = dateTime.toDate()
+            log.error "input date = ${date} || ${input}"
+            eventDate = date
+            dateStr = dateInputStr
+        }
     }
 }
