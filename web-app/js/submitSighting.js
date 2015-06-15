@@ -216,9 +216,9 @@ $(document).ready(function() {
         $('input.license').val($(this).val());
     });
 
-    // Clear the #eventDateNoTime field (extracted from photo EXIF data) if user changes either the date or time field
-    $('#eventDateNoTime, #eventTime').keyup(function() {
-        $('#eventDateTime').val('');
+    // Clear the #dateStr field (extracted from photo EXIF data) if user changes either the date or time field
+    $('#dateStr, #timeStr').keyup(function() {
+        $('#eventDate').val('');
     });
 
     // close button on bootstrap alert boxes
@@ -257,7 +257,7 @@ $(document).ready(function() {
         $(this).parent().remove();
     });
 
-    $('#speciesOne').on('click', 'a.removeHide', function(e) {
+    $('#species').on('click', 'a.removeHide', function(e) {
         e.preventDefault();
         $(this).parent().hide();
     });
@@ -300,7 +300,7 @@ $(document).ready(function() {
     });
 
     // init date picker
-    //$('#eventDateNoTime').datepicker({format: 'dd-mm-yyyy'});
+    //$('#dateStr').datepicker({format: 'dd-mm-yyyy'});
 
     // clear validation errors red border on input blur
     $('.validationErrors').on('blur', function(e) {
@@ -325,7 +325,7 @@ $(document).ready(function() {
     //});
 
     // trigger image assisted identification popup
-    $('#identifyHelpTrigger').click(function(e) {
+    $('.identifyHelpTrigger').click(function(e) {
         e.preventDefault();
         var lat = $('#decimalLatitude').val();
         var lng = $('#decimalLongitude').val();
@@ -337,7 +337,7 @@ $(document).ready(function() {
             updateSpeciesGroups(null, GSP_VARS.lat, GSP_VARS.lng);
             $('#identifyHelpModal').modal('show');
         } else {
-            bootbox.alert('<h3>Image assisted identification</h3>A sighting location is required for this tool, please include a location using the map tool below, then try again');
+            bootbox.alert('<h3>See species known to occur in a particular location</h3>A sighting location is required for this tool, please include a location using the map tool below, then try again');
         }
 
     });
@@ -364,6 +364,7 @@ $(document).ready(function() {
     $('#datetimepicker2').datetimepicker({
         format: 'HH:mm',
         useCurrent: true,
+        showTodayButton: true,
         showClear: true,
         icons: {
             time: 'fa fa-clock-o',
@@ -383,9 +384,13 @@ $(document).ready(function() {
         var date = $('#dateStr').val();
         var time = $('#timeStr').val() || '00:00';
         var timeZone = $('#timeZoneOffset').val() || '+10:00';
-        var dateInput = date + " " + time  + " " +  timeZone
-        var mDateTime = moment(dateInput, "DD-MM-YYYY HH:mm Z"); // format("DD-MM-YYYY, HH:mm");
-        $('#eventDate').val(mDateTime.format()); // default is ISO
+
+        if (date) {
+            var dateInput = date + " " + time  + " " +  timeZone
+            var mDateTime = moment(dateInput, "DD-MM-YYYY HH:mm Z"); // format("DD-MM-YYYY, HH:mm");
+            $('#eventDate').val(mDateTime.format()); // default is ISO
+        }
+
         $('#sightingForm').submit();
     });
 
@@ -396,17 +401,19 @@ function insertImageMetadata(imageRow) {
     var dateTimeVal = imageRow.find('.imgDate').data('datetime');
     if (dateTimeVal) {
         var dateTime = String(dateTimeVal);
-        $('#eventDateTime').val(dateTime);
-        $('#eventDateNoTime').val(isoToAusDate(dateTime.substring(0,10)));
-        $('#eventTime').val(dateTime.substring(11,19));
+        //$('#eventDateTime').val(dateTime);
+        $('#eventDate').val(isoToAusDate(dateTime.substring(0,10)));
+        //$('#eventTime').val(dateTime.substring(11,19));
         $('#timeZoneOffset').val(dateTime.substring(19));
         //console.log("dateTime 3.1", dateTime, dateTime instanceof String);
         var mDateTime = moment(dateTime, moment.ISO_8601); // format("DD-MM-YYYY, HH:mm");
-        $('#eventDate_year').val(mDateTime.format("YYYY"));
-        $('#eventDate_month').val(mDateTime.format("M"));
-        $('#eventDate_day').val(mDateTime.format("D"));
-        $('#eventDate_hour').val(mDateTime.format("HH"));
-        $('#eventDate_minute').val(mDateTime.format("mm"));
+        $('#dateStr').val(mDateTime.format("DD-MM-YYYY"));
+        $('#timeStr').val(mDateTime.format("HH:MM"));
+        //$('#eventDate_year').val(mDateTime.format("YYYY"));
+        //$('#eventDate_month').val(mDateTime.format("M"));
+        //$('#eventDate_day').val(mDateTime.format("D"));
+        //$('#eventDate_hour').val(mDateTime.format("HH"));
+        //$('#eventDate_minute').val(mDateTime.format("mm"));
     }
     var lat = imageRow.find('.imgCoords').data('lat');
     var lng = imageRow.find('.imgCoords').data('lng');
