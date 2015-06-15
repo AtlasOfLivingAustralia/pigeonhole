@@ -95,7 +95,7 @@
                 <!-- Species -->
                 <div class="boxed-heading" id="species" data-content="Species">
                     <div class="row">
-                        <div class="col-md-7">
+                        <div class="col-sm-7 col-md-8">
                             <div id="showConfident" class="form-group">
                                 <label for="speciesLookup">
                                     <div id="noTaxa" style="display: inherit;">Type a scientific or common name into the box below and choose from the auto-complete list.</div>
@@ -132,7 +132,7 @@
                                 </div>
                             </g:if>
                         </div>
-                        <div id="" class="col-md-5">
+                        <div id="" class="col-sm-5 col-md-4">
                             <div id="taxonDetails" class="well well-small" style="display: none;">
                                 <table>
                                     <tr>
@@ -155,7 +155,8 @@
                             </div>
                             <div id="tagsBlock"></div>
                         </div>
-                        <button href="${g.createLink(uri:'/identify_fragment_nomap')}" id="identifyHelpTrigger" data-target="#identifyHelpModal" role="button" class="btn btn-primary tooltipsZ" title="assists identification by providing a list of suggested species with images, known to occur at the sighting location" data-toggle-ignore="modal"><i class="fa fa-search"></i> Image-assisted identification</button>
+                        <div id="identifyHelpTrigger">Not sure about the name of the species? Try the location-based <a href="#identifyHelpModal" class="identifyHelpTrigger">species suggestion tool</a></div>
+                        %{--<button href="${g.createLink(uri:'/identify_fragment_nomap')}" id="identifyHelpTrigger" data-target="#identifyHelpModal" role="button" class="btn btn-primary identifyHelpTrigger" title="assists identification by providing a list of suggested species with images, known to occur at the sighting location" data-toggle-ignore="modal"><i class="fa fa-search"></i> See suggested species</button>--}%
                     </div>
                 </div>
 
@@ -174,7 +175,7 @@
                     <br>
                     <!-- The container for the uploaded files -->
                     <div id="files" class="files"></div>
-                    <div id="imageLicenseDiv" class="hide form-horizontal">
+                    <div id="imageLicenseDiv" class=" form-horizontal">
                         <div class="form-group">
                             <label for="imageLicense" class="col-sm-2 control-label">Licence:</label>
                             <div class="col-sm-4">
@@ -249,7 +250,7 @@
                                                 <button id="bookmarkLocation" class="btn btn-default disabled" disabled="disabled">Save this location</button>
                                             </span>
                                         </div><!-- /input-group -->
-                                    %{--<div class="form-horizontal"><g:select name="bookmarkedLocations" id="bookmarkedLocations" class="form-control input-sm" from="${[]}" optionKey="" optionValue="" noSelection="['':'-- saved locations --']"/>--}%
+                                    %{--<div class="form-horizontal"><g:select name="bookmarkedLocations" id="bookmarkedLocations" class="form-control " from="${[]}" optionKey="" optionValue="" noSelection="['':'-- saved locations --']"/>--}%
                                     %{--<button id="bookmarkLocation" class="btn btn-default disabled" disabled="disabled">Save this location</button></div>--}%
                                     </td>
                                 </tr>
@@ -289,9 +290,9 @@
                                                 </span>
                                             </div>
                                         </div>
-                                        %{--<g:select name="eventDate_hour" id="eventDate_hour" class="form-control input-sm"  from="${(0..23).collect{it.toString().padLeft(2,'0')}}" value="${si.getDateTimeValue(date: sighting?.eventDate, part: Calendar.HOUR)}"/>--}%
+                                        %{--<g:select name="eventDate_hour" id="eventDate_hour" class="form-control "  from="${(0..23).collect{it.toString().padLeft(2,'0')}}" value="${si.getDateTimeValue(date: sighting?.eventDate, part: Calendar.HOUR)}"/>--}%
                                         %{--:--}%
-                                        %{--<g:select name="eventDate_minute" id="eventDate_minute" class="form-control input-sm"  from="${(0..59).collect{it.toString().padLeft(2,'0')}}" value="${si.getDateTimeValue(date: sighting?.eventDate, part: Calendar.MINUTE)}"/>--}%
+                                        %{--<g:select name="eventDate_minute" id="eventDate_minute" class="form-control "  from="${(0..59).collect{it.toString().padLeft(2,'0')}}" value="${si.getDateTimeValue(date: sighting?.eventDate, part: Calendar.MINUTE)}"/>--}%
                                     </td>
                                     <td><span class="helphint">24 hour format</span></td>
                                 </tr>
@@ -357,7 +358,7 @@
                         <div class="modal-content">
                             <div class="modal-header">
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                                <h3 id="identifyHelpModalLabel">Image assisted identification</h3>
+                                <h3 id="identifyHelpModalLabel">See species known to occur in a particular location</h3>
                             </div>
                             <div class="modal-body">
                                 <g:render template="/identify/widget_nomap"  />
