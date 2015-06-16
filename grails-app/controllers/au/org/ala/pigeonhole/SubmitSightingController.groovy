@@ -37,14 +37,19 @@ class SubmitSightingController {
 
     def edit(String id, String guid) {
         log.debug "id = ${id} || guid = ${guid} || params = ${params}"
+        def user = authService.userDetails()
         Sighting sighting = ecodataService.getSighting(id)
 
         if (sighting.error) {
             //flash.message = sighting.error
             render view: "index", model: [
                     sighting: sighting,
-                    user:authService.userDetails()
+                    user: authService.userDetails()
             ]
+        } else if (sighting.userId != user.userId && !authService.userInRole('ROLE_ADMIN')) {
+            // check user has rights to make edit
+            flash.message = "You don't have permission to edit this record (${sighting.occurrenceID})"
+            redirect(uri: request.getHeader('referer')?:'/sightings/user' )
         } else {
             log.debug "EDIT - taxonConceptID = ${sighting.taxonConceptID} || getTaxonForGuid(sighting.taxonConceptID)"
             log.debug "EDIT - sighting = ${(sighting as JSON).toString(true)}"
@@ -68,15 +73,22 @@ class SubmitSightingController {
     def upload(Sighting sighting) {
         log.debug "upload params: ${(params as JSON).toString(true)}"
         log.debug "upload sighting: ${(sighting as JSON).toString(true)}"
-        def userId = authService.userId ?: 99999
-        def userDisplayName = authService.displayName ?: ""
+        def user = authService.userDetails()
+        //def userId = authService.userId ?: 99999
+        //def userDisplayName = authService.displayName ?: ""
         def debug = grailsApplication.config.submit.debug;
 
         if (!sighting.userId) {
             // edits will already have user info - don't clobber
-            sighting.userId = userId
-            sighting.userDisplayName = userDisplayName
-        } else
+            sighting.userId = user.userId
+            sighting.userDisplayName = user.userDisplayName
+        } else {
+            // EDIT - check user has rights to make edit
+            if (sighting.userId != user.userId && !authService.userInRole('ROLE_ADMIN')) {
+                flash.message = "You don't have permission to edit this record (${sighting.occurrenceID})"
+                redirect(uri:'/sightings/user')
+            }
+        }
 
         if (!sighting.validate()) {
             sighting.errors.allErrors.each {
