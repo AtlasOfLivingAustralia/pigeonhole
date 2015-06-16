@@ -347,8 +347,10 @@ $(document).ready(function() {
         format: 'DD-MM-YYYY',
         showTodayButton: true,
         showClear: true,
+        showClose: true,
         maxDate: moment().add(1, 'hours'),
         useCurrent: true,
+        focusOnShow:false,
         icons: {
             time: 'fa fa-clock-o',
             date: 'fa fa-calendar',
@@ -357,7 +359,8 @@ $(document).ready(function() {
             previous: 'fa fa-chevron-left',
             next: 'fa fa-chevron-right',
             today: 'fa fa-crosshairs',
-            clear: 'fa fa-trash'
+            clear: 'fa fa-trash',
+            close: 'fa fa-close'
         }
     });
 
@@ -366,6 +369,9 @@ $(document).ready(function() {
         useCurrent: true,
         showTodayButton: true,
         showClear: true,
+        showClose: true,
+        focusOnShow:false,
+        toolbarPlacement: 'bottom',
         icons: {
             time: 'fa fa-clock-o',
             date: 'fa fa-calendar',
@@ -374,7 +380,8 @@ $(document).ready(function() {
             previous: 'fa fa-chevron-left',
             next: 'fa fa-chevron-right',
             today: 'fa fa-crosshairs',
-            clear: 'fa fa-trash'
+            clear: 'fa fa-trash',
+            close: 'fa fa-close'
         }
     });
 

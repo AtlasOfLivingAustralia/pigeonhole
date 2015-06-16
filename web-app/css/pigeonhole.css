@@ -416,6 +416,10 @@ a.adminLink:hover {
 }
 
 .formInputTable td div {
+    /*z-index: 1002;*/
+}
+
+.bootstrap-datetimepicker-widget {
     z-index: 1002;
 }
 

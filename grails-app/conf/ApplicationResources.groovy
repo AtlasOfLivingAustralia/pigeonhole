@@ -99,7 +99,8 @@ modules = {
 
     bs3_datepicker {
         dependsOn 'jqueryMigrate, bootstrap, moment'
-        resource url:'js/bootstrap3-datetimepicker/css/bootstrap-datetimepicker.min.css'
+        //resource url:'js/bootstrap3-datetimepicker/css/bootstrap-datetimepicker.min.css'
+        resource url:'js/bootstrap3-datetimepicker/css/bootstrap-datetimepicker.css'
         resource url:'js/bootstrap3-datetimepicker/js/bootstrap-datetimepicker.min.js'
     }
 
