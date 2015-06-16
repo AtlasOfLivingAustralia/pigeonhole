@@ -450,7 +450,10 @@ function setSpecies(guid) {
                     $('#noTaxa').hide();
                     $('#matchedTaxa').show();
                     $('#identificationChoice').show();
-                    $("input[name=identificationVerificationStatus][value=confident]").prop('checked', true);
+                    if (!GSP_VARS.sightingBean) {
+                        $("input[name=identificationVerificationStatus][value=confident]").prop('checked', true);
+                    }
+
                 }
             })
             .fail(function( jqXHR, textStatus, errorThrown ) {
