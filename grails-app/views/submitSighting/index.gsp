@@ -250,8 +250,6 @@
                                                 <button id="bookmarkLocation" class="btn btn-default disabled" disabled="disabled">Save this location</button>
                                             </span>
                                         </div><!-- /input-group -->
-                                    %{--<div class="form-horizontal"><g:select name="bookmarkedLocations" id="bookmarkedLocations" class="form-control " from="${[]}" optionKey="" optionValue="" noSelection="['':'-- saved locations --']"/>--}%
-                                    %{--<button id="bookmarkLocation" class="btn btn-default disabled" disabled="disabled">Save this location</button></div>--}%
                                     </td>
                                 </tr>
                             </table>
@@ -290,9 +288,6 @@
                                                 </span>
                                             </div>
                                         </div>
-                                        %{--<g:select name="eventDate_hour" id="eventDate_hour" class="form-control "  from="${(0..23).collect{it.toString().padLeft(2,'0')}}" value="${si.getDateTimeValue(date: sighting?.eventDate, part: Calendar.HOUR)}"/>--}%
-                                        %{--:--}%
-                                        %{--<g:select name="eventDate_minute" id="eventDate_minute" class="form-control "  from="${(0..59).collect{it.toString().padLeft(2,'0')}}" value="${si.getDateTimeValue(date: sighting?.eventDate, part: Calendar.MINUTE)}"/>--}%
                                     </td>
                                     <td><span class="helphint">24 hour format</span></td>
                                 </tr>
@@ -306,10 +301,12 @@
                             <input type="hidden" name="eventDate" id="eventDate" value="${sighting?.eventDate}"/>
                         </div>
                         <div class="col-sm-6">
-                            <section class="sightings-block ui-corner-all form-horizontal" style="vertical-align: top;">
+                            <section class="sightings-block form-horizontal" style="vertical-align: top;">
                                 <div class="form-group">
-                                    <label for="occurrenceRemarks" class="col-sm-2">Notes: </label>
-                                    <textarea name="occurrenceRemarks" rows="4" cols="90" class="form-control col-sm-10" id="occurrenceRemarks">${sighting?.occurrenceRemarks}</textarea>
+                                    <label for="occurrenceRemarks" class="col-sm-2 control-label">Notes: </label>
+                                    <div class="col-sm-10">
+                                        <textarea name="occurrenceRemarks" rows="4" cols="90" class="form-control" id="occurrenceRemarks">${sighting?.occurrenceRemarks}</textarea>
+                                    </div>
                                 </div>
                             </section>
                         </div>
@@ -322,7 +319,7 @@
                     <input type="submit" id="formSubmit" class="btn btn-primary btn-lg"  value="${actionName == 'edit' ? 'Update' : 'Submit'} Record"/>
                 </div>
 
-            <%-- Template HTML used by JS code via .clone() --%>
+                <%-- Template HTML used by JS code via .clone() --%>
                 <div class="hide imageRow row" id="uploadActionsTmpl">
                     <div class="col-sm-2"><span class="preview pull-right"></span></div>
                     <div class="col-sm-10">
