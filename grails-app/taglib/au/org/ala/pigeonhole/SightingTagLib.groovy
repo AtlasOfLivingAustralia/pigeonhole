@@ -25,9 +25,10 @@ class SightingTagLib {
 
         if (!inputDate) {
             inputDate = new Date()
-        } else if (inputDate instanceof String) {
-            DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZ");
-            DateTime dt = formatter.parseDateTime(inputDate);
+        } else if (inputDate instanceof String && inputDate.length() > 18) {
+            //DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZ");
+            DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss");
+            DateTime dt = formatter.parseDateTime(inputDate.substring(0,19));
             inputDate = dt.toDate()
         }
 
