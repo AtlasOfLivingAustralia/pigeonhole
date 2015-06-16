@@ -350,7 +350,7 @@ $(document).ready(function() {
         showClose: true,
         maxDate: moment().add(1, 'hours'),
         useCurrent: true,
-        focusOnShow:false,
+        focusOnShow: false,
         icons: {
             time: 'fa fa-clock-o',
             date: 'fa fa-calendar',
@@ -370,7 +370,7 @@ $(document).ready(function() {
         showTodayButton: true,
         showClear: true,
         showClose: true,
-        focusOnShow:false,
+        focusOnShow: false,
         toolbarPlacement: 'bottom',
         icons: {
             time: 'fa fa-clock-o',

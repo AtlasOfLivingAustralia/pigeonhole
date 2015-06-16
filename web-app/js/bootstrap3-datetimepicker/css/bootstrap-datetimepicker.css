@@ -10,7 +10,7 @@
 .bootstrap-datetimepicker-widget.dropdown-menu {
   margin: 2px 0;
   padding: 2px;
-  width: 14em;
+  width: 16em;
 }
 .bootstrap-datetimepicker-widget.dropdown-menu.timepicker-sbs {
   width: 20em;
@@ -24,7 +24,7 @@
   .bootstrap-datetimepicker-widget.dropdown-menu {
     margin: 2px 0;
     padding: 4px;
-    width: 16em;
+    width: 18em;
   }
 }
 @media (min-width: 992px) {
@@ -98,7 +98,7 @@
 .bootstrap-datetimepicker-widget .timepicker-hour,
 .bootstrap-datetimepicker-widget .timepicker-minute,
 .bootstrap-datetimepicker-widget .timepicker-second {
-  width: 3.8em;
+  width: 2.5em;
   font-weight: bold;
   font-size: 1.2em;
   margin: 0;
@@ -283,9 +283,9 @@
   background: #eeeeee;
 }
 .bootstrap-datetimepicker-widget table td {
-  height: 3.8em;
-  line-height: 3.8em;
-  width: 3.8em;
+  height: 2.5em;
+  line-height: 2.5em;
+  width: 2.5em;
 }
 .bootstrap-datetimepicker-widget table td.cw {
   font-size: .8em;
@@ -339,9 +339,9 @@
 }
 .bootstrap-datetimepicker-widget table td span {
   display: inline-block;
-  width: 3.8em;
-  height: 3.8em;
-  line-height: 3.8em;
+  width: 2.5em;
+  height: 2.5em;
+  line-height: 2.5em;
   margin: 2px 1.5px;
   cursor: pointer;
   border-radius: 4px;
