@@ -315,6 +315,8 @@ function loadSpeciesGroupImages(speciesGroup, start) {
             //console.log(speciesGroup + ': species count = ' + data.facetResults[0].fieldResult.length);
             var images = "<span id='imagesGrid'>";
             var newTotal = Number(start);
+            var itemsMap = {};
+
             $.each(data.facetResults[0].fieldResult, function(i, el){
                 //if (i >= 30) return false;
                 newTotal++;
@@ -323,30 +325,54 @@ function loadSpeciesGroupImages(speciesGroup, start) {
                 if (parts.length == 5) {
                     nameObj = {
                         sciName: parts[0],
-                        commonName: "",
-                        lsid: parts[1],
-                        shortName: "<i>" + parts[0] + "</i>",
-                        fullName1: "<i>" + parts[0] + "</i>",
-                        fullName2: "<i>" + parts[0] + "</i>"
+                        commonName: parts[2],
+                        lsid: parts[1]
                     };
                 } else {
                     nameObj = {
                         sciName: parts[1],
                         commonName: parts[0],
-                        lsid: parts[2],
-                        shortName: (parts[0]) ? parts[0] : "<i>" + parts[1] + "</i>",
-                        fullName1: (parts[0]) ? parts[0] + " &mdash; " + "<i>" + parts[1] + "</i>" : "<i>" + parts[1] + "</i>",
-                        fullName2: (parts[0]) ? parts[0] + "<br>" + "<i>" + parts[1] + "</i>" : "<i>" + parts[1] + "</i>"
+                        lsid: parts[2]
                     };
                 }
-                var displayName = $('<div/>').text(nameObj.fullName1).html(); // use jQuery to escape text
-                var imgUrl = "http://bie.ala.org.au/ws/species/image/small/" + nameObj.lsid; // http://bie.ala.org.au/ws/species/image/thumbnail/urn:lsid:biodiversity.org.au:afd.taxon:aa745ff0-c776-4d0e-851d-369ba0e6f537
-                images += "<div class='imgCon'><a class='cbLink thumbImage' rel='thumbs' href='http://bie.ala.org.au/species/" +
-                nameObj.lsid + "' target='species' data-lsid='" + nameObj.lsid + "' data-displayname='" + displayName + "'><img src='" + imgUrl +
-                "' alt='species thumbnail' onerror='imgError(this);'/><div class='meta brief'>" +
-                nameObj.shortName + "</div><div class='meta detail hide'>" +
-                nameObj.fullName2 + "<br>Records: " + el.count + "</div></a></div>";
+
+                nameObj.count = el.count;
+                nameObj.shortName = (nameObj.commonName) ? nameObj.commonName : "<i>" + nameObj.sciName + "</i>";
+                nameObj.fullName1 = (nameObj.commonName) ? nameObj.commonName + " &mdash; " + "<i>" + nameObj.sciName + "</i>" : "<i>" + nameObj.sciName + "</i>";
+                nameObj.fullName2 = (nameObj.commonName) ? nameObj.commonName + " <br> " + "<i>" + nameObj.sciName + "</i>" : "<i>" + nameObj.sciName + "</i>";
+
+                // Due to bug where facet results contain duplicate entries (with and without common name)
+                // entries are added to a JS Map (itemsMap) to store unique LSIDs
+                if (itemsMap[nameObj.lsid]) {
+                    // entry exists - update commonName and counts
+                    if (nameObj.commonName) {
+                        // update HTML sections with commonName
+                        itemsMap[nameObj.lsid].commonName = nameObj.commonName;
+                        itemsMap[nameObj.lsid].shortName = (nameObj.commonName) ? nameObj.commonName : "<i>" + nameObj.sciName + "</i>";
+                        itemsMap[nameObj.lsid].fullName1 = (nameObj.commonName) ? nameObj.commonName + " &mdash; " + "<i>" + nameObj.sciName + "</i>" : "<i>" + nameObj.sciName + "</i>";
+                        itemsMap[nameObj.lsid].fullName2 = (nameObj.commonName) ? nameObj.commonName + " <br> " + "<i>" + nameObj.sciName + "</i>" : "<i>" + nameObj.sciName + "</i>";
+                    }
+                    // update counts
+                    itemsMap[nameObj.lsid].count = itemsMap[nameObj.lsid].count + nameObj.count
+                } else {
+                    // new entry
+                    itemsMap[nameObj.lsid] = nameObj
+                }
+
             });
+
+            //iterate over itemsMap ...
+            $.each(itemsMap, function( lsid, nameObj ) {
+                var displayName = $('<div/>').text(nameObj.fullName1).html(); // use jQuery to escape text
+                var imgUrl = "http://bie.ala.org.au/ws/species/image/small/" + lsid; // http://bie.ala.org.au/ws/species/image/thumbnail/urn:lsid:biodiversity.org.au:afd.taxon:aa745ff0-c776-4d0e-851d-369ba0e6f537
+                images += "<div class='imgCon'><a class='cbLink thumbImage' rel='thumbs' href='http://bie.ala.org.au/species/" +
+                    lsid + "' target='species' data-lsid='" + lsid + "' data-displayname='" + displayName + "'><img src='" + imgUrl +
+                    "' alt='species thumbnail' onerror='imgError(this);'/><div class='meta brief'>" +
+                    nameObj.shortName + "</div><div class='meta detail hide'>" +
+                    nameObj.fullName2 + "<br>Records: " + nameObj.count + "</div></a></div>";
+            });
+
+
             images += "</span>";
             images += "<div id='end'>&nbsp;</div>";
             $('#speciesImagesDiv').append(images);
