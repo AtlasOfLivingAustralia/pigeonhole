@@ -318,15 +318,27 @@ function loadSpeciesGroupImages(speciesGroup, start) {
             $.each(data.facetResults[0].fieldResult, function(i, el){
                 //if (i >= 30) return false;
                 newTotal++;
+                var nameObj;
                 var parts = el.label.split("|");
-                var nameObj = {
-                    sciName: parts[1],
-                    commonName: parts[0],
-                    lsid: parts[2],
-                    shortName: (parts[0]) ? parts[0] : "<i>" + parts[1] + "</i>",
-                    fullName1: (parts[0]) ? parts[0] + " &mdash; " + "<i>" + parts[1] + "</i>" : "<i>" + parts[1] + "</i>",
-                    fullName2: (parts[0]) ? parts[0] + "<br>" + "<i>" + parts[1] + "</i>" : "<i>" + parts[1] + "</i>"
-                };
+                if (parts.length == 5) {
+                    nameObj = {
+                        sciName: parts[0],
+                        commonName: "",
+                        lsid: parts[1],
+                        shortName: "<i>" + parts[0] + "</i>",
+                        fullName1: "<i>" + parts[0] + "</i>",
+                        fullName2: "<i>" + parts[0] + "</i>"
+                    };
+                } else {
+                    nameObj = {
+                        sciName: parts[1],
+                        commonName: parts[0],
+                        lsid: parts[2],
+                        shortName: (parts[0]) ? parts[0] : "<i>" + parts[1] + "</i>",
+                        fullName1: (parts[0]) ? parts[0] + " &mdash; " + "<i>" + parts[1] + "</i>" : "<i>" + parts[1] + "</i>",
+                        fullName2: (parts[0]) ? parts[0] + "<br>" + "<i>" + parts[1] + "</i>" : "<i>" + parts[1] + "</i>"
+                    };
+                }
                 var displayName = $('<div/>').text(nameObj.fullName1).html(); // use jQuery to escape text
                 var imgUrl = "http://bie.ala.org.au/ws/species/image/small/" + nameObj.lsid; // http://bie.ala.org.au/ws/species/image/thumbnail/urn:lsid:biodiversity.org.au:afd.taxon:aa745ff0-c776-4d0e-851d-369ba0e6f537
                 images += "<div class='imgCon'><a class='cbLink thumbImage' rel='thumbs' href='http://bie.ala.org.au/species/" +
