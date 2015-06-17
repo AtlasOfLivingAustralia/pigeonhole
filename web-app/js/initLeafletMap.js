@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Atlas of Living Australia
+ * Copyright (C) 2015 Atlas of Living Australia
  * All Rights Reserved.
  *
  * The contents of this file are subject to the Mozilla Public
@@ -67,7 +67,7 @@ $(document).ready(function() {
 
     marker = L.marker(null, {draggable: true}).on('dragend', function() {
         updateLocation(this.getLatLng().wrap(), true);
-        console.log('position', map.latLngToLayerPoint(marker.getLatLng()));
+        //console.log('position', map.latLngToLayerPoint(marker.getLatLng()));
     });
 
     radius = $('#coordinateUncertaintyInMeters').val();
@@ -183,7 +183,7 @@ $(document).ready(function() {
     $(".drag").udraggable({
         containment: 'parent',
         stop: function(evt, el) {
-            console.log("transformMarker", el);
+            //console.log("transformMarker", el);
             var x = el.offset.left + 12;
             var y = el.offset.top + 40;
             marker.setLatLng(map.containerPointToLatLng([x, y])).addTo(map);
