@@ -19,6 +19,13 @@ $(document).ready(function() {
     if (typeof GSP_VARS == 'undefined') {
         alert('GSP_VARS not set in page - required for submit.js');
     }
+
+    // init BS3 tooltip on submit btn
+    var tooltipVars = {
+        viewport: '#submitArea',
+        placement: 'bottom'
+    };
+
     // upload code taken from http://blueimp.github.io/jQuery-File-Upload/basic-plus.html
     var imageCount = 0;
 
@@ -40,6 +47,7 @@ $(document).ready(function() {
         // load event triggered (start)
         // Disable the submit button while images are being uploaded to server in background
         $('#formSubmit').attr('disabled','disabled').attr('title','image upload in progress').addClass('disabled');
+        $('#submitWrapper').attr('title', 'Image upload in progress... please wait').tooltip(tooltipVars).tooltip('show');
         // Clone the template and reference it via data.context
         data.context = $('#uploadActionsTmpl').clone(true).removeAttr('id').removeClass('hide').appendTo('#files');
         $.each(data.files, function (index, file) {
@@ -131,6 +139,7 @@ $(document).ready(function() {
         // file has successfully uploaded
         // Re-enable the submit button
         $('#formSubmit').removeAttr('disabled').removeAttr('title').removeClass('disabled');
+        $('#submitWrapper').removeAttr('title').tooltip('destroy');
         var node = $(data.context[0]);
         var index = node.data('index');
         var result = data.result; // ajax results
@@ -161,6 +170,7 @@ $(document).ready(function() {
         });
         // Re-enable the submit button
         $('#formSubmit').removeAttr('disabled').removeAttr('title').removeClass('disabled');
+        $('#submitWrapper').removeAttr('title').tooltip('destroy');
     }).prop('disabled', !$.support.fileInput).parent().addClass($.support.fileInput ? undefined : 'disabled');
 
     $("input#speciesLookup").autocomplete('http://bie.ala.org.au/ws/search/auto.jsonp', {

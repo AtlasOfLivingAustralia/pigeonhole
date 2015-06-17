@@ -313,10 +313,10 @@
                     </div>
                 </div>
 
-                <div style="text-align: center;">
+                <div id="submitArea">
                     <div id="termsOfUse">Please read the <a href="http://www.ala.org.au/about-the-atlas/terms-of-use/" target="_blank">ALA
                     terms of use</a> before submitting your sighting</div>
-                    <input type="submit" id="formSubmit" class="btn btn-primary btn-lg"  value="${actionName == 'edit' ? 'Update' : 'Submit'} Record"/>
+                    <div id="submitWrapper"><input type="submit" id="formSubmit" class="btn btn-primary btn-lg"  value="${actionName == 'edit' ? 'Update' : 'Submit'} Record"/></div>
                 </div>
 
                 <%-- Template HTML used by JS code via .clone() --%>

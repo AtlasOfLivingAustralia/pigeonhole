@@ -427,6 +427,11 @@ a.adminLink:hover {
     min-width: 13px;
 }
 
+#submitArea {
+    text-align: center;
+    position: relative;
+}
+
 /* Fix for ala-styles.css "issues" */
 body #main {
     padding-right: 15px;
