@@ -74,3 +74,6 @@
         </div>
     </div>
 </g:else>
+<r:script disposition="head">
+    GSP_VARS.subgroupFacet = "${grailsApplication.config.identify.subgroupFacet}"
+</r:script>

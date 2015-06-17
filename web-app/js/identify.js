@@ -272,7 +272,7 @@ function loadSpeciesGroupImages(speciesGroup, start) {
     } else {
         $( "#end" ).remove(); // remove the trigger element for the inview loading of more images
     }
-
+    var facetName = GSP_VARS.subgroupFacet || "common_name_and_lsid";
     var pageSize = 30;
     var radius = $('#radius').val();
     var latlng = $('#locationLatLng span').data('latlng');
@@ -300,7 +300,7 @@ function loadSpeciesGroupImages(speciesGroup, start) {
                 //'geospatial_kosher:true'],
             ],
             //'fq': speciesGroup,
-            'facets': 'common_name_and_lsid',
+            'facets': facetName,
             'flimit': pageSize,
             'foffset': start,
             'start': 0,
