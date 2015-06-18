@@ -14,17 +14,10 @@
  */
 package au.org.ala.pigeonhole.command
 
-import grails.web.JSONBuilder
-import grails.util.Holders
 import groovy.util.logging.Log4j
-import org.apache.commons.lang.time.DateUtils
-import org.grails.databinding.BindingFormat
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
 import org.joda.time.format.DateTimeFormatter;
-
-import java.text.DateFormat
-import java.text.SimpleDateFormat
 
 /**
  * Command class for the sighting (based on DarwinCore terms)
@@ -73,6 +66,7 @@ class Sighting {
     String lastUpdatedFromTaxonoverflow
     String dateIdentified
     String error // fromm webservice failures
+    String projectId
 
     static constraints = {
         userId(nullable: true)
@@ -118,6 +112,7 @@ class Sighting {
         error(nullable: true)
         dateStr(nullable: true)
         timeStr(nullable: true)
+        projectId(nullable: true)
     }
 
     public void setDateStrZ(String dateInputStr) {

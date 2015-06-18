@@ -46,7 +46,6 @@
 </div>
 <div class="row">
     <div class="col-sm-12 col-md-12 col-lg-12">
-        %{--${sightings} ${sightings.getClass()?.name}--}%
         <div class="row" id="content">
             <div class="col-md-12">
                 <div class="panel panel-body">
@@ -61,17 +60,17 @@
                         <div class=""><strong>Note:</strong> Sightings may take up to 24 hours to appear in the <a href="${biocacheLink}">Occurrence explorer</a> pages.</div>
                     </div>
                     <div class="panel-body">
-                        <g:if test="${sightings && sightings.records}">
+                        <g:if test="${sightings && sightings.list}">
                             <div class="" id="sightingsBlurb">
                             </div>
-                            <g:if test="${sightings?.totalRecords > 0}">
+                            <g:if test="${sightings?.total > 0}">
                                 <div class="">
                                     <div id="sortWidget">Sort by:
                                     <g:select from="${grailsApplication.config.sortFields}" valueMessagePrefix="sort" id="sortBy" name="sortBy" value="${params.sort?:'lastUpdated'}"/>
                                     <g:select from="${['asc','desc']}" valueMessagePrefix="order" id="orderBy" name="orderBy" value="${params.order?:'desc'}"/>
                                     </div>
                                     <div id="recordsPaginateSummary">
-                                        <g:set var="total" value="${sightings.totalRecords}"/>
+                                        <g:set var="total" value="${sightings.total}"/>
                                         <g:set var="fromIndex" value="${(params.offset) ? (params.offset.toInteger() + 1) : 1}"/>
                                         <g:set var="toIndex" value="${((params.offset?:0).toInteger() + (params.max?:10).toInteger())}"/>
                                         Displaying records ${fromIndex} to ${(toIndex < total) ? toIndex : total} of ${g.formatNumber(number: total, format: "###,##0")}
@@ -89,7 +88,7 @@
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    <g:each in="${sightings.records}" var="s">
+                                    <g:each in="${sightings.list}" var="s">
                                         <tr id="s_${s.occurrenceID}" data-tags="${(si.getTags(sighting: s)).encodeAsJavaScript()}" data-uuid="${s.occurrenceID}">
                                             <td>
                                                 <g:if test="${(s.offensiveFlag == null || s.offensiveFlag?.toBoolean() == false) && s.multimedia}">
@@ -168,7 +167,7 @@
                             </div>
                             <div class="col-md-12" style="text-align: center;">
                                 <g:set var="mappingName"><g:if test="${actionName == 'index'}">recent</g:if><g:elseif test="${actionName == 'user' && params.id}">spotter</g:elseif><g:else>mine</g:else></g:set>
-                                <g:paginate total="${sightings.totalRecords?:0}" mapping="${mappingName}" id="${params.id}"/>
+                                <g:paginate total="${sightings.total?:0}" mapping="${mappingName}" id="${params.id}"/>
                             </div>
                             <!-- Image Modal -->
                         %{--<div class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">--}%

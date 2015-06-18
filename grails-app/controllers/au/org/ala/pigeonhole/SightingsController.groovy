@@ -11,43 +11,31 @@ class SightingsController {
         [user: authService.userDetails()?:[:], sightings: ecodataService.getRecentSightings(params), pageHeading: "Recent sightings"]
     }
 
+    /**
+     * Validate the supplied scientificName and coordinates.
+     *
+     * @return
+     */
     def validate(){
         def requestJson = request.JSON
         log.debug("Checking: ${requestJson.scientificName} with ${requestJson.decimalLatitude}, ${requestJson.decimalLongitude}")
         if(requestJson.scientificName && requestJson.decimalLatitude && requestJson.decimalLongitude){
-            def result = sightingValidationService.validate(requestJson.scientificName, requestJson.decimalLatitude, requestJson.decimalLongitude)
+            def result = sightingValidationService.validate(
+                    requestJson.scientificName,
+                    requestJson.decimalLatitude,
+                    requestJson.decimalLongitude)
             render (result as JSON)
         } else {
             response.sendError(400, "Service requires a JSON payload with scientificName, decimalLatitude and decimalLongitude properties.")
         }
     }
 
-    def validateTest1(){
-        def result = sightingValidationService.validate("Diodon holocanthus", -18.4,  144.1)
-        render (result as JSON)
-    }
-
-    def validateTest2(){
-        def result = sightingValidationService.validate("Macropus rufus", -37.1,  149.1)
-        render (result as JSON)
-    }
-
-    def validateTest3(){
-        def result = sightingValidationService.validate("Calyptorhynchus latirostris", -37.1,  149.1)
-        render (result as JSON)
-    }
-
-    def validateTest4(){
-        def result = sightingValidationService.validate("Carcharodon carcharias", -37.1,  145.1)
-        render (result as JSON)
-    }
-
-    def validateTest5(){
-        def result = sightingValidationService.validate("Wollemia nobilis", -37.1,  149.1)
-        render (result as JSON)
-    }
-
-
+    /**
+     * Retrieve a users sightings.
+     *
+     * @param id
+     * @return
+     */
     def user(String id) {
         def user = authService.userDetails()
         String heading =  "My sightings"
@@ -60,24 +48,33 @@ class SightingsController {
                 heading =  "${name}'${(name.endsWith('s')) ? '' : 's'} sightings"
             } else {
                 heading =  "User sightings"
-                flash.errorMessage = "Error: Could not find user with ID ${id}"
+                flash.errorMessage = "Error: User details lookup failed for user with ID ${id}. Check authorised systems listings."
             }
         }
 
-        render(view:"index", model:[user: user, sightings: ecodataService.getSightingsForUserId(user?.userId, params), pageHeading: heading])
+        render(view:"index", model:[
+                user: user,
+                sightings: ecodataService.getSightingsForUserId(user?.userId?:id, params),
+                pageHeading: heading
+        ])
     }
 
+    /**
+     * Delete a sighting.
+     *
+     * @param id
+     * @return
+     */
     def delete(String id) {
         log.debug "DEL id = ${id}"
         def user = authService.userDetails()
         String recordUserId = ecodataService.getUserIdForSightingId(id)
 
-
         if (authService.userInRole("${grailsApplication.config.security.cas.adminRole}") || user?.userId == recordUserId) {
             def result = ecodataService.deleteSighting(id)
             log.debug "result = ${result}"
 
-            if (result == 200) {
+            if (result.success) {
                 flash.message = "Record was successfully deleted"
             } else {
                 flash.message = "An error occurred. Record was not deleted"

@@ -179,7 +179,7 @@
                         <div class="form-group">
                             <label for="imageLicense" class="col-sm-2 control-label">Licence:</label>
                             <div class="col-sm-4">
-                                <g:select from="${grailsApplication.config.sighting.licenses}" name="imageLicense" class="form-control input-sm" id="imageLicense" value="${sighting?.multimedia?.get(0)?.license}"/>
+                                <g:select from="${grailsApplication.config.sighting.licenses}" name="imageLicense" class="form-control input-sm" id="imageLicense" value="${sighting?.multimedia ? sighting?.multimedia?.get(0)?.license : ''   }"/>
                             </div>
                         </div>
                     </div>

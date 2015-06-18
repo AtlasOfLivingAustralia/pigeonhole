@@ -73,13 +73,12 @@ class AjaxController {
             if (result.status != 200) {
                 response.status = result.status?:500
             }
-
             return render(result as JSON)
         } else {
             return render(status: 400, text: "No bookmark provided")
         }
-
     }
+
     /**
      * Create a taxon overflow question
      *
@@ -122,7 +121,7 @@ class AjaxController {
             if (result.error) {
                 render(status: 400, text: result.text?:'Unexpected error')
             } else {
-                webserviceService.sendEmail(id, userId, comment)
+                webserviceService.sendImageFlaggedEmail(id, userId, comment)
                 def json = [message: "Record ${id} was flagged"]
                 render(status: 200, text: "${json as JSON}")
             }

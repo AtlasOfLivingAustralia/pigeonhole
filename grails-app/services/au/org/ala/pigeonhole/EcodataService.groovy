@@ -12,15 +12,11 @@
  * implied. See the License for the specific language governing
  * rights and limitations under the License.
  */
-
 package au.org.ala.pigeonhole
 
 import au.org.ala.pigeonhole.command.Bookmark
 import au.org.ala.pigeonhole.command.Sighting
 import grails.converters.JSON
-import groovyx.net.http.ContentType
-import groovyx.net.http.HTTPBuilder
-import org.apache.commons.lang.time.DateUtils
 import org.codehaus.groovy.grails.web.json.JSONArray
 import org.codehaus.groovy.grails.web.json.JSONElement
 import org.codehaus.groovy.grails.web.json.JSONObject
@@ -28,14 +24,20 @@ import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
 import org.joda.time.format.DateTimeFormatter
-import org.joda.time.format.ISODateTimeFormat
 
-import java.text.DateFormat
-import java.text.SimpleDateFormat;
-
+/**
+ * A grails service for interacting with ecodata webservices.
+ */
 class EcodataService {
+
     def grailsApplication, httpWebService, webserviceService
 
+    /**
+     * Retrieve the details of this sighting.
+     *
+     * @param id
+     * @return
+     */
     Sighting getSighting(String id) {
         Sighting sc = new Sighting()
 
@@ -49,7 +51,7 @@ class EcodataService {
             try {
                 sc = new Sighting(json)
             } catch (Exception e) {
-                log.error "Couldn't unmarshall JSON - " + e.message, e
+                log.error "Couldn't un-marshall JSON - " + e.message, e
                 sc.error = "Error: sighting could not be loaded - ${e.message}"
             }
         } else {
@@ -78,7 +80,14 @@ class EcodataService {
         userId
     }
 
+    /**
+     * Submit the sighting object
+     *
+     * @param sightingCommand
+     * @return
+     */
     Map submitSighting(Sighting sightingCommand) {
+
         def url = grailsApplication.config.ecodata.baseUrl + "/record"
 
         if (sightingCommand.occurrenceID) {
@@ -87,7 +96,9 @@ class EcodataService {
         }
 
         def json = sightingCommand as JSON
-        def result = webserviceService.doJsonPost(url, json.toString())
+        def result = webserviceService.doJsonPost(url, json.toString(), [
+                "Authorization": grailsApplication.config.ecodata.apiKey
+        ])
         log.debug "ecodata result = ${result}"
         // if error return Map below
         // else return Map key/values as JSON
@@ -116,11 +127,17 @@ class EcodataService {
 
         log.debug "params string = ${queryString}"
 
-        queryString
+        if(queryString == "?"){
+            ""
+        } else {
+            queryString
+        }
     }
 
     def deleteSighting(String id) {
-        doDelete("${grailsApplication.config.ecodata.baseUrl}/record/${id}") // returns statusCode 200|500
+        webserviceService.doDelete("${grailsApplication.config.ecodata.baseUrl}/record/${id}", [
+                "Authorization": grailsApplication.config.ecodata.apiKey
+        ]) // returns statusCode 200|500
     }
 
     def getSightingsForUserId(String userId, GrailsParameterMap params) {
@@ -133,7 +150,7 @@ class EcodataService {
         def result = httpWebService.getJson("${grailsApplication.config.ecodata.baseUrl}/record" + getQueryStringForParams(params, true))
 
         if (result instanceof JSONArray) {
-            sightings.put("records", result)
+            sightings.put("list", result)
         } else if (result instanceof JSONObject) {
             sightings = result
         }
@@ -163,23 +180,6 @@ class EcodataService {
         // if error return Map below
         // else return Map key/values as JSON
         [status:result.status?:200, message: (result.error?:result)]
-    }
-
-
-    def doDelete(String url) {
-        log.debug "DELETE url = ${url}"
-        def conn = new URL(url).openConnection()
-        try {
-            conn.setRequestMethod("DELETE")
-            return conn.getResponseCode()
-        } catch(Exception e){
-            log.error e.message
-            return 500
-        } finally {
-            if (conn != null){
-                conn.disconnect()
-            }
-        }
     }
 
     /**

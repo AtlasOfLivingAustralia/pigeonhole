@@ -25,13 +25,26 @@ class WebserviceService {
 
     def grailsApplication, mailService
 
-    def doJsonPost(String url, String postBody) {
+    /**
+     * HTTP Post with JSON body.
+     *
+     * @param url
+     * @param postBody
+     * @param requestHeaders
+     * @return
+     */
+    def doJsonPost(String url, String postBody, Map requestHeaders = [:]) {
         log.debug "url = ${url} "
         log.debug "postBody = ${postBody} "
         def http = new HTTPBuilder(url)
         http.request( groovyx.net.http.Method.POST, groovyx.net.http.ContentType.JSON ) {
             body = postBody
             requestContentType = ContentType.JSON
+
+            // add possible headers
+            requestHeaders.each { key, value ->
+                headers."${key}" = "${value}"
+            }
 
             response.success = { resp, json ->
                 log.debug "json = " + json
@@ -48,7 +61,36 @@ class WebserviceService {
         }
     }
 
-    def sendEmail(String recordId, String userId, String comment) {
+    def doDelete(String url, Map requestHeaders = [:]) {
+        log.debug "url = ${url} "
+        def http = new HTTPBuilder(url)
+        http.request( groovyx.net.http.Method.DELETE ) {
+            // add possible headers
+            requestHeaders.each { key, value ->
+                headers."${key}" = "${value}"
+            }
+            response.success = { resp, json ->
+                log.debug "json = " + json
+                log.debug "resp = ${resp}"
+                log.debug "json is a ${json.getClass().name}"
+                return json
+            }
+            response.failure = { resp ->
+                def error = [error: "Unexpected error: ${resp.statusLine.statusCode} : ${resp.statusLine.reasonPhrase}", status: resp.statusLine.statusCode]
+                log.error "Oops: " + error.error
+                return error
+            }
+        }
+    }
+
+    /**
+     * Send an "image flagged as inappropriate" email
+     * @param recordId
+     * @param userId
+     * @param comment
+     * @return
+     */
+    def sendImageFlaggedEmail(String recordId, String userId, String comment) {
         if (grailsApplication.config.grails.mail?.host && !grailsApplication.config.grails.mail?.disabled) {
 
             mailService.sendMail {
@@ -59,6 +101,13 @@ class WebserviceService {
         }
     }
 
+    /**
+     * HTTP form POST
+     *
+     * @param url
+     * @param postBody
+     * @return
+     */
     def doPost(String url, Map postBody) {
         def conn = null
         def charEncoding = 'utf-8'

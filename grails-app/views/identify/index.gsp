@@ -16,7 +16,7 @@
 <html>
 	<head>
 		<meta name="layout" content="main"/>
-		<title>Identify</title>
+        <title>Identify | Atlas of Living Australia</title>
         <r:require modules="jquery, jqueryUIEffects, pigeonhole, leaflet, identify, inview, purl, fontawesome"/>
         <r:script disposition="head">
             // global var to pass in GSP/Grails values into external JS files

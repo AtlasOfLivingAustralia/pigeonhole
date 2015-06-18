@@ -16,7 +16,7 @@
 <html>
 <head>
     <meta name="layout" content="main"/>
-    <title>Identifiy</title>
+    <title>Identify | Atlas of Living Australia</title>
     <r:require modules="jquery, jqueryUIEffects, pigeonhole, leaflet, inview, purl, fontawesome"/>
     <style type="text/css">
     #locationLatLng {
