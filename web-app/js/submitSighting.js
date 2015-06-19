@@ -28,6 +28,7 @@ $(document).ready(function() {
 
     // upload code taken from http://blueimp.github.io/jQuery-File-Upload/basic-plus.html
     var imageCount = 0;
+    var existingImagesIndex = 0;
 
     $('#fileupload').fileupload({
         url: GSP_VARS.uploadUrl,
@@ -141,7 +142,7 @@ $(document).ready(function() {
         $('#formSubmit').removeAttr('disabled').removeAttr('title').removeClass('disabled');
         $('#submitWrapper').removeAttr('title').tooltip('destroy');
         var node = $(data.context[0]);
-        var index = node.data('index');
+        var index = node.data('index') + existingImagesIndex;
         var result = data.result; // ajax results
         if (result.success) {
             var link = $('<a>')
@@ -307,6 +308,7 @@ $(document).ready(function() {
     $.each(media, function(i, m) {
         //console.log("image", m);
         addServerImage(m, i);
+        existingImagesIndex++;
     });
 
     // init date picker
