@@ -375,7 +375,7 @@ function geocodeAddress() {
         }
     })
     .done(function(data){
-        console.log("geonames", data);
+        //console.log("geonames", data);
         if (data.results.length > 0) {
             var res = data.results[0];
             var latlng = new L.LatLng(res.geometry.lat, res.geometry.lng);
