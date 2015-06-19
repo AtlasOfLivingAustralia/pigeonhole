@@ -12,7 +12,6 @@
  * implied. See the License for the specific language governing
  * rights and limitations under the License.
  */
-
 /******************************************************************************\
  *  CONFIG MANAGEMENT
  \******************************************************************************/
@@ -44,7 +43,7 @@ reloadable.cfgs = ["file:/data/${appName}/config/${appName}-config.properties"]
 
 bie.baseUrl = "http://bie.ala.org.au"
 biocache.baseUrl = "http://biocache.ala.org.au/ws"
-biocache.validation.url = "http://sandbox.ala.org.au/ws/process/adhoc"
+biocache.validation.url = "http://biocache.ala.org.au/ws/process/adhoc"
 layers.service.url = "http://spatial.ala.org.au/ws"
 ecodata.baseUrl = "http://ecodata-sightings-dev.ala.org.au"
 taxonoverflow.baseUrl = "http://taxonoverflow-dev.ala.org.au"
@@ -59,6 +58,8 @@ accuracyValues=[0,10,50,100,500,1000,5000,10000]
 flag.issues = ['IDENTIFICATION','GEOCODING_ISSUE','TEMPORAL_ISSUE','HABITAT_ISSUE','--','INAPPROPRIATE_IMAGE']
 showBiocacheLinks = false
 identify.subgroupFacet = "names_and_lsid"
+
+identify.enabled = true
 
 grails.project.groupId = "au.org.ala" // change this to alter the default package name and Maven publishing destination
 
@@ -162,6 +163,9 @@ environments {
 }
 
 def loggingDir = (System.getProperty('catalina.base') ? System.getProperty('catalina.base') + '/logs' : './logs')
+if(!(new File(loggingDir).exists())){
+    loggingDir = "/tmp"
+}
 
 // log4j configuration
 log4j = {

@@ -155,8 +155,10 @@
                             </div>
                             <div id="tagsBlock"></div>
                         </div>
+
+                        <g:if test="${grailsApplication.config.identify.enabled.toBoolean()}">
                         <div id="identifyHelpTrigger">Unsure of the species name? Try the location-based <a href="#identifyHelpModal" class="identifyHelpTrigger">species suggestion tool</a></div>
-                        %{--<button href="${g.createLink(uri:'/identify_fragment_nomap')}" id="identifyHelpTrigger" data-target="#identifyHelpModal" role="button" class="btn btn-primary identifyHelpTrigger" title="assists identification by providing a list of suggested species with images, known to occur at the sighting location" data-toggle-ignore="modal"><i class="fa fa-search"></i> See suggested species</button>--}%
+                        </g:if>
                     </div>
                 </div>
 
