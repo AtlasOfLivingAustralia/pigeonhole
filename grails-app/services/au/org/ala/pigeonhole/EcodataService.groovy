@@ -95,6 +95,11 @@ class EcodataService {
             url += "/${sightingCommand.occurrenceID}"
         }
 
+        if (sightingCommand.multimedia) {
+            // remove null elements (i.e. image removed in UI)
+            sightingCommand.multimedia.removeAll([null])
+        }
+
         def json = sightingCommand as JSON
         def result = webserviceService.doJsonPost(url, json.toString(), [
                 "Authorization": grailsApplication.config.ecodata.apiKey
