@@ -211,7 +211,7 @@ function loadBookmarks() {
         dataType: 'json',
     }).done(function (data) {
         if (data.error) {
-            alert("Bookmark could not be loaded - " + data.error, 'Error');
+            bootbox.alert("Bookmark could not be loaded - " + data.error, 'Error');
         } else {
             // reload bookmarks
             bookmarks = data; // cache json
@@ -223,6 +223,7 @@ function loadBookmarks() {
         }
     }).fail(function( jqXHR, textStatus, errorThrown ) {
         //alert("Error: " + textStatus + " - " + errorThrown);
+        bootbox.alert("Error: bookmarks could not be loaded at this time. " + textStatus + " - " + errorThrown);
         $('#bookmarkedLocations').append('<option value="error">Error: bookmarks could not be loaded at this time. Select to retry.</option>');
     });
 }
@@ -243,19 +244,26 @@ function geocodeAddress(query) {
         //console.log("geonames", data);
         if (data.results.length > 0) {
             var res = data.results[0];
-            var latlng = new L.LatLng(res.geometry.lat, res.geometry.lng);
-            var bounds = new L.LatLngBounds([res.bounds.southwest.lat, res.bounds.southwest.lng], [res.bounds.northeast.lat, res.bounds.northeast.lng]);
-            updateLocation(latlng);
-            map.fitBounds(bounds);
-            marker.setPopupContent(res.formatted + " - " + latlng.toString());
-            //marker = L.marker(latlng, {draggable: true}).addTo(map);
-            //marker.setLatLng(latlng).addTo(map);
+            var latlng, bounds;
+
+            if (res.geometry) {
+                latlng = new L.LatLng(res.geometry.lat, res.geometry.lng);
+                updateLocation(latlng);
+                marker.setPopupContent(res.formatted + " - " + latlng.toString());
+            } else {
+                bootbox.alert("Location coordinates were found, please try a different address");
+            }
+
+            if (res.bounds && res.bounds.southwest && res.bounds.northeast) {
+                bounds = new L.LatLngBounds([res.bounds.southwest.lat, res.bounds.southwest.lng], [res.bounds.northeast.lat, res.bounds.northeast.lng]);
+                map.fitBounds(bounds);
+            }
         } else {
-            alert('location was not found, try a different address or place name');
+            bootbox.alert('location was not found, try a different address or place name');
         }
     })
     .fail(function( jqXHR, textStatus, errorThrown ) {
-        alert("Error: " + textStatus + " - " + errorThrown);
+        bootbox.alert("Error: " + textStatus + " - " + errorThrown);
     })
     .always(function() {  $('.spinner').hide(); });
 }
@@ -267,7 +275,7 @@ function geolocate() {
         $('.spinner0').hide();
     }).on('locationerror', function(e){
         $('.spinner0').hide();
-        alert("Location failed: " + e.message);
+        bootbox.alert("Location failed: " + e.message);
     });
 }
 
@@ -288,7 +296,7 @@ function updateLocation(latlng, keepView) {
         reverseGeocode(latlng.lat, latlng.lng);
         var sciName = $('#scientificName').val();
         if (latlng.lat > 0 || latlng.lng < 100) {
-            alert("Coordinates are not in the Australasia region. Are you sure this location is correct?");
+            bootbox.alert("Coordinates are not in the Australasia region. Are you sure this location is correct?");
         } else if (sciName) {
             // do habitat vlaidation check
             var params = {
@@ -320,7 +328,7 @@ function updateLocation(latlng, keepView) {
                     bootbox.alert(html);
                 }
             }).fail(function( jqXHR, textStatus, errorThrown ) {
-                alert("Error: " + textStatus + " - " + errorThrown);
+                bootbox.alert("Error: " + textStatus + " - " + errorThrown);
             })
         } else {
             // highlight no sciname set
@@ -340,7 +348,7 @@ function reverseGeocode(lat, lng) {
                 $('#locality').val(data.display_name);
             }
         }).fail(function( jqXHR, textStatus, errorThrown ) {
-            alert("Error: " + textStatus + " - " + errorThrown);
+            bootbox.alert("Error: " + textStatus + " - " + errorThrown);
         }).always(function() {  //
             // $('.spinner').hide();
         });

@@ -192,7 +192,7 @@
                             <div class="row">
                                 <div class="col-sm-5">
                                     <button class="btn btn-default" id="useMyLocation">
-                                        <i class="fa fa-location-arrow fa-lg" style="margin-left:-2px;margin-right:2px;"></i> My location <r:img uri="/images/spinner.gif" class="spinner0 hide" style="height: 18px;"/>
+                                        <i class="fa fa-location-arrow fa-lg" style="margin-left:-2px;margin-right:2px;"></i> My location <r:img uri="/images/spinner.gif" class="spinner0" style="display:none;height: 18px;"/>
                                     </button>
                                     <span class="pull-right">
                                         <span class="badge" style="font-size:14px;margin-top:4px;"> OR </span>
