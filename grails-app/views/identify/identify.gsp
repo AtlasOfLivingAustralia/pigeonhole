@@ -550,12 +550,17 @@
                     }
             })
             .done(function(data){
-                //console.log("geonames", data);
                 if (data.results.length > 0) {
                     var res = data.results[0];
                     var latlng = new L.LatLng(res.geometry.lat, res.geometry.lng);
-                    var bounds = new L.LatLngBounds([res.bounds.southwest.lat, res.bounds.southwest.lng], [res.bounds.northeast.lat, res.bounds.northeast.lng]);
-                    map.fitBounds(bounds);
+
+                    //if no bounds supplied use them
+                    if(res.bounds){
+                        var bounds = new L.LatLngBounds([res.bounds.southwest.lat, res.bounds.southwest.lng],
+                        [res.bounds.northeast.lat, res.bounds.northeast.lng]);
+                        map.fitBounds(bounds);
+                    }
+
                     updateLocation(latlng);
                     marker.setPopupContent(res.formatted + " - " + latlng.toString());
                     //marker = L.marker(latlng, {draggable: true}).addTo(map);

@@ -18,9 +18,6 @@
  */
 
 var groupSelected, subgroupSelected, groupsAjax;
-//var lat = GSP_VARS.lat;
-//var lng = GSP_VARS.lng;
-
 var biocacheBaseUrl = GSP_VARS.biocacheBaseUrl;
 
 $(document).ready(function() {
@@ -86,10 +83,6 @@ $(document).ready(function() {
     $('#singleSpeciesImages').on('click', '.imgCon a', function() {
         var img = $(this).find('img');
         var imgId = $(img).attr('id');
-        //var thisImgId =  $(img).attr('src');
-        //var isZoomed = $(img).hasClass('zoomed');
-        //$('#singleSpeciesImages img').removeClass('zoomed');
-        //console.log("img clicked!", imgId, prevImgId, prevWidth);
 
         function shrink(theImg) {
             $(theImg).animate({
@@ -152,43 +145,13 @@ $(document).ready(function() {
         //setSpecies(guid);
 
         $('.modal').modal('hide'); // hide all
-        //$('#identifyHelpModal').modal('hide');
-        //window.location = returnUrl + "/" + lsid + queryStr;
     });
 
     $('.imgModalClose').click(function(e) {
         e.preventDefault();
         $('#imgModal').modal('hide')
     });
-
-    //$('.modal').on('hidden.bs.modal', function( event ) {
-    //    $(this).removeClass( 'fv-modal-stack' );
-    //    $('body').data( 'fv_open_modals', $('body').data( 'fv_open_modals' ) - 1 );
-    //});
-    //
-    //$( '.modal' ).on( 'shown.bs.modal', function ( event ) {
-    //    // keep track of the number of open modals
-    //    if ( typeof( $('body').data( 'fv_open_modals' ) ) == 'undefined' ){
-    //        $('body').data( 'fv_open_modals', 0 );
-    //    }
-    //
-    //    // if the z-index of this modal has been set, ignore.
-    //    if ( $(this).hasClass( 'fv-modal-stack' ) ) {
-    //        return;
-    //    }
-    //
-    //    $(this).addClass( 'fv-modal-stack' );
-    //    $('body').data( 'fv_open_modals', $('body').data( 'fv_open_modals' ) + 1 );
-    //    $(this).css('z-index', 1040 + (10 * $('body').data( 'fv_open_modals' )));
-    //    $( '.modal-backdrop' ).not( '.fv-modal-stack' )
-    //        .css( 'z-index', 1039 + (10 * $('body').data( 'fv_open_modals' )));
-    //    $( '.modal-backdrop' ).not( 'fv-modal-stack' )
-    //        .addClass( 'fv-modal-stack' );
-    //});
-
 }); // end document load
-
-
 
 function imgError(image){
     image.onerror = "";
@@ -197,8 +160,6 @@ function imgError(image){
     $(image).parents('.imgCon').addClass('noImage ' + hide);// hides species without images
     return true;
 }
-
-
 
 function geocode() {
     geocodeAddress();
@@ -410,28 +371,31 @@ function geocodeAddress() {
         data : {
             'q' : query,
             'key': '577ca677f86a3a4589b17814ec399112', // key for username 'nickdos' with pw 'ac..on',
-            'bounds': initalBounds // restricts search to initla map view
+            'bounds': initalBounds // restricts search to initial map view
         }
     })
-        .done(function(data){
-            //console.log("geonames", data);
-            if (data.results.length > 0) {
-                var res = data.results[0];
-                var latlng = new L.LatLng(res.geometry.lat, res.geometry.lng);
-                var bounds = new L.LatLngBounds([res.bounds.southwest.lat, res.bounds.southwest.lng], [res.bounds.northeast.lat, res.bounds.northeast.lng]);
-                map1.fitBounds(bounds);
-                updateLocation(latlng);
-                marker.setPopupContent(res.formatted + " - " + latlng.toString());
-                //marker = L.marker(latlng, {draggable: true}).addTo(map1);
-                //marker.setLatLng(latlng).addTo(map1);
-            } else {
-                alert('location was not found, try a different address or place name');
+    .done(function(data){
+        console.log("geonames", data);
+        if (data.results.length > 0) {
+            var res = data.results[0];
+            var latlng = new L.LatLng(res.geometry.lat, res.geometry.lng);
+
+            //if no bounds supplied use them
+            if(res.bounds){
+                var bounds = new L.LatLngBounds([res.bounds.southwest.lat, res.bounds.southwest.lng],
+                    [res.bounds.northeast.lat, res.bounds.northeast.lng]);
+                map.fitBounds(bounds);
             }
-        })
-        .fail(function( jqXHR, textStatus, errorThrown ) {
-            alert("Error: " + textStatus + " - " + errorThrown);
-        })
-        .always(function() {  $('.spinner').hide(); });
+            updateLocation(latlng);
+            marker.setPopupContent(res.formatted + " - " + latlng.toString());
+        } else {
+            alert('location was not found, try a different address or place name');
+        }
+    })
+    .fail(function( jqXHR, textStatus, errorThrown ) {
+        alert("Error: " + textStatus + " - " + errorThrown);
+    })
+    .always(function() {  $('.spinner').hide(); });
 }
 
 function loadSpeciesPopup(lsid, name) {
