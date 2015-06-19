@@ -503,8 +503,8 @@ function addTagLabel(group) {
     if (!isTagPresent(group) && group) {
         var close = '<a href="#" class="remove removeTag" title="remove this item"><i class="remove fa fa-close fa-inverse"></i></a>';
         var input = '<input type="hidden" value="' + group + '" name="tags" class="tags"/>';
-        var label = $('<span class="tag label label-default"/>').append(input + '<span>' + group + '</span>' + close).after('&nbsp;');
-        $('#tagsBlock').append(label);
+        var label = $('<span class="tag label label-default"/>').append(input + '<span>' + group + '</span> ' + close).after('&nbsp;');
+        $('#tagsBlock').append(label).append(' ');
     }
 }
 

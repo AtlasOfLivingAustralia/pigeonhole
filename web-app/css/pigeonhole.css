@@ -192,7 +192,7 @@ span.label, span.badge {
     /*color: #fff;*/
     font-size: 12px;
     margin-bottom: 2px;
-    margin-left: 6px;
+    margin-left: 5px;
 }
 
 
@@ -200,8 +200,18 @@ span.label, span.badge {
     margin: 10px 0;
 }
 
+#tagsBlock .tag {
+    /*line-height: 1em;*/
+    margin-bottom: 3px;
+    display: inline-block;
+    padding: 4px;
+}
+
+#tagsBlock a .fa {
+    margin-bottom: 2px;
+}
+
 .tagGroup {
-    /*margin-bottom: 2px;*/
     line-height: 1.8em;
 }
 
