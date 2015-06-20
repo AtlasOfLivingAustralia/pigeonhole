@@ -29,6 +29,7 @@ $(document).ready(function() {
     // upload code taken from http://blueimp.github.io/jQuery-File-Upload/basic-plus.html
     var imageCount = 0;
     var existingImagesIndex = 0;
+    var uploadStateStack = []; // track uploaded files in progress
 
     $('#fileupload').fileupload({
         url: GSP_VARS.uploadUrl,
@@ -56,6 +57,7 @@ $(document).ready(function() {
             node.find('.filename').append(file.name + '  (' + humanFileSize(file.size) + ')');
             node.data('index', imageCount++);
             $('#imageLicenseDiv').removeClass('hide'); // show the license options
+            uploadStateStack.push(1);
         });
     }).on('fileuploadprocessalways', function (e, data) {
         // next event after 'add' setup progress bar, etc
@@ -139,6 +141,8 @@ $(document).ready(function() {
     }).on('fileuploaddone', function (e, data) {
         // file has successfully uploaded
         // Re-enable the submit button
+        uploadStateStack.pop(); //remove last element
+        checkAllUploadsDone();
         $('#formSubmit').removeAttr('disabled').removeAttr('title').removeClass('disabled');
         $('#submitWrapper').removeAttr('title').tooltip('destroy');
         var node = $(data.context[0]);
@@ -169,10 +173,23 @@ $(document).ready(function() {
             var error = $('<div class="alert alert-error"/>').text('File upload failed.');
             $(data.context.children()[index]).append(error);
         });
+        uploadStateStack.pop(); //remove last element
+        checkAllUploadsDone();
         // Re-enable the submit button
         $('#formSubmit').removeAttr('disabled').removeAttr('title').removeClass('disabled');
         $('#submitWrapper').removeAttr('title').tooltip('destroy');
     }).prop('disabled', !$.support.fileInput).parent().addClass($.support.fileInput ? undefined : 'disabled');
+
+    /*
+     * If all uploads are done, uploadStateStack will be empty so re-activate submit button
+     */
+    function checkAllUploadsDone() {
+        //console.log('checkAllUploadsDone', uploadStateStack);
+        if (uploadStateStack.length == 0) {
+            $('#formSubmit').removeAttr('disabled').removeAttr('title').removeClass('disabled');
+            $('#submitWrapper').removeAttr('title').tooltip('destroy');
+        }
+    }
 
     $("input#speciesLookup").autocomplete('http://bie.ala.org.au/ws/search/auto.jsonp', {
         extraParams: {limit: 100},
