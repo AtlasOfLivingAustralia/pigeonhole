@@ -68,6 +68,9 @@ class Sighting {
     String error // fromm webservice failures
     String projectId
     String dataResourceUid
+    String coordinatePrecision
+    String device
+    String eventTime
 
     static constraints = {
         userId(nullable: true)
@@ -115,6 +118,9 @@ class Sighting {
         timeStr(nullable: true)
         projectId(nullable: true)
         dataResourceUid(nullable: true)
+        coordinatePrecision(nullable: true)
+        device(nullable:true)
+        eventTime(nullable:true)
     }
 
     public void setDateStrZ(String dateInputStr) {
