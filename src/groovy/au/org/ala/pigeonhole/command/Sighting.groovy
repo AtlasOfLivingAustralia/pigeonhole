@@ -67,6 +67,7 @@ class Sighting {
     String dateIdentified
     String error // fromm webservice failures
     String projectId
+    String dataResourceUid
 
     static constraints = {
         userId(nullable: true)
@@ -113,6 +114,7 @@ class Sighting {
         dateStr(nullable: true)
         timeStr(nullable: true)
         projectId(nullable: true)
+        dataResourceUid(nullable: true)
     }
 
     public void setDateStrZ(String dateInputStr) {

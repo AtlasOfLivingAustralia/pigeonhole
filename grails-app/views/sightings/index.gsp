@@ -127,7 +127,7 @@
                                                         <div><a href="${s.taxonoverflowURL}" class="btn btn-default btn-sm questionBtn" title="View the Community identification discussion of this record">
                                                             <i class="fa fa-comments"></i> View community identification</a></div>
                                                     </g:if>
-                                                    <g:elseif test="${s.multimedia}">
+                                                    <g:elseif test="${s.multimedia && grailsApplication.config.include.taxonoverflow.toBoolean()}">
                                                         <div><a class="btn btn-default btn-sm flagBtn" href="#flagModal" role="button" data-occurrenceid="${s.occurrenceID}" title="Suggest this record might require an identification or confirmation" style="white-space: nowrap">
                                                             <i class="fa fa-comments-o"></i> Suggest an identification</a></div>
                                                     </g:elseif>
