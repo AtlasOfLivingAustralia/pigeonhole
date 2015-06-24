@@ -27,7 +27,7 @@
 <head>
     <meta name="layout" content="main"/>
     <title>${pageHeading}</title>
-    <r:require modules="pigeonhole, jqueryMigrate, moment, bootbox, pigeonhole"/>
+    <r:require modules="jqueryMigrate, moment, bootbox, pigeonhole"/>
 </head>
 <body class="nav-species">
 <g:render template="/topMenu" model="[pageHeading: pageHeading]"/>
@@ -38,7 +38,6 @@
                 <div class="alert ${(flash.errorMessage) ? 'alert-error' : 'alert-info'}">
                     <button type="button" class="close" data-dismiss="alert">&times;</button>
                     ${raw(flash.message?:flash.errorMessage)}
-                    <!-- ${flash.message = null} ${flash.errorMessage = null} -->
                 </div>
             </div>
         </g:if>
@@ -127,7 +126,7 @@
                                                         <div><a href="${s.taxonoverflowURL}" class="btn btn-default btn-sm questionBtn" title="View the Community identification discussion of this record">
                                                             <i class="fa fa-comments"></i> View community identification</a></div>
                                                     </g:if>
-                                                    <g:elseif test="${s.multimedia && grailsApplication.config.include.taxonoverflow.toBoolean()}">
+                                                    <g:elseif test="${s.multimedia && grailsApplication.config.hideTaxonOverflowLinks.toBoolean() || params.show_to}">
                                                         <div><a class="btn btn-default btn-sm flagBtn" href="#flagModal" role="button" data-occurrenceid="${s.occurrenceID}" title="Suggest this record might require an identification or confirmation" style="white-space: nowrap">
                                                             <i class="fa fa-comments-o"></i> Suggest an identification</a></div>
                                                     </g:elseif>
