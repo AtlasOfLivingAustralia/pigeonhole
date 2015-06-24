@@ -63,6 +63,21 @@ class EcodataService {
     }
 
     /**
+     * Retrieve a list of data resources supplying data.
+     * @return
+     */
+    def getDataResourceUids(){
+        def json = httpWebService.getJson("${grailsApplication.config.ecodata.baseUrl}/project/")
+        def dataResourceUids = []
+        json.list.each { project ->
+            if(project.dataResourceId){
+                dataResourceUids << project.dataResourceId
+            }
+        }
+        dataResourceUids
+    }
+
+    /**
      * Non JSON marshalling method for getting userId for a record id
      * Needed for older records which can't be marshalled into the Sighting Obj
      *

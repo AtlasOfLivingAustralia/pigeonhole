@@ -54,7 +54,7 @@
                         <g:elseif test="${actionName == 'user'}">you have submitted.</g:elseif>
                         <g:elseif test="${actionName == 'index'}">submitted recently by users.</g:elseif>
                         You can filter, sort and map sightings using the Atlas'
-                        <g:set var="biocacheLink" value="http://biocache.ala.org.au/occurrences/search?q=*:*&fq=data_resource_uid:dr364${(actionName != 'index' && user?.userId) ? '&fq=alau_user_id:' + user?.userId : ''}"/>
+                        <g:set var="biocacheLink" value="${si.generateBiocacheLink(dataResourceUids: dataResourceUids, userId: user?.userId)}"/>
                         <a href="${biocacheLink}">Occurrence explorer</a>.
                         <div class=""><strong>Note:</strong> Sightings may take up to 24 hours to appear in the <a href="${biocacheLink}">Occurrence explorer</a> pages.</div>
                     </div>
@@ -119,7 +119,7 @@
                                                     <div class="tagGroup"><span class="label label-default">${s.identificationVerificationStatus}</span></div>
                                                 </g:if>
                                                 <g:if test="${grailsApplication.config.showBiocacheLinks && s.occurrenceID}">
-                                                    <a href="http://biocache.ala.org.au/occurrence/${s.occurrenceID}">View public record</a>
+                                                    <a href="${grailsApplication.config.biocacheUi.baseUrl}/occurrence/${s.occurrenceID}">View public record</a>
                                                 </g:if>
                                                 <g:if test="${!grailsApplication.config.hideTaxonOverflowLinks?.asBoolean() || params.show_to}">
                                                     <g:if test="${s.taxonoverflowURL}">

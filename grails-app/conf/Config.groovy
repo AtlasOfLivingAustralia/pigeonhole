@@ -43,6 +43,7 @@ reloadable.cfgs = ["file:/data/${appName}/config/${appName}-config.properties"]
 
 bie.baseUrl = "http://bie.ala.org.au"
 biocache.baseUrl = "http://biocache.ala.org.au/ws"
+biocacheUi.baseUrl = "http://biocache.ala.org.au"
 biocache.validation.url = "http://biocache.ala.org.au/ws/process/adhoc"
 layers.service.url = "http://spatial.ala.org.au/ws"
 ecodata.baseUrl = "http://ecodata-sightings-dev.ala.org.au"

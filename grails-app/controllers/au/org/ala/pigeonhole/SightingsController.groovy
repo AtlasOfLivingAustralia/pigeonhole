@@ -8,7 +8,12 @@ class SightingsController {
     def sightingValidationService
 
     def index() {
-        [user: authService.userDetails()?:[:], sightings: ecodataService.getRecentSightings(params), pageHeading: "Recent sightings"]
+        [
+                user: authService.userDetails()?:[:],
+                sightings: ecodataService.getRecentSightings(params),
+                pageHeading: "Recent sightings",
+                dataResourceUids: ecodataService.getDataResourceUids()
+        ]
     }
 
     /**
@@ -55,7 +60,8 @@ class SightingsController {
         render(view:"index", model:[
                 user: user,
                 sightings: ecodataService.getSightingsForUserId(user?.userId?:id, params),
-                pageHeading: heading
+                pageHeading: heading,
+                dataResourceUids: ecodataService.getDataResourceUids()
         ])
     }
 

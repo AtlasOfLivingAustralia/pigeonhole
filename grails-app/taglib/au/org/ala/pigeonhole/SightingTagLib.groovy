@@ -13,6 +13,26 @@ class SightingTagLib {
 
     static namespace = "si"
 
+    def generateBiocacheLink = { attrs ->
+
+        def baseUrl = grailsApplication.config.biocacheUi.baseUrl + "/occurrences/search?q=*:*&fq=("
+
+        //add stuff
+        attrs.dataResourceUids.eachWithIndex { uid, idx ->
+            if(idx > 0){
+                baseUrl += " OR "
+            }
+            baseUrl += "data_resource_uid:${uid}"
+        }
+        baseUrl += ")"
+
+        if(attrs.userId){
+            baseUrl += "&fq=alau_user_id:${attrs.userId}"
+        }
+
+        out << baseUrl
+    }
+
     /**
      * Get the hours or minutes part of the input date (or current date)
      *
