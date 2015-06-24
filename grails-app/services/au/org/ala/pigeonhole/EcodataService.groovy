@@ -70,7 +70,7 @@ class EcodataService {
         def json = httpWebService.getJson("${grailsApplication.config.ecodata.baseUrl}/project/")
         def dataResourceUids = []
         json.list.each { project ->
-            if(project.dataResourceId){
+            if(project.dataResourceId & !project.isExternal.toBoolean()){
                 dataResourceUids << project.dataResourceId
             }
         }
