@@ -48,7 +48,7 @@ biocache.validation.url = "http://biocache.ala.org.au/ws/process/adhoc"
 layers.service.url = "http://spatial.ala.org.au/ws"
 ecodata.baseUrl = "http://ecodata-sightings-dev.ala.org.au"
 taxonoverflow.baseUrl = "http://taxonoverflow-dev.ala.org.au"
-
+hideTaxonOverflowLinks = false
 media.uploadDir = "/data/${appName}/cache/imageUploads/" // Path to where files will be uploaded
 coordinates.sources = ["Google maps", "Google earth", "GPS device", "camera/phone", "physical maps", "other"]
 sighting.fields.excludes = ['errors','timeZoneOffset','eventDateNoTime','eventDateTime','class','log','constraints','$constraints']

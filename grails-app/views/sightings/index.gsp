@@ -142,7 +142,7 @@
                                                         <span class="eventDateFormatted" data-isodate="${s.eventDate}">${(s.eventDate.size() >= 10) ? s.eventDate?.substring(0,10) : s.eventDate}</span>
                                                     </g:if>
                                                     <g:set var="userNameMissing" value="User ${s.userId}"/>
-                                                    <div>Recorded by: <a href="${g.createLink(mapping: 'spotter', id: s.userId)}" title="View other sightings by this user">${s.userDisplayName?:userNameMissing}</a></div>
+                                                    <div>Recorded by: <a href="${g.createLink(mapping: 'spotter', id: s.userId)}" title="View other sightings by this user">${s.recordedBy?:userNameMissing}</a></div>
                                                 </span>
                                                 <g:if test="${s.locality}">
                                                     <div>Locality: ${s.locality}</div>

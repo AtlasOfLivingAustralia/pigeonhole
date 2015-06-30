@@ -91,7 +91,7 @@
             <form id="sightingForm" action="${g.createLink(controller:'submitSighting', action:'upload')}" method="POST">
                 <input type="hidden" name="occurrenceID" id="occurrenceID" value="${sighting?.occurrenceID}"/>
                 <input type="hidden" name="userId" id="occurrenceID" value="${sighting?.userId?:user?.userId}"/>
-                <input type="hidden" name="userDisplayName" id="occurrenceID" value="${sighting?.userDisplayName?:user?.userDisplayName}"/>
+                <input type="hidden" name="recordedBy" id="occurrenceID" value="${sighting?.recordedBy?:user?.userDisplayName}"/>
                 <!-- Species -->
                 <div class="boxed-heading" id="species" data-content="Species">
                     <div class="row">

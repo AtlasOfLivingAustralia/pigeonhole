@@ -22,6 +22,7 @@ import org.codehaus.groovy.grails.web.json.JSONObject
 import org.springframework.web.servlet.ModelAndView
 
 class SubmitSightingController {
+
     def httpWebService, authService, ecodataService, bieService
 
     def index(String id) {
@@ -74,14 +75,12 @@ class SubmitSightingController {
         log.debug "upload params: ${(params as JSON).toString(true)}"
         log.debug "upload sighting: ${(sighting as JSON).toString(true)}"
         def user = authService.userDetails()
-        //def userId = authService.userId ?: 99999
-        //def userDisplayName = authService.displayName ?: ""
         def debug = grailsApplication.config.submit.debug;
 
         if (!sighting.userId) {
             // edits will already have user info - don't clobber
             sighting.userId = user.userId
-            sighting.userDisplayName = user.userDisplayName
+            sighting.recordedBy = user.userDisplayName
         } else {
             // EDIT - check user has rights to make edit
             if (sighting.userId != user.userId && !authService.userInRole('ROLE_ADMIN')) {

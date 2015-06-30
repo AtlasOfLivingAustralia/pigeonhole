@@ -29,6 +29,7 @@ import org.joda.time.format.DateTimeFormatter;
 class Sighting {
     String userId
     String userDisplayName
+    String recordedBy
     String taxonConceptID
     String scientificName
     String family
@@ -75,6 +76,7 @@ class Sighting {
     static constraints = {
         userId(nullable: true)
         userDisplayName(nullable: true)
+        recordedBy(nullable: true)
         taxonConceptID(nullable: true)
         scientificName(nullable: true, validator: { val, obj ->
             // one of scientificName or (tags + image) must be specified
