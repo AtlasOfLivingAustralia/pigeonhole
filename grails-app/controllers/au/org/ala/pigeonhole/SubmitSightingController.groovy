@@ -21,10 +21,19 @@ import org.codehaus.groovy.grails.web.json.JSONArray
 import org.codehaus.groovy.grails.web.json.JSONObject
 import org.springframework.web.servlet.ModelAndView
 
+/**
+ * Controller for report a sighting page
+ */
 class SubmitSightingController {
 
     def httpWebService, authService, ecodataService, bieService
 
+    /**
+     * Default action - show empty sighting form
+     *
+     * @param id - the GUID for the pre-populated taxon (linked from species page)
+     * @return
+     */
     def index(String id) {
         log.debug "ID = ${id} || ${params}"
         log.debug "getTaxonForGuid = ${getTaxonForGuid(id)}"
@@ -36,6 +45,13 @@ class SubmitSightingController {
         ]
     }
 
+    /**
+     * User or admin to edit a record - this shows the form with values pre-populated
+     *
+     * @param id
+     * @param guid
+     * @return
+     */
     def edit(String id, String guid) {
         log.debug "id = ${id} || guid = ${guid} || params = ${params}"
         def user = authService.userDetails()

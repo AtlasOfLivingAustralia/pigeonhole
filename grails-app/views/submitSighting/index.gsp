@@ -35,6 +35,7 @@
             uploadUrl: "${createLink(uri:"/ajax/upload")}",
             bookmarksUrl: "${createLink(controller:"ajax", action:"getBookmarkLocations")}",
             saveBookmarksUrl: "${createLink(controller:"ajax", action:"saveBookmarkLocation")}",
+            contextPath: "${request.contextPath}",
             //bookmarks: ${(bookmarks).encodeAsJson()?:'{}'},
             guid: "${taxon?.guid}",
             speciesGroups: ${(speciesGroupsMap).encodeAsJson()?:'{}'}, // TODO move this to an ajax call (?)
