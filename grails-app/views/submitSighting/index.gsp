@@ -26,7 +26,7 @@
 <head>
     <meta name="layout" content="main"/>
     <title>Report a sighting | Atlas of Living Australia</title>
-    <r:require modules="fileuploads, exif, moment, pigeonhole, bs3_datepicker, udraggable, fontawesome, purl, submitSighting, jqueryUIEffects, inview, identify"/>
+    <r:require modules="fileuploads, exif, moment, pigeonhole, bs3_datepicker, udraggable, fontawesome, purl, submitSighting, jqueryUIEffects, inview, identify, leafletGoogle"/>
     <r:script disposition="head">
         // global var to pass in GSP/Grails values into external JS files
         GSP_VARS = {

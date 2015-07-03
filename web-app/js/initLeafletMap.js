@@ -41,10 +41,14 @@ $(document).ready(function() {
         attribution: 'Imagery from <a href="http://giscience.uni-hd.de/">GIScience Research Group @ University of Heidelberg</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     });
 
+    var gmap_road = new L.Google('ROADMAP', {maxZoom: 21}); // requires Google.js plugin
+    var gmap_sat = new L.Google('HYBRID', {maxZoom: 21}); // requires Google.js plugin
+    var gmap_ter = new L.Google('TERRAIN', {maxZoom: 15}); // requires Google.js plugin. Note: maxZoom of 15 is Google hard coded limit
+
     var Esri_WorldImagery = L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
         attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
         maxZoom: 17
-        });
+    });
 
     map = L.map('map', {
         center: [-28, 134],
@@ -57,11 +61,14 @@ $(document).ready(function() {
     initalBounds = map.getBounds().toBBoxString(); // save for geocoding lookups
 
     var baseLayers = {
-        "Street": osm,
-        "Satellite": Esri_WorldImagery
-        };
+        "Street": gmap_road,
+        "Satellite": gmap_sat,
+        //"Terrain": gmap_ter,
+        //"Street": osm,
+        //"Satellite": Esri_WorldImagery
+    };
 
-    map.addLayer(osm);
+    map.addLayer(gmap_road);
 
     L.control.layers(baseLayers).addTo(map);
 
