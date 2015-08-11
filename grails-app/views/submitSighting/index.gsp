@@ -166,12 +166,12 @@
                 <!-- Media -->
                 <div class="boxed-heading" id="media" data-content="Images">
                     <!-- The fileinput-button span is used to style the file input field as button -->
-                    <button class="btn btn-success fileinput-button tooltipsZ" title="Select one or more photos to upload (you can also simply drag and drop files onto the page).">
+                    <span class="btn btn-success fileinput-button" title="Select one or more photos to upload (you can also simply drag and drop files onto the page).">
                         <i class="icon icon-white icon-plus"></i>
                         <span>Add files...</span>
                         <!-- The file input field used as target for the file upload widget -->
                         <input id="fileupload" type="file" name="files[]" multiple>
-                    </button>
+                    </span>
                     <span style="display: inline-block;">Optional. Add one or more images. Image metadata will be used to automatically set date and location fields (where available)
                         <br>Hint: you can drag and drop files onto this window</span>
                     <br>
