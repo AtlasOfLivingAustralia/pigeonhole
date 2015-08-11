@@ -270,7 +270,7 @@ td label {
 #taxonDetails {
     margin-top: 5px;
     margin-bottom: 5px;
-    display: inline-block;
+    /*display: inline-block;*/
 }
 #taxonDetails table {
     display: inline-block;
@@ -289,7 +289,7 @@ td label {
 
 .sciName {
     display: block;
-    font-size: 14px;
+    font-size: 15px;
     font-weight: bold;
     font-style: italic;
     margin-bottom: 10px;
@@ -301,7 +301,7 @@ td label {
 
 .commonName {
     display: block;
-    font-size: 13px;
+    font-size: 15px;
 }
 
 .row#content {

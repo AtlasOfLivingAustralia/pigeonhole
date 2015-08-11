@@ -269,17 +269,17 @@ $(document).ready(function() {
                         .attr("value",el.common)
                         .text(el.common));
             });
-            addTagLabel(group);
+            addTagLabel(group, 'group');
         }
     });
 
     // species subgroup drop-down
     $('#speciesSubgroups').change(function(e) {
-        addTagLabel($(this).val());
+        addTagLabel($(this).val(), 'subgroup');
         //$(this).val(''); // reset
     });
 
-    // remove species/secientificName box
+    // remove species/scientificName box
     $('#species').on('click', 'a.removeTag', function(e) {
         e.preventDefault();
         $(this).parent().remove();
@@ -467,6 +467,7 @@ function setSpecies(guid) {
             .done(function(data) {
                 if (data.scientificName) {
                     $('#taxonDetails').removeClass('hide').show();
+                    $('#noSpecies').hide();
                     $('.sciName a').attr('href', GSP_VARS.bieBaseUrl + "/species/" + guid).html(data.scientificName);
                     $('.speciesThumbnail').attr('src', GSP_VARS.bieBaseUrl + '/ws/species/image/thumbnail/' + guid);
                     if (data.commonName) {
@@ -518,10 +519,10 @@ function clearTaxonDetails() {
  *
  * @param group
  */
-function addTagLabel(group) {
+function addTagLabel(group, type) {
     if (!isTagPresent(group) && group) {
         var close = '<a href="#" class="remove removeTag" title="remove this item"><i class="remove fa fa-close fa-inverse"></i></a>';
-        var input = '<input type="hidden" value="' + group + '" name="tags" class="tags"/>';
+        var input = '<input type="hidden" value="' + group + '" name="tags" class="tags ' + type + '"/>';
         var label = $('<span class="tag label label-default"/>').append(input + '<span>' + group + '</span> ' + close).after('&nbsp;');
         $('#tagsBlock').append(label).append(' ');
     }
