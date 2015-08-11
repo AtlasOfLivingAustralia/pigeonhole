@@ -15,12 +15,15 @@
 
 /*  Global var GSP_VARS required to be set in calling page */
 
-var map, geocoding, marker, circle, radius, initalBounds, bookmarks;
+var map, geocoding, marker, circle, radius, initalBounds, bookmarks, geocoder;
 
 $(document).ready(function() {
     if (typeof GSP_VARS == 'undefined') {
         alert('GSP_VARS not set in page - required for map widget JS');
     }
+
+    // initialise Google Geocoder - requires google API imports in calling page
+    geocoder = new google.maps.Geocoder();
 
     var osm = L.tileLayer('https://{s}.tiles.mapbox.com/v3/{id}/{z}/{x}/{y}.png', {
         maxZoom: 18,
@@ -94,19 +97,21 @@ $(document).ready(function() {
     }).on('contextmenu',function(e){
         //alert('right click');
         popup1.openOn(map);
-    });; // triggered from map.locate()
+    }); // triggered from map.locate()
 
 
     $('#geocodeinput').on('keydown', function(e) {
         if (e.keyCode == 13 ) {
             e.preventDefault();
-            geocodeAddress($(this).val());
+            //geocodeAddress($(this).val());
+            googleGeocodeAddress($('#geocodeinput').val());
         }
     });
 
     $('#geocodebutton').click(function(e) {
         e.preventDefault();
-        geocodeAddress($('#geocodeinput').val());
+        //geocodeAddress($('#geocodeinput').val());
+        googleGeocodeAddress($('#geocodeinput').val());
     });
 
     $('#useMyLocation').click(function(e) {
@@ -275,6 +280,25 @@ function geocodeAddress(query) {
     .always(function() {  $('.spinner').hide(); });
 }
 
+/**
+ * Get lat/lng for a given address via Google geocode API
+ *
+ * @param address
+ */
+function googleGeocodeAddress(address) {
+    if (geocoder && address) {
+        geocoder.geocode( {'address': address, region: 'AU'}, function(results, status) {
+            if (status == google.maps.GeocoderStatus.OK) {
+                // geocode was successful
+                var latlng = new L.LatLng(results[0].geometry.location.k, results[0].geometry.location.D); //results[0].geometry.location;
+                updateLocation(latlng);
+            } else {
+                bootbox.alert("Location coordinates were not found, please try a different address - " + status);
+            }
+        });
+    }
+}
+
 function geolocate() {
     // this triggers a 'locationfound' event, which is registered further up in code.
     $('.spinner0').show();
@@ -300,7 +324,7 @@ function updateLocation(latlng, keepView) {
         }
         $('#georeferenceProtocol').val('Google maps');
         $('#bookmarkLocation').removeClass('disabled').removeAttr('disabled'); // activate button
-        reverseGeocode(latlng.lat, latlng.lng);
+        reverseGeocodeGoogle(latlng.lat, latlng.lng);
         var sciName = $('#scientificName').val();
         if (latlng.lat > 0 || latlng.lng < 100) {
             bootbox.alert("Coordinates are not in the Australasia region. Are you sure this location is correct?");
@@ -343,6 +367,12 @@ function updateLocation(latlng, keepView) {
     }
 }
 
+/**
+ * Get address for a given lat/lng using OpenStreetMap API
+ * @deprecated - use Google implementation
+ * @param lat
+ * @param lng
+ */
 function reverseGeocode(lat, lng) {
     // http://nominatim.openstreetmap.org/reverse?format=json&lat=-30.1484782&lon=153.1961178&zoom=18&addressdetails=1&accept-language=en&json_callback=foo123
     //console.log("lat lng", lat, lng);
@@ -361,4 +391,24 @@ function reverseGeocode(lat, lng) {
         });
     }
 
+}
+
+/**
+ * Get address for a given lat/lng using Google geocode API
+ */
+function reverseGeocodeGoogle(lat, lng) {
+    var pos = new google.maps.LatLng(lat, lng);
+    if (pos) {
+        geocoder.geocode({
+            latLng: pos
+        }, function(responses) {
+            if (responses && responses.length > 0) {
+                //console.log("geocoded position", responses[0]);
+                var address = responses[0].formatted_address;
+                $('#locality').val(address);
+            } else {
+                $('#locality').val('Error: cannot determine address for this location.');
+            }
+        });
+    }
 }
