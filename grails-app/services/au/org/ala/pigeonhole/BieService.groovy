@@ -8,11 +8,16 @@ class BieService {
 
     @Cacheable('longTermCache')
     def Map getSpeciesGroupsMap() {
-        JSONArray resp = httpWebService.getJson("${grailsApplication.config.bie.baseUrl}/subgroups.json")
-        Map groupsMap = [:]
-        resp.each {
-            groupsMap.put(it.speciesGroup, it.taxa)
+        try {
+            JSONArray resp = httpWebService.getJson("${grailsApplication.config.bie.baseUrl}/subgroups.json")
+            Map groupsMap = [:]
+            resp.each {
+                groupsMap.put(it.speciesGroup, it.taxa)
+            }
+            groupsMap
+        } catch(Exception e){
+            log.error("Problem retrieving species group information: " + e.getMessage(), e)    
+            [:]
         }
-        groupsMap
     }
 }
