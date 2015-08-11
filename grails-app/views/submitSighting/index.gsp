@@ -26,7 +26,7 @@
 <head>
     <meta name="layout" content="main"/>
     <title>Report a sighting | Atlas of Living Australia</title>
-    <r:require modules="fileuploads, exif, moment, pigeonhole, bs3_datepicker, udraggable, fontawesome, purl, submitSighting, jqueryUIEffects, inview, identify"/>
+    <r:require modules="fileuploads, exif, moment, pigeonhole, bs3_datepicker, udraggable, fontawesome, purl, submitSighting, jqueryUIEffects, inview, identify, leafletGoogle"/>
     <r:script disposition="head">
         // global var to pass in GSP/Grails values into external JS files
         GSP_VARS = {
@@ -96,18 +96,63 @@
                 <!-- Species -->
                 <div class="boxed-heading" id="species" data-content="Species">
                     <div class="row">
+                        <div id="" class="col-sm-5 col-md-4">
+                            <div id="taxonDetails" class="well well-small" style="display: none">
+                                <table class="hidden">
+                                    <tr>
+                                        <td><img src="" class="speciesThumbnail" alt="thumbnail image of species" style="width:75px; height:75px;"/></td>
+                                        <td>
+                                            <div class="sciName">
+                                                <a href="" class="tooltips" title="view species page" target="BIE">species name</a>
+                                            </div>
+                                            <div class="commonName">common name</div>
+                                        </td>
+                                    </tr>
+                                </table>
+                                <div class="row">
+                                    <div class="col-sm-4">
+                                        <img src="" width="75" class="speciesThumbnail" alt="thumbnail image of species" style="width:75px; height:75px;"/>
+                                    </div>
+                                    <div class="col-sm-8">
+                                        <div class="sciName">
+                                            <a href="" class="tooltips" title="view species page" target="BIE">species name</a>
+                                        </div>
+                                        <div class="commonName">common name</div>
+                                    </div>
+                                </div>
+                                <input type="hidden" name="taxonConceptID" id="guid" value="${taxon?.taxonConceptID}"/>
+                                <input type="hidden" name="scientificName" id="scientificName" value="${taxon?.scientificName}"/>
+                                <input type="hidden" name="commonName" id="commonName" value="${taxon?.commonName}"/>
+                                <input type="hidden" name="kingdom" id="kingdom" value="${taxon?.kingdom}"/>
+                                <input type="hidden" name="family" id="family" value="${taxon?.family}"/>
+                                %{--<input type="hidden" name="identificationVerificationStatus" id="identificationVerificationStatus" value="${taxon?.identificationVerificationStatus}"/>--}%
+                                %{--<a href="#" class="close removeHide" title="remove this item"><span aria-hidden="true">&times;</span></a>--}%
+                            </div>
+                            <div  class="well well-small" id="noSpecies">
+                                <div class="row" style="font-size:15px;">
+                                    <div class="col-sm-3">
+                                        <i class="fa fa-image" style="font-size:36px; margin-right:10px;"></i>
+                                    </div>
+                                    <div class="col-sm-9">
+                                        No species selected
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="tagsBlock"></div>
+                        </div>
                         <div class="col-sm-7 col-md-8">
                             <div id="showConfident" class="form-group">
                                 <label for="speciesLookup">
                                     <div id="noTaxa" style="display: inherit;">Type a scientific or common name into the box below and choose from the auto-complete list.</div>
-                                    <div id="matchedTaxa" style="display: none;">Not the right species? To change identification, type a scientific
+                                    <div id="matchedTaxa" style="display: none;">Not the right species? To <b>change</b> identification, type a scientific
                                     or common name into the box below and choose from the auto-complete list.</div>
                                 </label>
                                 <input class="form-control ${hasErrors(bean:sighting,field:'scientificName','validationErrors')}" id="speciesLookup" type="text" placeholder="Start typing a species name (common or latin)">
                             </div>
                             <div id="showUncertain" class="form-group">
                                 <div>How confident are you with the species identification?
-                                    <g:radioGroup name="identificationVerificationStatus" labels="['Confident','Uncertain']" values="['confident','uncertain']" value="${sighting?.identificationVerificationStatus?.toLowerCase()?:'uncertain'}" >
+                                    <g:set var="confidenceGuess" value="${(taxon?.guid) ? 'confident' : 'uncertain' }"/>
+                                    <g:radioGroup name="identificationVerificationStatus" labels="['Confident','Uncertain']" values="['confident','uncertain']" value="${sighting?.identificationVerificationStatus?.toLowerCase()?:confidenceGuess}" >
                                         <span style="white-space:nowrap;">${it.radio}&nbsp;${it.label}</span>
                                     </g:radioGroup>
                                 </div>
@@ -133,32 +178,9 @@
                                 </div>
                             </g:if>
                         </div>
-                        <div id="" class="col-sm-5 col-md-4">
-                            <div id="taxonDetails" class="well well-small" style="display: none;">
-                                <table>
-                                    <tr>
-                                        <td><img src="" class="speciesThumbnail" alt="thumbnail image of species" style="width:75px; height:75px;"/></td>
-                                        <td>
-                                            <div class="sciName">
-                                                <a href="" class="tooltips" title="view species page" target="BIE">species name</a>
-                                            </div>
-                                            <div class="commonName">common name</div>
-                                        </td>
-                                    </tr>
-                                </table>
-                                <input type="hidden" name="taxonConceptID" id="guid" value="${taxon?.taxonConceptID}"/>
-                                <input type="hidden" name="scientificName" id="scientificName" value="${taxon?.scientificName}"/>
-                                <input type="hidden" name="commonName" id="commonName" value="${taxon?.commonName}"/>
-                                <input type="hidden" name="kingdom" id="kingdom" value="${taxon?.kingdom}"/>
-                                <input type="hidden" name="family" id="family" value="${taxon?.family}"/>
-                                %{--<input type="hidden" name="identificationVerificationStatus" id="identificationVerificationStatus" value="${taxon?.identificationVerificationStatus}"/>--}%
-                                <a href="#" class="close removeHide" title="remove this item"><span aria-hidden="true">&times;</span></a>
-                            </div>
-                            <div id="tagsBlock"></div>
-                        </div>
 
                         <g:if test="${grailsApplication.config.identify.enabled.toBoolean()}">
-                        <div id="identifyHelpTrigger">Unsure of the species name? Try the location-based <a href="#identifyHelpModal" class="identifyHelpTrigger">species suggestion tool</a></div>
+                            <div id="identifyHelpTrigger">Unsure of the species name? Try the location-based <a href="#identifyHelpModal" class="identifyHelpTrigger">species suggestion tool</a></div>
                         </g:if>
                     </div>
                 </div>
@@ -166,12 +188,12 @@
                 <!-- Media -->
                 <div class="boxed-heading" id="media" data-content="Images">
                     <!-- The fileinput-button span is used to style the file input field as button -->
-                    <button class="btn btn-success fileinput-button tooltipsZ" title="Select one or more photos to upload (you can also simply drag and drop files onto the page).">
+                    <span class="btn btn-success fileinput-button" title="Select one or more photos to upload (you can also simply drag and drop files onto the page).">
                         <i class="icon icon-white icon-plus"></i>
                         <span>Add files...</span>
                         <!-- The file input field used as target for the file upload widget -->
                         <input id="fileupload" type="file" name="files[]" multiple>
-                    </button>
+                    </span>
                     <span style="display: inline-block;">Optional. Add one or more images. Image metadata will be used to automatically set date and location fields (where available)
                         <br>Hint: you can drag and drop files onto this window</span>
                     <br>

@@ -1,20 +1,16 @@
 /*
- * Copyright (C) 2014 Atlas of Living Australia
- * All Rights Reserved.
+ * jQuery File Upload Processing Plugin 1.3.1
+ * https://github.com/blueimp/jQuery-File-Upload
  *
- * The contents of this file are subject to the Mozilla Public
- * License Version 1.1 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of
- * the License at http://www.mozilla.org/MPL/
+ * Copyright 2012, Sebastian Tschan
+ * https://blueimp.net
  *
- * Software distributed under the License is distributed on an "AS
- * IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
- * implied. See the License for the specific language governing
- * rights and limitations under the License.
+ * Licensed under the MIT license:
+ * http://www.opensource.org/licenses/MIT
  */
 
 /* jshint nomen:false */
-/* global define, window */
+/* global define, require, window */
 
 (function (factory) {
     'use strict';
@@ -24,6 +20,9 @@
             'jquery',
             './jquery.fileupload'
         ], factory);
+    } else if (typeof exports === 'object') {
+        // Node/CommonJS:
+        factory(require('jquery'));
     } else {
         // Browser globals:
         factory(

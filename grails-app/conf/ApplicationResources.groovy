@@ -21,7 +21,7 @@ modules = {
     jqueryMigrate {
         dependsOn 'jquery'
         //resource url:'js/jquery-2.0.3.min.js'
-        resource url:'http://code.jquery.com/jquery-migrate-1.2.1.min.js'
+        resource url:'js/jquery-migrate-1.2.1.min.js'
     }
 
     jqueryUIEffects {
@@ -141,6 +141,12 @@ modules = {
     leafletGeocoding {
         dependsOn 'leaflet'
         resource url: 'js/leaflet-plugins/leaflet.geocoding/leaflet.geocoding.js'
+    }
+
+    leafletGoogle {
+        dependsOn 'leaflet'
+        resource url: 'https://maps.google.com/maps/api/js?v=3.2&sensor=false', attrs: [type: "js"], disposition: 'head'
+        resource url: 'js/leaflet-plugins/Google.js'
     }
 
     inview {

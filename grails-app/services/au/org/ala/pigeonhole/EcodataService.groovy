@@ -68,13 +68,15 @@ class EcodataService {
      */
     def getDataResourceUids(){
         def json = httpWebService.getJson("${grailsApplication.config.ecodata.baseUrl}/project/")
-        def dataResourceUids = []
+        def dataResourceUids = ['dr364'] // bug with prod where dataResourceId is not set
+        log.debug "json = $json"
         json.list.each { project ->
             if (project.dataResourceId && !project.isExternal.toBoolean()){
                 dataResourceUids << project.dataResourceId
             }
         }
-        dataResourceUids
+        log.debug "dataResourceUids = ${dataResourceUids}"
+        dataResourceUids.toSet()
     }
 
     /**

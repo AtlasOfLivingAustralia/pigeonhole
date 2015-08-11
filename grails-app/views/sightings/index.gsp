@@ -20,8 +20,11 @@
   Time: 12:09 PM
   To change this template use File | Settings | File Templates.
 --%>
-
 <%@ page contentType="text/html;charset=UTF-8" %>
+<g:set var="biocacheLink">
+    <g:if test="${actionName != 'index' && user && user.userId}">${si.generateBiocacheLink(dataResourceUids: dataResourceUids, userId: user.userId)}</g:if>
+    <g:else>${si.generateBiocacheLink(dataResourceUids: dataResourceUids)}</g:else>
+</g:set>
 <!DOCTYPE html>
 <html>
 <head>
@@ -30,7 +33,7 @@
     <r:require modules="jqueryMigrate, moment, bootbox, pigeonhole"/>
 </head>
 <body class="nav-species">
-<g:render template="/topMenu" model="[pageHeading: pageHeading]"/>
+<g:render template="/topMenu" model="[pageHeading: pageHeading, biocacheLink: biocacheLink]"/>
 <div class="row">
     <div class="col-sm-12">
         <g:if test="${flash.message?:flash.errorMessage}">
@@ -54,7 +57,6 @@
                         <g:elseif test="${actionName == 'user'}">you have submitted.</g:elseif>
                         <g:elseif test="${actionName == 'index'}">submitted recently by users.</g:elseif>
                         You can filter, sort and map sightings using the Atlas'
-                        <g:set var="biocacheLink" value="${si.generateBiocacheLink(dataResourceUids: dataResourceUids, userId: user?.userId)}"/>
                         <a href="${biocacheLink}">Occurrence explorer</a>.
                         <div class=""><strong>Note:</strong> Sightings may take up to 24 hours to appear in the <a href="${biocacheLink}">Occurrence explorer</a> pages.</div>
                     </div>
@@ -402,8 +404,8 @@
                                 $('.mapPopup').click(function(e) {
                                     e.preventDefault();
                                     var latLngStr = $(this).data('lat') + ',' + $(this).data('lng');
-                                    bootbox.alert('<img border="0" src="//maps.googleapis.com/maps/api/staticmap?center=' + latLngStr
-                                            + '&zoom=15&size=400x400&markers=|' + latLngStr + '" alt="Map view of ' + latLngStr + '">');
+                                    bootbox.alert('<iframe width="500" height="400" frameborder="0" style="border:0" scrolling="no" marginheight="0" marginwidth="0" src="https://www.google.com/maps?q=' + latLngStr + '&output=embed"></iframe>');
+                                    //bootbox.alert('<img border="0" src="//maps.googleapis.com/maps/api/staticmap?center=' + latLngStr + '&zoom=15&size=400x400&markers=|' + latLngStr + '" alt="Map view of ' + latLngStr + '">');
                                 });
 
                             }); // end of $(document).ready(function()

@@ -17,7 +17,7 @@
  * Created by dos009 on 18/05/15.
  */
 
-var groupSelected, subgroupSelected, groupsAjax;
+var groupSelected, subgroupSelected, groupsAjax, imageLookup;
 var biocacheBaseUrl = GSP_VARS.biocacheBaseUrl;
 
 $(document).ready(function() {
@@ -174,6 +174,10 @@ function updateSpeciesGroups(group, lat, lng) {
         lng = GSP_VARS.lng;
     }
 
+    var user_group = $('input.tags.group').val();
+    var user_subgroup = $('input.tags.subgroup').val();
+    console.log('groups, etc', user_group, user_subgroup);
+
     var latF = parseFloat(lat).toFixed(6);
     var lngF = parseFloat(lng).toFixed(6);
     clearGroupsAndImages();
@@ -215,6 +219,18 @@ function updateSpeciesGroups(group, lat, lng) {
 
         $('#speciesGroup').html(group);
         $('#species_group p.hide').removeClass('hide');
+
+        if (user_group) {
+            $('.groupBtn[data-group="' + escape(user_group) + '"]').click();
+        }
+
+        if (user_subgroup) {
+            //$('#speciesImagesDiv').empty();
+            imageLookup.abort();
+            setTimeout(function() {
+                $('.subGroupBtn[data-group="' + escape(user_subgroup) + '"]').click();
+            }, 1000);
+        }
     })
     .always(function() {
         $('.spinner1').addClass('hide');
@@ -250,7 +266,7 @@ function loadSpeciesGroupImages(speciesGroup, start) {
     $('.spinner2').removeClass('hide');
     jQuery.ajaxSettings.traditional = true; // so multiple params with same key are formatted right
     //var url = "http://biocache.ala.org.au/ws/occurrences/search?q=species_subgroup:Parrots&fq=geospatial_kosher%3Atrue&fq=multimedia:Image&facets=multimedia&lat=-35.2792511&lon=149.1113017&radius=5"
-    $.ajax({
+    imageLookup = $.ajax({
         url : biocacheBaseUrl + '/occurrences/search.json',
         dataType : 'jsonp',
         jsonp : 'callback',
