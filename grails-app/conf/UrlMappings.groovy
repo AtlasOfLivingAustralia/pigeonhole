@@ -19,6 +19,7 @@ class UrlMappings {
         name recent: "/recent"(controller: "sightings")
         name mine: "/mine"(controller: "sightings", action:"user")
         name spotter: "/spotter/$id"(controller: "sightings", action:"user")
+        "/validate"(controller:"sightings", action:"validate")
         "/identify"(view:"/identify/identify")
         "/identify_fragment_nomap"(view:"/identify/identify_fragment_nomap")
         "/uploads/$file**"(controller:"image", action:"index")

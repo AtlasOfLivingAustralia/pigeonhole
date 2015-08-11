@@ -312,19 +312,33 @@ function updateLocation(latlng, keepView) {
                 dataType: 'json',
             }).done(function(data){
                 var messages = [];
+
                 if (data.habitatMismatch && data.habitatMismatchDetail) {
                     messages.push("Habitat mismatch: " + data.habitatMismatchDetail);
                 }
-                if (data.outlierForExpertDistribution) {
-                    messages.push("Record location falls outside expert distribution");
+                if (data.outlierForExpertDistribution && data.distanceFromExpertDistributionInMetres) {
+
+                    var distanceInKm = Math.floor(data.distanceFromExpertDistributionInMetres / 1000);
+                    messages.push("Record location falls <strong>" + distanceInKm + " kilometres outside expert distribution</strong>. You may want to check your coordinates for this sighting or identification.");
                 }
                 if (data.sensitive) {
-                    messages.push("Record location/identification is flagged as SENSITIVE, publicly visible coordinates may be altered.");
+                    messages.push("Records of <i>" + sciName + "</i> at this location are <strong>sensitive</strong>, " +
+                        "the precision of the publicly visible coordinates may be reduced so that the location of this " +
+                        "sensitive species is not made public. For more details on sensitive data checks " +
+                        "<a target='_blank' href='http://www.ala.org.au/about-the-atlas/how-we-integrate-data/data-sensitivity-checks/'>click here</a>.");
                 }
-
+                if (data.conservationStatus && data.conservationStatus.country) {
+                    messages.push("<i>" + sciName + "</i> has a conservation status of  <strong>" + data.conservationStatus.country + "</strong> in this country.");
+                }
+                if (data.conservationStatus && data.conservationStatus.stateProvince) {
+                    messages.push("<i>" + sciName + "</i> has a conservation status of <strong>" + data.conservationStatus.stateProvince + "</strong> in this state.");
+                }
+                if (data.conservationStatus && data.conservationStatus.global) {
+                    messages.push("<i>" + sciName + "</i> has a global conservation status of <strong>" + data.conservationStatus.global + "</strong>.");
+                }
                 if (messages.length > 0) {
-                    var html = '<h4>Identification/Location pre-submission check</h4><ul><li>' + messages.join('</li><li>') +
-                        '</li></ul><div>You may wish to reconsider the identification or location based on this check.</div>';
+                    var html = '<h4>Identification and location information</h4><ul><li>' + messages.join('</li><li>') +
+                        '</li></ul>';
                     bootbox.alert(html);
                 }
             }).fail(function( jqXHR, textStatus, errorThrown ) {

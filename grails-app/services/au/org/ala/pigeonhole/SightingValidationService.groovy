@@ -1,7 +1,11 @@
 package au.org.ala.pigeonhole
 
 import grails.converters.JSON
+import org.codehaus.groovy.grails.web.json.JSONElement
 
+/**
+ * A service for validating sighting information by querying and combining existing ALA services.
+ */
 class SightingValidationService {
 
     static transactional = false
@@ -9,6 +13,12 @@ class SightingValidationService {
     def webserviceService
 
     def grailsApplication
+
+    /** See http://biocache.ala.org.au/ws/assertions/codes for more details */
+    def final static HABITAT_MISMATCH_ASSERTION_CODE = 19
+
+    /** Biocache QA status codes are  0=failed, 1=passed, 2=unchecked,  */
+    def final static QA_STATUS_CODE_FAILED = 0
 
     /**
      * Performs a set of validation checks on a record.
@@ -21,13 +31,13 @@ class SightingValidationService {
     def validate(name, lat, lon){
 
         try {
-            def resp = webserviceService.doPost(grailsApplication.config.biocache.validation.url, [
+            def biocacheResponse = webserviceService.doPost(grailsApplication.config.biocache.validation.url, [
                     scientificName  : name,
                     decimalLatitude : lat,
                     decimalLongitude: lon
             ])
 
-            def payload = resp.resp
+            def payload = biocacheResponse.resp
 
             def scientificName = payload.values.find { it.name == "scientificName" }?.processed
             def taxonConceptID = payload.values.find { it.name == "taxonConceptID" }?.processed
@@ -37,40 +47,47 @@ class SightingValidationService {
             def originalDecimalLatitude = payload.values.find { it.name == "decimalLatitude" }?.raw
             def originalDecimalLongitude = payload.values.find { it.name == "decimalLongitude" }?.raw
 
-            def globalConservation = payload.values.find { it.name == "globalConservation" }?.processed
-            def countryConservation = payload.values.find { it.name == "countryConservation" }?.processed
-            def stateProvinceConservation = payload.values.find { it.name == "stateProvinceConservation" }?.processed
+            def globalConservation = getStatus(payload, "globalConservation")
+            def countryConservation = getStatus(payload, "countryConservation")
+            def stateProvinceConservation = getStatus(payload, "stateProvinceConservation")
 
             //habitat mismatch
             def habitatMismatch = false
             def habitatMismatchMessage = ""
-            def habitatCheck = payload.assertions.find { it.code == 19 }
+            def habitatCheck = payload.assertions.find { it.code == HABITAT_MISMATCH_ASSERTION_CODE }
             if (habitatCheck) {
                 habitatMismatch = habitatCheck.qaStatus == 0 ? true : false
                 habitatMismatchMessage = habitatCheck.comment
             }
 
+            //create a simple map of the other tests that have been ran
             def tests = [:]
-
             payload.assertions.each {
-                tests.put(it.name, it.qaStatus == 1 ? false : true)
+                tests.put(it.name, it.qaStatus == QA_STATUS_CODE_FAILED ? false : true)
             }
 
-            log.debug("Recognised taxonConceptID: " + taxonConceptID)
-
-            def resp2 = webserviceService.doPostWithParams(
-                    grailsApplication.config.layers.service.url + "/distribution/outliers/" + taxonConceptID,
-                    ["pointsJson": (["occurrence": [decimalLatitude: lat, decimalLongitude: lon]] as JSON).toString()]
-            )
+            //do an intersect with the expert distribution if one is available
+            def expertOutlierResponse = {
+                try {
+                    webserviceService.doPostWithParams(
+                            grailsApplication.config.layers.service.url + "/distribution/outliers/" + taxonConceptID,
+                            ["pointsJson": (["occurrence": [decimalLatitude: lat, decimalLongitude: lon]] as JSON).toString()]
+                    )
+                } catch (Exception e){
+                    //this service doesn't respond well to taxon not found lookups
+                    log.warn("Unable to lookup expert distribution for " + taxonConceptID)
+                    null
+                }
+            }.call()
 
             def outlierForExpertDistribution = false
             def distanceFromExpertDistributionInMetres = ""
             def imageOfExpertDistribution = ""
 
-            if (resp2.resp) {
-                if (resp2.resp."occurrence") {
+            if (expertOutlierResponse && expertOutlierResponse.resp) {
+                if (expertOutlierResponse.resp."occurrence") {
                     outlierForExpertDistribution = true
-                    distanceFromExpertDistributionInMetres = resp2.resp."occurrence"
+                    distanceFromExpertDistributionInMetres = expertOutlierResponse.resp."occurrence"
                 }
 
                 def expertDistro = webserviceService.getJson(grailsApplication.config.layers.service.url + "/distribution/map/" + URLEncoder.encode(scientificName, "UTF-8"))
@@ -91,7 +108,6 @@ class SightingValidationService {
                     outlierForExpertDistribution          : outlierForExpertDistribution,
                     distanceFromExpertDistributionInMetres: distanceFromExpertDistributionInMetres,
                     imageOfExpertDistribution             : imageOfExpertDistribution,
-                    //            extinct: false,
                     conservationStatus                    : [
                             stateProvince: stateProvinceConservation,
                             country      : countryConservation,
@@ -99,16 +115,22 @@ class SightingValidationService {
                     ],
                     habitatMismatch                       : habitatMismatch,
                     habitatMismatchDetail                 : habitatMismatchMessage,
-                    //            hasNearestRecentSighting:true,
-                    //            nearestRecentSighting: [
-                    //                decimalLatitude:0,
-                    //                decimalLongitude:0,
-                    //            ],
                     otherTests                            : tests
             ]
         } catch (Exception e){
+            //this service is a best effort currently, avoid breaking anything upstream
             log.error(e.getMessage(), e)
             return [:]
+        }
+    }
+
+    private def getStatus(JSONElement payload, statusName) {
+        def value = payload.values.find { it.name == statusName }?.processed
+        if(value){
+            def values = value.split(",")
+            values.first()
+        } else {
+            null
         }
     }
 }
