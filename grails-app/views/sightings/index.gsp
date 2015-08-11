@@ -404,8 +404,8 @@
                                 $('.mapPopup').click(function(e) {
                                     e.preventDefault();
                                     var latLngStr = $(this).data('lat') + ',' + $(this).data('lng');
-                                    bootbox.alert('<img border="0" src="//maps.googleapis.com/maps/api/staticmap?center=' + latLngStr
-                                            + '&zoom=15&size=400x400&markers=|' + latLngStr + '" alt="Map view of ' + latLngStr + '">');
+                                    bootbox.alert('<iframe width="500" height="400" frameborder="0" style="border:0" scrolling="no" marginheight="0" marginwidth="0" src="https://www.google.com/maps?q=' + latLngStr + '&output=embed"></iframe>');
+                                    //bootbox.alert('<img border="0" src="//maps.googleapis.com/maps/api/staticmap?center=' + latLngStr + '&zoom=15&size=400x400&markers=|' + latLngStr + '" alt="Map view of ' + latLngStr + '">');
                                 });
 
                             }); // end of $(document).ready(function()
