@@ -156,17 +156,23 @@ class SubmitSightingController {
     }
 
     private String getGuidForName(String scientificName) {
-        JSONObject taxon
+        def taxon
         def guid
-
         if (scientificName) {
             taxon = httpWebService.getJson("${grailsApplication.config.bieService.baseUrl}/guid/${scientificName.encodeAsURL()}")
 
-            if (taxon.has('acceptedIdentifier') || taxon.has('identifier')) {
+            if(taxon instanceof JSONArray){
+                if(taxon) {
+                    taxon = taxon.first()
+                } else {
+                    taxon = null
+                }
+            }
+            
+            if (taxon && (taxon.has('acceptedIdentifier') || taxon.has('identifier'))) {
                 guid = taxon.acceptedIdentifier?:taxon.identifier
             }
         }
-
         guid
     }
 }

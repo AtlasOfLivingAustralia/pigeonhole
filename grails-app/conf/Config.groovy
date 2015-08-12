@@ -45,10 +45,12 @@ bie.baseUrl = "http://bie.ala.org.au"
 bieService.baseUrl = "http://bie.ala.org.au/ws"
 biocache.baseUrl = "http://biocache.ala.org.au/ws"
 biocacheUi.baseUrl = "http://biocache.ala.org.au"
+
 biocache.validation.url = "http://biocache.ala.org.au/ws/process/adhoc"
 layers.service.url = "http://spatial.ala.org.au/ws"
 ecodata.baseUrl = "http://ecodata-sightings-dev.ala.org.au/ws"
 taxonoverflow.baseUrl = "http://taxonoverflow-dev.ala.org.au"
+
 hideTaxonOverflowLinks = false
 media.uploadDir = "/data/${appName}/cache/imageUploads/" // Path to where files will be uploaded
 coordinates.sources = ["Google maps", "Google earth", "GPS device", "camera/phone", "physical maps", "other"]
