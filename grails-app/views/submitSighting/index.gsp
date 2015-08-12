@@ -32,6 +32,7 @@
         GSP_VARS = {
             biocacheBaseUrl: "${(grailsApplication.config.biocache.baseUrl)}",
             bieBaseUrl: "${(grailsApplication.config.bie.baseUrl)}",
+            bieServiceBaseUrl: "${(grailsApplication.config.bieService.baseUrl)}",
             uploadUrl: "${createLink(uri:"/ajax/upload")}",
             bookmarksUrl: "${createLink(controller:"ajax", action:"getBookmarkLocations")}",
             saveBookmarksUrl: "${createLink(controller:"ajax", action:"saveBookmarkLocation")}",
@@ -42,7 +43,16 @@
             leafletImagesDir: "${g.createLink(uri:'/js/leaflet-0.7.3/images')}",
             user: ${(user).encodeAsJson()?:'{}'},
             sightingBean: ${(sighting).encodeAsJson()?:'{}'},
-            validateUrl: "${createLink(controller: 'sightings', action:'validate')}"
+            validateUrl: "${createLink(controller: 'sightings', action:'validate')}",
+            defaultMapLng: ${grailsApplication.config.defaultMapLng?:'134'},
+            defaultMapLat: ${grailsApplication.config.defaultMapLat?:'-28'},
+            defaultMapZoom: ${grailsApplication.config.defaultMapZoom?:'3'},
+            geocodeRegion: '${grailsApplication.config.defaultGeocodeRegion?:'AU'}',
+            expectedRegionName: '${grailsApplication.config.expectedRegionName?:'Australasia'}',
+            expectedMinLat: ${grailsApplication.config.expectedMinLat?:'-90'},
+            expectedMinLng: ${grailsApplication.config.expectedMinLng?:'0'},
+            expectedMaxLat: ${grailsApplication.config.expectedMaxLat?:'0'},
+            expectedMaxLng: ${grailsApplication.config.expectedMaxLng?:'180'}
         };
 
         function imgError(image){

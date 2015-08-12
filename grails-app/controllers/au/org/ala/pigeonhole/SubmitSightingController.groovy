@@ -146,7 +146,7 @@ class SubmitSightingController {
         JSONObject taxon
 
         if (guid) {
-            taxon = httpWebService.getJson("${grailsApplication.config.bie.baseUrl}/ws/species/shortProfile/${guid}.json")
+            taxon = httpWebService.getJson("${grailsApplication.config.bieService.baseUrl}/species/shortProfile/${guid}.json")
             if (taxon.has('scientificName')) {
                 taxon.guid = guid // not provided by /ws/species/shortProfile
             }
@@ -160,7 +160,7 @@ class SubmitSightingController {
         def guid
 
         if (scientificName) {
-            taxon = httpWebService.getJson("${grailsApplication.config.bie.baseUrl}/ws/guid/${scientificName.encodeAsURL()}")
+            taxon = httpWebService.getJson("${grailsApplication.config.bieService.baseUrl}/guid/${scientificName.encodeAsURL()}")
 
             if (taxon.has('acceptedIdentifier') || taxon.has('identifier')) {
                 guid = taxon.acceptedIdentifier?:taxon.identifier

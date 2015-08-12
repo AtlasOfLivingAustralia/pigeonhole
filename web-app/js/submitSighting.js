@@ -191,7 +191,13 @@ $(document).ready(function() {
         }
     }
 
-    $("input#speciesLookup").autocomplete('http://bie.ala.org.au/ws/search/auto.jsonp', {
+    var autocompleteUrl = 'http://bie.ala.org.au/ws/search/auto.jsonp';
+
+    if(typeof BIE_VARS != 'undefined' && BIE_VARS.autocompleteUrl){
+        autocompleteUrl = BIE_VARS.autocompleteUrl;
+    }
+
+    $("input#speciesLookup").autocomplete(autocompleteUrl, {
         extraParams: {limit: 100},
         dataType: 'jsonp',
         parse: function(data) {
@@ -463,13 +469,13 @@ function insertImageMetadata(imageRow) {
 function setSpecies(guid) {
     //console.log('setSpecies', guid);
     if (guid) {
-        $.getJSON(GSP_VARS.bieBaseUrl + "/ws/species/shortProfile/" + guid + ".json?callback=?")
+        $.getJSON(GSP_VARS.bieServiceBaseUrl + "/species/shortProfile/" + guid + ".json?callback=?")
             .done(function(data) {
                 if (data.scientificName) {
                     $('#taxonDetails').removeClass('hide').show();
                     $('#noSpecies').hide();
                     $('.sciName a').attr('href', GSP_VARS.bieBaseUrl + "/species/" + guid).html(data.scientificName);
-                    $('.speciesThumbnail').attr('src', GSP_VARS.bieBaseUrl + '/ws/species/image/thumbnail/' + guid);
+                    $('.speciesThumbnail').attr('src', data.thumbnail);
                     if (data.commonName) {
                         $('.commonName').text(data.commonName);
                         $('#commonName').val(data.commonName);

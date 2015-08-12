@@ -42,6 +42,7 @@ println "[${appName}] (*) grails.config.locations = ${grails.config.locations}"
 reloadable.cfgs = ["file:/data/${appName}/config/${appName}-config.properties"]
 
 bie.baseUrl = "http://bie.ala.org.au"
+bieService.baseUrl = "http://bie.ala.org.au/ws"
 biocache.baseUrl = "http://biocache.ala.org.au/ws"
 biocacheUi.baseUrl = "http://biocache.ala.org.au"
 biocache.validation.url = "http://biocache.ala.org.au/ws/process/adhoc"

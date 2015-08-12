@@ -54,21 +54,17 @@ $(document).ready(function() {
     });
 
     map = L.map('map', {
-        center: [-28, 134],
-        zoom: 3,
+        center: [GSP_VARS.defaultMapLat, GSP_VARS.defaultMapLng],
+        zoom: GSP_VARS.defaultMapZoom,
         scrollWheelZoom: false,
         worldCopyJump: true
-        //layers: [osm, MapQuestOpen_Aerial]
-        });
+    });
 
     initalBounds = map.getBounds().toBBoxString(); // save for geocoding lookups
 
     var baseLayers = {
         "Street": gmap_road,
-        "Satellite": gmap_sat,
-        //"Terrain": gmap_ter,
-        //"Street": osm,
-        //"Satellite": Esri_WorldImagery
+        "Satellite": gmap_sat
     };
 
     map.addLayer(gmap_road);
@@ -287,7 +283,7 @@ function geocodeAddress(query) {
  */
 function googleGeocodeAddress(address) {
     if (geocoder && address) {
-        geocoder.geocode( {'address': address, region: 'AU'}, function(results, status) {
+        geocoder.geocode( {'address': address, region: GSP_VARS.geocodeRegion}, function(results, status) {
             if (status == google.maps.GeocoderStatus.OK) {
                 // geocode was successful
                 var latlng = new L.LatLng(results[0].geometry.location.k, results[0].geometry.location.D); //results[0].geometry.location;
@@ -326,10 +322,11 @@ function updateLocation(latlng, keepView) {
         $('#bookmarkLocation').removeClass('disabled').removeAttr('disabled'); // activate button
         reverseGeocodeGoogle(latlng.lat, latlng.lng);
         var sciName = $('#scientificName').val();
-        if (latlng.lat > 0 || latlng.lng < 100) {
-            bootbox.alert("Coordinates are not in the Australasia region. Are you sure this location is correct?");
+        if (latlng.lat < GSP_VARS.expectedMinLat || latlng.lng < GSP_VARS.expectedMinLng ||
+            latlng.lat > GSP_VARS.expectedMaxLat || latlng.lng > GSP_VARS.expectedMaxLng) {
+            bootbox.alert("Coordinates are not in the " + GSP_VARS.expectedRegionName + " region. Are you sure this location is correct?");
         } else if (sciName) {
-            // do habitat vlaidation check
+            // do habitat validation check
             var params = {
                 decimalLatitude: latlng.lat,
                 decimalLongitude: latlng.lng,
@@ -379,32 +376,6 @@ function updateLocation(latlng, keepView) {
             // highlight no sciname set
         }
     }
-}
-
-/**
- * Get address for a given lat/lng using OpenStreetMap API
- * @deprecated - use Google implementation
- * @param lat
- * @param lng
- */
-function reverseGeocode(lat, lng) {
-    // http://nominatim.openstreetmap.org/reverse?format=json&lat=-30.1484782&lon=153.1961178&zoom=18&addressdetails=1&accept-language=en&json_callback=foo123
-    //console.log("lat lng", lat, lng);
-    if (lat && lng) {
-        $('#locality').val('');
-        var url = "http://nominatim.openstreetmap.org/reverse?format=json&lat="+lat+
-            "&lon="+lng+"&zoom=18&addressdetails=1&accept-language=en&json_callback=?";
-        $.getJSON(url).done(function(data){
-            if (data && !data.error) {
-                $('#locality').val(data.display_name);
-            }
-        }).fail(function( jqXHR, textStatus, errorThrown ) {
-            bootbox.alert("Error: " + textStatus + " - " + errorThrown);
-        }).always(function() {  //
-            // $('.spinner').hide();
-        });
-    }
-
 }
 
 /**

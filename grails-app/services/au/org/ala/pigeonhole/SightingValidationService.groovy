@@ -119,7 +119,7 @@ class SightingValidationService {
             ]
         } catch (Exception e){
             //this service is a best effort currently, avoid breaking anything upstream
-            log.error(e.getMessage(), e)
+            log.error("Validation lookup failed: " + e.getMessage())
             return [:]
         }
     }
