@@ -51,6 +51,11 @@ layers.service.url = "http://spatial.ala.org.au/ws"
 ecodata.baseUrl = "http://ecodata-sightings-dev.ala.org.au/ws"
 taxonoverflow.baseUrl = "http://taxonoverflow-dev.ala.org.au"
 
+skin.orgNameLong = "Atlas of Living Australia"
+skin.layout = "main"
+
+termsOfUseUrl = "http://www.ala.org.au/about-the-atlas/terms-of-use/"
+
 hideTaxonOverflowLinks = false
 media.uploadDir = "/data/${appName}/cache/imageUploads/" // Path to where files will be uploaded
 coordinates.sources = ["Google maps", "Google earth", "GPS device", "camera/phone", "physical maps", "other"]

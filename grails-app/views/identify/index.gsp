@@ -15,8 +15,8 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<meta name="layout" content="main"/>
-        <title>Identify | Atlas of Living Australia</title>
+        <meta name="layout" content="${grailsApplication.config.skin.layout}"/>
+        <title>Identify | ${grailsApplication.config.skin.orgNameLong}</title>
         <r:require modules="jquery, jqueryUIEffects, pigeonhole, leaflet, identify, inview, purl, fontawesome"/>
         <r:script disposition="head">
             // global var to pass in GSP/Grails values into external JS files

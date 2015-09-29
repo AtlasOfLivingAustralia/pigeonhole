@@ -283,10 +283,10 @@ function geocodeAddress(query) {
  */
 function googleGeocodeAddress(address) {
     if (geocoder && address) {
-        geocoder.geocode( {'address': address, region: GSP_VARS.geocodeRegion}, function(results, status) {
+        geocoder.geocode( {"address": address, "region": GSP_VARS.geocodeRegion}, function(results, status) {
             if (status == google.maps.GeocoderStatus.OK) {
                 // geocode was successful
-                var latlng = new L.LatLng(results[0].geometry.location.k, results[0].geometry.location.D); //results[0].geometry.location;
+                var latlng = new L.LatLng(results[0].geometry.location.lat(), results[0].geometry.location.lng());
                 updateLocation(latlng);
             } else {
                 bootbox.alert("Location coordinates were not found, please try a different address - " + status);

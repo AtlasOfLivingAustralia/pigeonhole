@@ -16,10 +16,12 @@
 <!--  vars: ${controllerName} || ${actionName} -->
 <div class="row titleRow">
     <div class="col-sm-4">
-        <h2>${pageHeading}</h2>
+        <div class="pull-left">
+            <h2>${pageHeading}</h2>
+        </div>
     </div>
-    <div class="col-sm-8" style="text-align: right;">
-        <div id="sightingLinks">
+    <div class="col-sm-8">
+        <div id="sightingLinks" class="pull-right">
             <g:if test="${user && params.action == 'user' && params.controller == 'sightings'}">
                 <span class="showMySightings">My sightings</span>
             </g:if>

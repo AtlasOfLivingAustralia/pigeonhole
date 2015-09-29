@@ -20,6 +20,10 @@ grails.project.target.level = 1.6
 grails.project.source.level = 1.6
 //grails.project.war.file = "target/${appName}-${appVersion}.war"
 
+//if (Environment.current == Environment.DEVELOPMENT) {
+//grails.plugin.location."ala-bootstrap3" = "../ala-bootstrap3"
+//}
+
 grails.project.fork = [
         run: false,
         test: false
@@ -60,8 +64,7 @@ grails.project.dependency.resolution = {
         runtime ":resources:1.2.14"
         runtime ":cached-resources:1.0"
         runtime ":release:3.0.1"
-        runtime ":ala-bootstrap3:1.2.1"
         runtime ":ala-auth:1.3.1"
-        //runtime ":images-client-plugin:0.6"
+        compile ':ala-bootstrap3:1.3'
     }
 }

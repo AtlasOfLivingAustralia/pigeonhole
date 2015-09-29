@@ -28,11 +28,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta name="layout" content="main"/>
-    <title>${pageHeading}</title>
+    <meta name="layout" content="${grailsApplication.config.skin.layout}"/>
+    <title>${pageHeading} | ${grailsApplication.config.skin.orgNameLong}</title>
     <r:require modules="jqueryMigrate, moment, bootbox, pigeonhole"/>
 </head>
-<body class="nav-species">
+<body class="nav-species record-sighting">
 <g:render template="/topMenu" model="[pageHeading: pageHeading, biocacheLink: biocacheLink]"/>
 <div class="row">
     <div class="col-sm-12">

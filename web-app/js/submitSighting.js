@@ -191,7 +191,7 @@ $(document).ready(function() {
         }
     }
 
-    var autocompleteUrl = 'http://bie.ala.org.au/ws/search/auto.jsonp';
+    var autocompleteUrl = GSP_VARS.bieServiceBaseUrl + '/search/auto.jsonp';
 
     if(typeof BIE_VARS != 'undefined' && BIE_VARS.autocompleteUrl){
         autocompleteUrl = BIE_VARS.autocompleteUrl;
@@ -348,17 +348,6 @@ $(document).ready(function() {
         $('#confident').trigger( "click" );
     }
 
-    // init qtip (tooltip)
-    //$('.tooltips').qtip({
-    //    style: {
-    //        classes: 'ui-tooltip-rounded ui-tooltip-shadow'
-    //    },
-    //    position: {
-    //        target: 'mouse',
-    //        adjust: { x: 6, y: 14 }
-    //    }
-    //});
-
     // trigger image assisted identification popup
     $('.identifyHelpTrigger').click(function(e) {
         e.preventDefault();
@@ -489,7 +478,6 @@ function setSpecies(guid) {
                     if (!GSP_VARS.sightingBean) {
                         $("input[name=identificationVerificationStatus][value=confident]").prop('checked', true);
                     }
-
                 }
             })
             .fail(function( jqXHR, textStatus, errorThrown ) {
