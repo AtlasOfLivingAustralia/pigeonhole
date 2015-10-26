@@ -67,8 +67,9 @@ accuracyValues=[0,10,50,100,500,1000,5000,10000]
 flag.issues = ['IDENTIFICATION','GEOCODING_ISSUE','TEMPORAL_ISSUE','HABITAT_ISSUE','--','INAPPROPRIATE_IMAGE']
 showBiocacheLinks = false
 identify.subgroupFacet = "names_and_lsid"
-
 identify.enabled = true
+
+// disableImageUploads = true
 
 grails.project.groupId = "au.org.ala" // change this to alter the default package name and Maven publishing destination
 

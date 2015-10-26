@@ -196,28 +196,36 @@
                 </div>
 
                 <!-- Media -->
+
+
                 <div class="boxed-heading" id="media" data-content="Images">
-                    <!-- The fileinput-button span is used to style the file input field as button -->
-                    <span class="btn btn-success fileinput-button" title="Select one or more photos to upload (you can also simply drag and drop files onto the page).">
-                        <i class="icon icon-white icon-plus"></i>
-                        <span>Add files...</span>
-                        <!-- The file input field used as target for the file upload widget -->
-                        <input id="fileupload" type="file" name="files[]" multiple>
-                    </span>
-                    <span style="display: inline-block;">Optional. Add one or more images. Image metadata will be used to automatically set date and location fields (where available)
-                        <br>Hint: you can drag and drop files onto this window</span>
-                    <br>
-                    <br>
-                    <!-- The container for the uploaded files -->
-                    <div id="files" class="files"></div>
-                    <div id="imageLicenseDiv" class=" form-horizontal">
-                        <div class="form-group">
-                            <label for="imageLicense" class="col-sm-2 control-label">Licence:</label>
-                            <div class="col-sm-4">
-                                <g:select from="${grailsApplication.config.sighting.licenses}" name="imageLicense" class="form-control input-sm" id="imageLicense" value="${sighting?.multimedia ? sighting?.multimedia?.get(0)?.license : ''   }"/>
+                    <g:if test="${grailsApplication.config.disableImageUploads}">
+                        <h4>Image uploads are temporarily disabled</h4>
+                        <p>Our image server is currently undergoing maintenance. Please check back later.</p>
+                    </g:if>
+                    <g:else>
+                        <!-- The fileinput-button span is used to style the file input field as button -->
+                        <span class="btn btn-success fileinput-button" title="Select one or more photos to upload (you can also simply drag and drop files onto the page).">
+                            <i class="icon icon-white icon-plus"></i>
+                            <span>Add files...</span>
+                            <!-- The file input field used as target for the file upload widget -->
+                            <input id="fileupload" type="file" name="files[]" multiple>
+                        </span>
+                        <span style="display: inline-block;">Optional. Add one or more images. Image metadata will be used to automatically set date and location fields (where available)
+                            <br>Hint: you can drag and drop files onto this window</span>
+                        <br>
+                        <br>
+                        <!-- The container for the uploaded files -->
+                        <div id="files" class="files"></div>
+                        <div id="imageLicenseDiv" class=" form-horizontal">
+                            <div class="form-group">
+                                <label for="imageLicense" class="col-sm-2 control-label">Licence:</label>
+                                <div class="col-sm-4">
+                                    <g:select from="${grailsApplication.config.sighting.licenses}" name="imageLicense" class="form-control input-sm" id="imageLicense" value="${sighting?.multimedia ? sighting?.multimedia?.get(0)?.license : ''   }"/>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    </g:else>
                 </div>
 
                 <!-- Location -->
