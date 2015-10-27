@@ -96,7 +96,6 @@ class ImageService {
             //uploaded = new File("${grailsApplication.config.media.uploadDir}/${filename}")
         } else {
             uploaded = File.createTempFile('grails', "image_${uuid}${ext}")
-            //uploaded = File.createTempFile('grails', "${filename}")
         }
 
         if (uploaded) {
@@ -108,6 +107,26 @@ class ImageService {
         log.debug "uploaded = ${uploaded.absolutePath}"
 
         return uploaded
+    }
+
+    public void purgeTemporaryFiles() {
+        def lifetimeInHours = grailsApplication.config.media.tempFileLifespanInHours ?: 24
+        log.info "purgeTemporaryFiles"
+        // work out the cutoff date...
+        def millis = lifetimeInHours * 60 * 60 * 1000 // minutes * seconds * millis
+        def cutoffDate = new Date(new Date().getTime() - millis)
+        def recent = {file -> new Date(file.lastModified()) < cutoffDate }
+
+        try {
+            new File(grailsApplication.config.media.uploadDir).listFiles().toList()
+                    .findAll(recent)
+                    .each { File file ->
+                        log.warn "about to delete temp file: ${file.name}"
+                        file.delete()
+                    }
+        } catch (Exception e) {
+            log.error "Failed to remove temp files: ${e.message}", e
+        }
     }
 
     private void uploadFile(InputStream inputStream, File file) {

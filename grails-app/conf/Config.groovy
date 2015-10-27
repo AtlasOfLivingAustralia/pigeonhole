@@ -58,6 +58,8 @@ termsOfUseUrl = "http://www.ala.org.au/about-the-atlas/terms-of-use/"
 
 hideTaxonOverflowLinks = false
 media.uploadDir = "/data/${appName}/cache/imageUploads/" // Path to where files will be uploaded
+media.purgeTempFilesEnabled = true
+media.tempFileLifespanInHours = 48
 coordinates.sources = ["Google maps", "Google earth", "GPS device", "camera/phone", "physical maps", "other"]
 sighting.fields.excludes = ['errors','timeZoneOffset','eventDateNoTime','eventDateTime','class','log','constraints','$constraints']
 sighting.licenses = ['Creative Commons Attribution','Creative Commons Attribution-Noncommercial','Creative Commons Attribution-Share Alike','Creative Commons Attribution-Noncommercial-Share Alike']
