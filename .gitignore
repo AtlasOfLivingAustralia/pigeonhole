@@ -10,6 +10,7 @@ stacktrace.log
 /*DB.*
 /cobertura.ser
 .DS_Store
+/.slcache/
 /target/
 /out/
 /web-app/plugins
