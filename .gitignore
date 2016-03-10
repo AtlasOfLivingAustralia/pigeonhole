@@ -1,3 +1,4 @@
+.slcache
 # generated with: grails integrate-with  --git
 *.iws
 *Db.properties

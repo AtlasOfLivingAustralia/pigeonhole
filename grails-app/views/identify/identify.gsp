@@ -444,7 +444,6 @@
             var latlng = $('#locationLatLng span').data('latlng');
             $('.spinner2').removeClass('hide');
             jQuery.ajaxSettings.traditional = true; // so multiple params with same key are formatted right
-            //var url = "http://biocache.ala.org.au/ws/occurrences/search?q=species_subgroup:Parrots&fq=geospatial_kosher%3Atrue&fq=multimedia:Image&facets=multimedia&lat=-35.2792511&lon=149.1113017&radius=5"
             $.ajax({
                 url : biocacheBaseUrl + '/occurrences/search.json',
                     dataType : 'jsonp',
