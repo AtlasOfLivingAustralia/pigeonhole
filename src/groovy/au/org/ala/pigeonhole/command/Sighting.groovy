@@ -71,6 +71,7 @@ class Sighting {
     String dataResourceUid
     String coordinatePrecision
     String device
+    String devicePlatform
     String eventTime
 
     static constraints = {
@@ -122,6 +123,7 @@ class Sighting {
         dataResourceUid(nullable: true)
         coordinatePrecision(nullable: true)
         device(nullable:true)
+        devicePlatform(nullable:true)
         eventTime(nullable:true)
     }
 
