@@ -254,13 +254,13 @@ function loadSpeciesGroupImages(speciesGroup, start) {
 
     var groupNameArray = speciesGroup.split(":"); // e.g. "species_group:Insects and Spiders"
 
-    if (groupNameArray.length > 1) {
+    if (groupNameArray.length > 1 && groupNameArray[0] == "species_group") {
         // Fix for Insects and Spiders group (webservice only recognises first word - Insects
         var fieldName = groupNameArray[0]; // "species_group"
         var valueName = groupNameArray[1]; // "Insects and Spiders"
         var valuesArray = valueName.split(" "); // ["Insects", "and", "Spiders"]
         var groupName = valuesArray[0]; // "Insects
-        speciesGroup = fieldName + ":" + groupName // species_group:Insects
+        speciesGroup = fieldName + ":" + groupName; // species_group:Insects
     } else {
         // fallback to old way
         speciesGroup = speciesGroup.replace(" and Spiders","");
