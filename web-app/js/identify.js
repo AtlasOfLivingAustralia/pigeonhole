@@ -33,9 +33,10 @@ $(document).ready(function() {
         $('#speciesGroup .btn').removeClass('btn-primary');
         $(this).addClass('btn-primary');
         var selected = $(this).data('group');
-
+        var idSelector = 'subgroup_' + selected;
+        //console.log("idSelector",idSelector);
         $('#speciesSubGroup .sub-groups').addClass('hide'); // hide all subgroups
-        $('#subgroup_' + selected).removeClass('hide'); // expose requested subgroup
+        $("div[id='" + idSelector + "']").removeClass('hide'); // expose requested subgroup
         groupSelected = selected;
         //updateSpeciesGroups($(this).data('group'));
         loadSpeciesGroupImages('species_group:' + unescape(selected), null, $(this).find('.badge').text());
@@ -176,7 +177,7 @@ function updateSpeciesGroups(group, lat, lng) {
 
     var user_group = $('input.tags.group').val();
     var user_subgroup = $('input.tags.subgroup').val();
-    console.log('groups, etc', user_group, user_subgroup);
+    //console.log('groups, etc', user_group, user_subgroup);
 
     var latF = parseFloat(lat).toFixed(6);
     var lngF = parseFloat(lng).toFixed(6);
@@ -205,13 +206,14 @@ function updateSpeciesGroups(group, lat, lng) {
         $.each(data, function(index, value){
             // console.log(index, value);
             var btn = ''; //(index == 0) ? 'btn-primary' : '';
-            group += "<div class='btn btn-default groupBtn " +  btn + "' data-group='" + escape(value.name) + "'>" + value.name + " <span class='counts'>[" + value.speciesCount + "]</span></div>";
+            var groupName = value.name; //escape(value.name);
+            group += "<div class='btn btn-default groupBtn " +  btn + "' data-group='" + groupName + "'>" + value.name + " <span class='counts'>[" + value.speciesCount + "]</span></div>";
 
             if (value.childGroups.length > 0) {
                 var hide = 'hide'; //(index == 0) ? '' : 'hide';
-                var subGroup = "<div id='subgroup_" + value.name + "' class='sub-groups " + hide + "'>";
+                var subGroup = "<div id='subgroup_" + groupName + "' class='sub-groups " + hide + "'>";
                 $.each(value.childGroups, function(i, el){
-                    subGroup += "<div class='btn btn-default subGroupBtn' data-group='" + escape(el.name) + "'>" + el.name + " <span class='counts'>[" + el.speciesCount + "]</span></div>";
+                    subGroup += "<div class='btn btn-default subGroupBtn' data-group='" + el.name + "'>" + el.name + " <span class='counts'>[" + el.speciesCount + "]</span></div>";
                 });
                 $('#speciesSubGroup').append(subGroup);
             }
@@ -249,12 +251,13 @@ function loadSpeciesGroupImages(speciesGroup, start) {
     } else {
         $( "#end" ).remove(); // remove the trigger element for the inview loading of more images
     }
+    speciesGroup = speciesGroup.replace(" and Spiders",""); // TODO data issue and will break once data is reindexed
     var facetName = GSP_VARS.subgroupFacet || "common_name_and_lsid";
     var pageSize = 30;
     var radius = $('#radius').val();
     var latlng = $('#locationLatLng span').data('latlng');
     var lat, lng;
-
+    //console.log("speciesGroup",speciesGroup);
     if (latlng) {
         lat = latlng.lat;
         lng = latlng.lng;
