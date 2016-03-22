@@ -251,7 +251,21 @@ function loadSpeciesGroupImages(speciesGroup, start) {
     } else {
         $( "#end" ).remove(); // remove the trigger element for the inview loading of more images
     }
-    speciesGroup = speciesGroup.replace(" and Spiders",""); // TODO data issue and will break once data is reindexed
+
+    var groupNameArray = speciesGroup.split(":"); // e.g. "species_group:Insects and Spiders"
+
+    if (groupNameArray.length > 1) {
+        // Fix for Insects and Spiders group (webservice only recognises first word - Insects
+        var fieldName = groupNameArray[0]; // "species_group"
+        var valueName = groupNameArray[1]; // "Insects and Spiders"
+        var valuesArray = valueName.split(" "); // ["Insects", "and", "Spiders"]
+        var groupName = valuesArray[0]; // "Insects
+        speciesGroup = fieldName + ":" + groupName // species_group:Insects
+    } else {
+        // fallback to old way
+        speciesGroup = speciesGroup.replace(" and Spiders","");
+    }
+
     var facetName = GSP_VARS.subgroupFacet || "common_name_and_lsid";
     var pageSize = 30;
     var radius = $('#radius').val();
