@@ -39,6 +39,7 @@
             contextPath: "${request.contextPath}",
             //bookmarks: ${(bookmarks).encodeAsJson()?:'{}'},
             guid: "${taxon?.guid}",
+            noImageUrl: "${resource(dir: 'images', file: 'noimage.jpg')}",
             speciesGroups: ${(speciesGroupsMap).encodeAsJson()?:'{}'}, // TODO move this to an ajax call (?)
             leafletImagesDir: "${g.createLink(uri:'/js/leaflet-0.7.3/images')}",
             user: ${(user).encodeAsJson()?:'{}'},
@@ -121,7 +122,7 @@
                                 </table>
                                 <div class="row">
                                     <div class="col-sm-4">
-                                        <img src="" width="75" class="speciesThumbnail" alt="thumbnail image of species" style="width:75px; height:75px;"/>
+                                        <img src="${resource(dir: 'images', file: 'noimage.jpg')}" width="75" class="speciesThumbnail" alt="thumbnail image of species" style="width:75px; height:75px;"/>
                                     </div>
                                     <div class="col-sm-8">
                                         <div class="sciName">

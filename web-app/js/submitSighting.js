@@ -224,7 +224,33 @@ $(document).ready(function() {
     }).result(function(event, item) {
         // user has selected an autocomplete item
         //console.log("item", item);
-        $('input#guid').val(item.guid).change();
+        $('input#guid').val(item.guid).change(); //moved into next block (.blur())
+    });
+
+    // catch #speciesLookup onBlur event and try and match the entered name
+    $('#speciesLookup').blur(function() {
+        // lookup GUID even if guid is alreay set in hidden field, as it the user could've entered a new name
+        var nameStr = $(this).val();
+
+        if (nameStr) {
+            $.getJSON(GSP_VARS.bieServiceBaseUrl + "/guid/batch?q=" + nameStr + "&callback=?")
+                .done(function(data) {
+                    if (data[nameStr] && data[nameStr][0]) {
+                        $('input#guid').val(data[nameStr][0].acceptedIdentifier).change();
+                    } else {
+                        var data = { scientificName: nameStr };
+                        updateTaxonDetails(null, data);
+                    }
+                })
+                .fail(function( jqXHR, textStatus, errorThrown ) {
+                    //console.log('error',jqXHR, textStatus, errorThrown);
+                    alert("Error: " + textStatus + " - " + errorThrown);
+                    // show error in a DOM element on oage
+                })
+                .always(function() {
+                    // clean-up & spinner deactivations, etc
+                });
+        }
     });
 
     // pass in local time offset from UTC
@@ -461,23 +487,7 @@ function setSpecies(guid) {
         $.getJSON(GSP_VARS.bieServiceBaseUrl + "/species/shortProfile/" + guid + ".json?callback=?")
             .done(function(data) {
                 if (data.scientificName) {
-                    $('#taxonDetails').removeClass('hide').show();
-                    $('#noSpecies').hide();
-                    $('.sciName a').attr('href', GSP_VARS.bieBaseUrl + "/species/" + guid).html(data.scientificName);
-                    $('.speciesThumbnail').attr('src', data.thumbnail);
-                    if (data.commonName) {
-                        $('.commonName').text(data.commonName);
-                        $('#commonName').val(data.commonName);
-                    }
-                    $('#kingdom').val(data.kingdom);
-                    $('#family').val(data.family);
-                    $('#scientificName').val(data.scientificName);
-                    $('#noTaxa').hide();
-                    $('#matchedTaxa').show();
-                    $('#identificationChoice').show();
-                    if (!GSP_VARS.sightingBean) {
-                        $("input[name=identificationVerificationStatus][value=confident]").prop('checked', true);
-                    }
+                    updateTaxonDetails(guid, data)
                 }
             })
             .fail(function( jqXHR, textStatus, errorThrown ) {
@@ -487,6 +497,42 @@ function setSpecies(guid) {
             .always(function() {
                 // clean-up & spinner deactivations, etc
             });
+    }
+}
+
+function updateTaxonDetails(guid, data) {
+    $('#taxonDetails').removeClass('hide').show();
+    $('#noSpecies').hide();
+
+    if (data.thumbnail) {
+        $('.speciesThumbnail').attr('src', data.thumbnail);
+    } else {
+        $('.speciesThumbnail').attr('src', GSP_VARS.noImageUrl);
+    }
+    if (data.commonName) {
+        $('.commonName').text(data.commonName);
+        $('#commonName').val(data.commonName);
+    } else {
+        $('.commonName').text("");
+        $('#commonName').val('');
+    }
+    if (!guid) {
+        $('.commonName').html("unmatched name");
+        $('.sciName a').removeAttr('href').html(data.scientificName);
+        $('#kingdom').val('');
+        $('#family').val('');
+        $('#guid').val('');
+    } else {
+        $('.sciName a').attr('href', GSP_VARS.bieBaseUrl + "/species/" + guid).html(data.scientificName);
+        $('#kingdom').val(data.kingdom);
+        $('#family').val(data.family);
+    }
+    $('#scientificName').val(data.scientificName);
+    $('#noTaxa').hide();
+    $('#matchedTaxa').show();
+    $('#identificationChoice').show();
+    if (!GSP_VARS.sightingBean) {
+        $("input[name=identificationVerificationStatus][value=confident]").prop('checked', true);
     }
 }
 
@@ -506,6 +552,13 @@ function clearTaxonDetails() {
     $('#taxonDetails img').attr('src','');
     $('#taxonDetails a').attr('href','').html('');
     $('#taxonConceptID, #scientificName, #commonName').val('');
+}
+
+function updateUnmatchedTaxon(name) {
+    $('#taxonDetails .commonName').html('Unmatched');
+    $('#taxonDetails img').attr('src','');
+    $('#taxonDetails a').attr('href','').html('');
+    $('#scientificName').val(name);
 }
 
 /**

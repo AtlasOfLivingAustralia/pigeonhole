@@ -28,7 +28,7 @@
                 guidSelector: "#guid",
                 nameSelector: "#scientificName",
                 maxHits: 10,
-                url: 'http://bie.ala.org.au/ws/search/auto.jsonp'
+                url: 'https://bie.ala.org.au/ws/search/auto.jsonp'
             }, options );
 
             //console.log('alaAutocomplete',settings, $this.attr('type'));

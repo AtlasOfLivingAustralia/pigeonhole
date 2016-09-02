@@ -67,5 +67,6 @@ grails.project.dependency.resolution = {
         runtime ":release:3.0.1"
         runtime ":ala-auth:1.3.1"
         compile ":ala-bootstrap3:1.6"
+        runtime ":ala-admin-plugin:1.2"
     }
 }
