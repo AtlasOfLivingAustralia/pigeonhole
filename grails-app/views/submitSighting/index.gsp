@@ -39,7 +39,7 @@
             contextPath: "${request.contextPath}",
             //bookmarks: ${(bookmarks).encodeAsJson()?:'{}'},
             guid: "${taxon?.guid}",
-            noImageUrl: "${resource(dir: 'images', file: 'noimage.jpg')}",
+            noImageUrl: "${resource(dir: 'images', file: 'noImage.jpg')}",
             speciesGroups: ${(speciesGroupsMap).encodeAsJson()?:'{}'}, // TODO move this to an ajax call (?)
             leafletImagesDir: "${g.createLink(uri:'/js/leaflet-0.7.3/images')}",
             user: ${(user).encodeAsJson()?:'{}'},
