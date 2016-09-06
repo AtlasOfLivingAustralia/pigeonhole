@@ -112,7 +112,12 @@
                                                 </g:else>
                                             </td>
                                             <td>
-                                                <span class="speciesName">${s.scientificName}</span>
+                                                <g:if test="${s.taxonConceptID}">
+                                                    <span class="speciesName"><a href="${grailsApplication.config.bie.baseUrl}/species/${s.taxonConceptID}" target="bie">${s.scientificName}</a></span>
+                                                </g:if>
+                                                <g:else>
+                                                    <span class="speciesName">${s.scientificName}</span>
+                                                </g:else>
                                                 <div>${s.commonName}</div>
                                                 <g:if test="${s.tags}"><div class="tagGroup">
                                                     <g:each in="${s.tags}" var="t"><span class="label label-default">${raw(t)}</span> </g:each>
