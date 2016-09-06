@@ -22,6 +22,11 @@ import org.joda.time.format.DateTimeFormatter;
 /**
  * Command class for the sighting (based on DarwinCore terms)
  *
+ * NOTE: there is a marshaller attached to this class via Spring,
+ * see {@link au.org.ala.pigeonhole.marshaller.SightingMarshaller} which is wired via the
+ * resources.groovy class.
+ *
+ * @see au.org.ala.pigeonhole.marshaller.SightingMarshaller
  * @author "Nick dos Remedios <Nick.dosRemedios@csiro.au>"
  */
 @Log4j
@@ -73,6 +78,7 @@ class Sighting {
     String device
     String devicePlatform
     String eventTime
+    String imageLicense
 
     static constraints = {
         userId(nullable: true)
@@ -125,6 +131,7 @@ class Sighting {
         device(nullable:true)
         devicePlatform(nullable:true)
         eventTime(nullable:true)
+        imageLicense(nullable:true)
     }
 
     public void setDateStrZ(String dateInputStr) {
