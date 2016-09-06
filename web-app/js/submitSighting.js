@@ -197,6 +197,7 @@ $(document).ready(function() {
         autocompleteUrl = BIE_VARS.autocompleteUrl;
     }
 
+    // autocomplete on #speciesLookup input (using BIE)
     $("input#speciesLookup").autocomplete(autocompleteUrl, {
         extraParams: {limit: 100},
         dataType: 'jsonp',
@@ -222,16 +223,14 @@ $(document).ready(function() {
         max: 10,
         selectFirst: false
     }).result(function(event, item) {
-        // user has selected an autocomplete item
-        //console.log("item", item);
-        $('input#guid').val(item.guid).change(); //moved into next block (.blur())
-    });
-
-    // catch #speciesLookup onBlur event and try and match the entered name
-    $('#speciesLookup').blur(function() {
-        // lookup GUID even if guid is alreay set in hidden field, as it the user could've entered a new name
+        // user has selected an autocomplete item...
+        // set guid hidden input & trigger change event on it
+        setTimeout(function() {
+            $('input#guid').val(item.guid).change();
+        },500);
+    }).blur(function() {
+        // do guid lookup for name
         var nameStr = $(this).val();
-
         if (nameStr) {
             $.getJSON(GSP_VARS.bieServiceBaseUrl + "/guid/batch?q=" + nameStr + "&callback=?")
                 .done(function(data) {
