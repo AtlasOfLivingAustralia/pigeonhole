@@ -29,7 +29,7 @@ class MediaMarshaller {
             return [
                     "type" : media.type,
                     "format" : media.format,
-                    "identifier" : media.identifier,
+                    "identifier" : media.identifier?.replaceFirst('http:','https:'),
                     "imageId" : media.imageId?:'',
                     "title": media.title,
                     //"description": media.description,
