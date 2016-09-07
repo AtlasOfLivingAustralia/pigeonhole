@@ -52,7 +52,7 @@ ecodata.baseUrl = "http://ecodata-sightings-dev.ala.org.au/ws"
 taxonoverflow.baseUrl = "http://taxonoverflow-dev.ala.org.au"
 
 skin.orgNameLong = "Atlas of Living Australia"
-skin.layout = "main"
+skin.layout = "ala"
 
 termsOfUseUrl = "http://www.ala.org.au/about-the-atlas/terms-of-use/"
 
