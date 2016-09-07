@@ -122,7 +122,7 @@
                                 </table>
                                 <div class="row">
                                     <div class="col-sm-4">
-                                        <img src="${resource(dir: 'images', file: 'noimage.jpg')}" width="75" class="speciesThumbnail" alt="thumbnail image of species" style="width:75px; height:75px;"/>
+                                        <img src="${resource(dir: 'images', file: 'noImage.jpg')}" width="75" class="speciesThumbnail" alt="thumbnail image of species" style="width:75px; height:75px;"/>
                                     </div>
                                     <div class="col-sm-8">
                                         <div class="sciName">
