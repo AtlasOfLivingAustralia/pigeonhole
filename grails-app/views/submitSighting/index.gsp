@@ -25,7 +25,7 @@
 <html>
 <head>
     <meta name="layout" content="${grailsApplication.config.skin.layout}"/>
-    <title>Report a sighting | ${grailsApplication.config.skin.orgNameLong}</title>
+    <title>Record a sighting | ${grailsApplication.config.skin.orgNameLong}</title>
     <r:require modules="fileuploads, exif, moment, pigeonhole, bs3_datepicker, udraggable, fontawesome, purl, submitSighting, jqueryUIEffects, inview, identify, leafletGoogle"/>
     <r:script disposition="head">
         // global var to pass in GSP/Grails values into external JS files
@@ -71,7 +71,7 @@
     </r:script>
 </head>
 <body class="nav-species record-sighting">
-<g:render template="/topMenu"  model="[pageHeading: 'Report a Sighting']"/>
+<g:render template="/topMenu"  model="[pageHeading: 'Record a Sighting']"/>
 <div class="row">
     <div class="col-sm-12">
         <g:set var="errorsShown" value="${false}"/>
