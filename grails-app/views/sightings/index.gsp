@@ -91,7 +91,7 @@
                                     <tbody>
                                     <g:each in="${sightings.list}" var="s">
                                         <tr id="s_${s.occurrenceID}" data-tags="${(si.getTags(sighting: s)).encodeAsJavaScript()}" data-uuid="${s.occurrenceID}">
-                                            <td>
+                                            <td><%-- images --%>
                                                 <g:if test="${(s.offensiveFlag == null || s.offensiveFlag?.toBoolean() == false) && s.multimedia}">
                                                     <g:each in="${s.multimedia}" var="i" status="st">
                                                         <g:set var="imagUrls" value="${s.multimedia.collect{it.identifier}}"/>
@@ -111,7 +111,7 @@
                                                     <g:img dir="images" file="noImage.jpg" style="max-height:130px;  max-width: 130px; opacity: 0.6;"/>
                                                 </g:else>
                                             </td>
-                                            <td>
+                                            <td><%-- identification --%>
                                                 <g:if test="${s.taxonConceptID}">
                                                     <span class="speciesName"><a href="${grailsApplication.config.bie.baseUrl}/species/${s.taxonConceptID}" target="bie">${s.scientificName}</a></span>
                                                 </g:if>
@@ -143,11 +143,12 @@
                                                     </g:if>
                                                 </g:if>
                                             </td>
-                                            <td>
+                                            <td><%-- sighting info --%>
                                                 <span style="white-space:nowrap;">
                                                     <g:if test="${!org.codehaus.groovy.grails.web.json.JSONObject.NULL.equals(s.get("eventDate"))}">
-                                                        <span class="eventDateFormatted" data-isodate="${s.eventDate}">${(s.eventDate.size() >= 10) ? s.eventDate?.substring(0,10) : s.eventDate}</span>
+                                                        Recorded on: <span class="eventDateFormatted" data-isodate="${s.eventDate}">${(s.eventDate.size() >= 10) ? s.eventDate?.substring(0,10) : s.eventDate}</span>
                                                     </g:if>
+                                                    <div>Submitted on: <span class="eventDateFormatted">${s.dateCreated}</span></div>
                                                     <g:set var="userNameMissing" value="User ${s.userId}"/>
                                                     <div>Recorded by: <a href="${g.createLink(mapping: 'spotter', id: s.userId)}" title="View other sightings by this user">${s.recordedBy?:userNameMissing}</a></div>
                                                 </span>
@@ -160,12 +161,14 @@
                                                     </div>
                                                 </g:if>
                                             </td>
-                                            <g:if test="${user?.userId && user?.userId == s?.userId || auth.ifAnyGranted(roles:'ROLE_ADMIN', "1")}"><td>
-                                                <div class="actionButtons">
-                                                    <a href="${g.createLink(controller: 'submitSighting', action:'edit', id: s.occurrenceID)}" class="btn btn-default btn-sm editBtn" data-recordid="occurrenceID"><i class="fa fa-pencil"></i> Edit</a>
-                                                    <button class="btn btn-default btn-sm deleteRecordBtn" data-recordid="${s.occurrenceID}"><i class="fa fa-trash"></i>&nbsp;Delete</button>
-                                                </div>
-                                            </td></g:if>
+                                            <g:if test="${user?.userId && user?.userId == s?.userId || auth.ifAnyGranted(roles:'ROLE_ADMIN', "1")}">
+                                                <td><%-- edit/admin actions --%>
+                                                    <div class="actionButtons">
+                                                        <a href="${g.createLink(controller: 'submitSighting', action:'edit', id: s.occurrenceID)}" class="btn btn-default btn-sm editBtn" data-recordid="occurrenceID"><i class="fa fa-pencil"></i> Edit</a>
+                                                        <button class="btn btn-default btn-sm deleteRecordBtn" data-recordid="${s.occurrenceID}"><i class="fa fa-trash"></i>&nbsp;Delete</button>
+                                                    </div>
+                                                </td>
+                                            </g:if>
                                         </tr>
                                     </g:each>
                                     </tbody>

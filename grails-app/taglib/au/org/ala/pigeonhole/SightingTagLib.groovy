@@ -54,18 +54,24 @@ class SightingTagLib {
 
         def output
 
-        if (part == Calendar.HOUR) {
-            SimpleDateFormat hourFormat = new SimpleDateFormat("HH");
-            output = hourFormat.format(inputDate)
-        } else if (part == Calendar.MINUTE) {
-            SimpleDateFormat minFormat = new SimpleDateFormat("mm");
-            output = minFormat.format(inputDate)
-        } else if (part == "time" && attrs.date) {
-            SimpleDateFormat minFormat = new SimpleDateFormat("HH:mm");
-            output = minFormat.format(inputDate)
-        } else if (part == "date" && attrs.date) {
-            SimpleDateFormat minFormat = new SimpleDateFormat("dd-MM-yyyy");
-            output = minFormat.format(inputDate)
+        try {
+            if (part == Calendar.HOUR) {
+                SimpleDateFormat hourFormat = new SimpleDateFormat("HH");
+                output = hourFormat.format(inputDate)
+            } else if (part == Calendar.MINUTE) {
+                SimpleDateFormat minFormat = new SimpleDateFormat("mm");
+                output = minFormat.format(inputDate)
+            } else if (part == "time" && attrs.date) {
+                SimpleDateFormat minFormat = new SimpleDateFormat("HH:mm");
+                output = minFormat.format(inputDate)
+            } else if (part == "date" && attrs.date) {
+                SimpleDateFormat minFormat = new SimpleDateFormat("dd-MM-yyyy");
+                output = minFormat.format(inputDate)
+            }
+        } catch (Exception e) {
+            log.info "Problem parseing date (${inputDate}): ${e.getMessage()}",e
+            // Known issue with ecodata returning "Invalid date"
+            output = (inputDate == "Invalid date") ? "" : inputDate
         }
 
         out << output
@@ -104,5 +110,17 @@ class SightingTagLib {
             "${match} class=\"${cssClass}\""
         }
         out << styled
+    }
+
+    /**
+     * Takes an ISO formatted date string (e.g. 2016-08-19T10:35:00+10:00) and parses
+     * it so we can output a locale specific version of the date.
+     *
+     * @attr isoDateStr REQUIRED
+     */
+    def parseAndFormatDate = { attrs, body ->
+        def dateStr = attrs.isoDateStr
+        def date = new Date().parse("yyyy-MM-dd'T'HH:mm:ssXXX", dateStr) // TODO put format into config var?
+        out << date.getDateString()
     }
 }
