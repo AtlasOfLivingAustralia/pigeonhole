@@ -148,7 +148,7 @@
                                                     <g:if test="${!org.codehaus.groovy.grails.web.json.JSONObject.NULL.equals(s.get("eventDate"))}">
                                                         Recorded on: <span class="eventDateFormatted" data-isodate="${s.eventDate}">${(s.eventDate.size() >= 10) ? s.eventDate?.substring(0,10) : s.eventDate}</span>
                                                     </g:if>
-                                                    <div>Submitted on: <span class="eventDateFormatted">${s.dateCreated}</span></div>
+                                                    <div>Submitted on: <span class="eventDateFormatted" data-isodate="${s.dateCreated}">${(s.dateCreated.size() >= 10) ? s.dateCreated?.substring(0,10) : s.dateCreated}</span></div>
                                                     <g:set var="userNameMissing" value="User ${s.userId}"/>
                                                     <div>Recorded by: <a href="${g.createLink(mapping: 'spotter', id: s.userId)}" title="View other sightings by this user">${s.recordedBy?:userNameMissing}</a></div>
                                                 </span>
