@@ -120,7 +120,7 @@ class SubmitSightingController {
         } else if (debug) {
             // testing without ecodata running
             String sj = (sighting as JSON).toString(true)
-            flash.message = "You sighting was successfully (dummy) submitted." +
+            flash.message = "Your sighting was successfully (dummy) submitted." +
                     "<br><code>${sj}</code>"
             redirect(uri:'/sightings/user')
         } else {
@@ -136,7 +136,7 @@ class SubmitSightingController {
                     chain action: "index", id: "${sighting.taxonConceptID?:''}", model: [sighting: sighting]
                 }
             } else {
-                flash.message = "You sighting was successfully submitted."
+                flash.message = "Your sighting was successfully submitted."
                 redirect(uri:'/sightings/user')
             }
         }
