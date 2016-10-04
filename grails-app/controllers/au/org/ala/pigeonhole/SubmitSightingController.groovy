@@ -91,7 +91,11 @@ class SubmitSightingController {
         log.debug "upload params: ${(params as JSON).toString(true)}"
         log.debug "upload sighting: ${(sighting as JSON).toString(true)}"
         def user = authService.userDetails()
-        def debug = grailsApplication.config.submit?.debug?.toBoolean();
+        def debug = false
+
+        if (grailsApplication.config.flatten().containsKey("submit.debug")) {
+            debug = grailsApplication.config.submit.debug.toBoolean()
+        }
 
         if (!sighting.userId) {
             // edits will already have user info - don't clobber
