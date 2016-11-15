@@ -55,6 +55,7 @@ skin.orgNameLong = "Atlas of Living Australia"
 skin.layout = "ala"
 
 termsOfUseUrl = "http://www.ala.org.au/about-the-atlas/terms-of-use/"
+privacyPolicyUrl = "http://www.ala.org.au/about-the-atlas/terms-of-use/privacy-policy/"
 
 hideTaxonOverflowLinks = false
 media.uploadDir = "/data/${appName}/cache/imageUploads/" // Path to where files will be uploaded

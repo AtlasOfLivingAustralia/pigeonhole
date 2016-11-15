@@ -359,7 +359,9 @@
 
                 <div id="submitArea">
                     <div id="termsOfUse">Please read the <a href="${grailsApplication.config.termsOfUseUrl}" target="_blank">
-                    terms of use</a> before submitting your sighting</div>
+                        terms of use</a>
+                        <g:if test="${grailsApplication.config.privacyPolicyUrl}"> and <a href="${grailsApplication.config.privacyPolicyUrl}" target="_blank">privacy policy</a></g:if>
+                        before submitting your sighting</div>
                     <div id="submitWrapper"><input type="submit" id="formSubmit" class="btn btn-primary btn-lg"  value="${actionName == 'edit' ? 'Update' : 'Submit'} Record"/></div>
                 </div>
 
